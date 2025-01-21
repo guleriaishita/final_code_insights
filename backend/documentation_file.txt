@@ -1,0 +1,378 @@
+Generated Documentation:
+```python
+"""
+AudioStreamer Module
+
+This module provides an implementation for streaming audio over WebSocket connections. 
+It allows capturing audio from a microphone, sending it to a WebSocket server, 
+receiving audio data from the server, and playing it back through speakers. 
+The module supports different modes of operation: sending, receiving, or both.
+
+Classes:
+    AudioStreamer: Handles audio streaming functionality.
+    
+Functions:
+    websocket_server: WebSocket server that broadcasts received audio to all connected clients.
+    start_server: Starts the WebSocket server.
+"""
+
+import asyncio
+import base64
+import json
+import pyaudio
+import websockets
+import numpy as np
+
+
+class AudioStreamer:
+    """
+    AudioStreamer class for capturing, sending, receiving, and playing audio over WebSocket.
+
+    Attributes:
+        FORMAT (int): Audio format (16-bit PCM).
+        CHANNELS (int): Number of audio channels (2 for stereo).
+        CHUNK (int): Number of audio frames per buffer.
+        RATE (int): Sample rate (44100 Hz).
+        websocket_url (str): URL of the WebSocket server.
+        audio_queue (asyncio.Queue): Queue for storing received audio data.
+        mode (str): Mode of operation ("send", "receive", or "both").
+    """
+
+    def __init__(self, websocket_url=None, mode="both"):
+        """
+        Initializes the AudioStreamer instance.
+
+        Parameters:
+            websocket_url (str): The WebSocket server URL. Defaults to "ws://localhost:8765".
+            mode (str): The mode of operation ("send", "receive", or "both"). Defaults to "both".
+        """
+        self.FORMAT = pyaudio.paInt16
+        self.CHANNELS = 2
+        self.CHUNK = 1024
+        self.RATE = 44100
+        self.websocket_url = websocket_url or "ws://localhost:8765"
+        self.audio_queue = asyncio.Queue()
+        self.mode = mode  # Can be "send", "receive", or "both"
+
+    def find_audio_device(self, audio, is_input=True):
+        """
+        Finds the appropriate audio device for input or output.
+
+        Parameters:
+            audio (pyaudio.PyAudio): The PyAudio instance.
+            is_input (bool): True to find input device, False for output device.
+
+        Returns:
+            int: The index of the found audio device, or None if not found.
+        """
+        # First try PipeWire
+        for i in range(audio.get_device_count()):
+            dev_info = audio.get_device_info_by_index(i)
+            if 'pipewire' in str(dev_info['name'].lower()):
+                return i
+
+        # If PipeWire not found, try pulse
+        for i in range(audio.get_device_count()):
+            dev_info = audio.get_device_info_by_index(i)
+            if 'pulse' in str(dev_info['name'].lower()):
+                return i
+
+        # If still not found, try default
+        for i in range(audio.get_device_count()):
+            dev_info = audio.get_device_info_by_index(i)
+            if 'default' in str(dev_info['name'].lower()):
+                return i
+
+        return None
+
+    async def start(self):
+        """
+        Starts the audio streaming process.
+
+        Establishes a WebSocket connection and starts capturing and/or receiving audio 
+        based on the specified mode. Handles cleanup on exit.
+        """
+        try:
+            async with websockets.connect(self.websocket_url) as websocket:
+                print(f"Connected to WebSocket server in {self.mode} mode.")
+                print("Press Ctrl+C to stop streaming")
+                # Start tasks based on mode
+                async with asyncio.TaskGroup() as tg:
+                    if self.mode in ["send", "both"]:
+                        tg.create_task(self.capture_audio(websocket))
+                    if self.mode in ["receive", "both"]:
+                        tg.create_task(self.receive_audio(websocket))
+                        tg.create_task(self.play_audio())
+        except KeyboardInterrupt:
+            print("\nStopping audio streaming...")
+        except Exception as e:
+            print(f"\nError in audio streaming: {e}")
+        finally:
+            print("Cleanup complete")
+
+    async def capture_audio(self, websocket):
+        """
+        Captures audio from the microphone and sends it over the WebSocket.
+
+        Parameters:
+            websocket (websockets.WebSocketClientProtocol): The WebSocket connection to send audio data.
+        """
+        audio = pyaudio.PyAudio()
+        stream = None
+
+        try:
+            device_index = self.find_audio_device(audio, is_input=True)
+            if device_index is None:
+                print("Could not find suitable input device!")
+                return
+
+            device_info = audio.get_device_info_by_index(device_index)
+            print(f"\nUsing input device: {device_info['name']}")
+
+            stream = audio.open(
+                format=self.FORMAT,
+                channels=self.CHANNELS,
+                rate=self.RATE,
+                input=True,
+                frames_per_buffer=self.CHUNK,
+                input_device_index=device_index,
+                stream_callback=None
+            )
+
+            print("Successfully opened input stream")
+
+            while True:
+                try:
+                    data = await asyncio.to_thread(stream.read, self.CHUNK, exception_on_overflow=False)
+                    # Calculate volume level (RMS)
+                    audio_data = np.frombuffer(data, dtype=np.float32)
+                    volume_level = float(np.sqrt(np.mean(audio_data ** 2)))
+
+                    # Show volume meter if above threshold
+                    if volume_level > 0.01:
+                        bars = min(int(volume_level * 40), 40)
+                        print(f"\rInput Level: {'|' * bars}{' ' * (40 - bars)}", end='', flush=True)
+
+                    await websocket.send(json.dumps({
+                        "audio_data": base64.b64encode(data).decode(),
+                        "sample_rate": self.RATE,
+                        "channels": self.CHANNELS
+                    }))
+
+                except OSError as e:
+                    if "Input overflowed" in str(e):
+                        # Ignore overflow errors
+                        continue
+                    raise
+
+        except Exception as e:
+            print(f"\nError in audio capture: {e}")
+        finally:
+            if stream:
+                stream.stop_stream()
+                stream.close()
+            audio.terminate()
+
+    async def receive_audio(self, websocket):
+        """
+        Receives audio data from the WebSocket and stores it in a queue.
+
+        Parameters:
+            websocket (websockets.WebSocketClientProtocol): The WebSocket connection to receive audio data.
+        """
+        messages_received = 0
+        try:
+            print("Starting to receive audio...")
+            async for message in websocket:
+                try:
+                    data = json.loads(message)
+                    audio_data = base64.b64decode(data["audio_data"])
+                    await self.audio_queue.put(audio_data)
+                    messages_received += 1
+                    if messages_received % 100 == 0:
+                        print(f"\rReceived {messages_received} audio chunks", end="", flush=True)
+                except json.JSONDecodeError:
+                    print(f"\nError decoding message: {message[:100]}...")
+                except KeyError:
+                    print(f"\nMissing audio_data in message: {message[:100]}...")
+                except Exception as e:
+                    print(f"\nError processing received audio: {e}")
+        except Exception as e:
+            print(f"\nError in receive_audio: {e}")
+        finally:
+            print("\nStopped receiving audio")
+
+    async def play_audio(self):
+        """
+        Plays audio from the queue through the speakers.
+
+        Continuously retrieves audio data from the queue and plays it back.
+        """
+        audio = pyaudio.PyAudio()
+        stream = None
+        played_chunks = 0
+
+        try:
+            print("\nAvailable Output Devices:")
+            for i in range(audio.get_device_count()):
+                dev_info = audio.get_device_info_by_index(i)
+                if dev_info["maxOutputChannels"] > 0:
+                    print(f"Device {i}: {dev_info['name']}")
+
+            device_index = self.find_audio_device(audio, is_input=False)
+            if device_index is None:
+                print("Could not find suitable output device!")
+                return
+
+            print(f"\nUsing output device {device_index}: {audio.get_device_info_by_index(device_index)['name']}")
+
+            stream = audio.open(
+                format=self.FORMAT,
+                channels=self.CHANNELS,
+                rate=self.RATE,
+                output=True,
+                output_device_index=device_index
+            )
+            print("Successfully opened output stream")
+            print("\n*** Audio playback started - you should hear sound when speaking ***")
+            print("If you don't hear anything, check:")
+            print("1. Is your volume turned up?")
+            print("2. Are you using the correct audio output device?")
+            print("3. Try running: pactl list sinks")
+
+            while True:
+                data = await self.audio_queue.get()
+                # Convert bytes to integers for volume calculation
+                audio_data = np.frombuffer(data, dtype=np.int16)
+                # Calculate volume level (RMS)
+                volume_level = np.sqrt(np.mean(np.square(audio_data)))
+
+                # Visual volume indicator
+                if volume_level > 500:  # Adjust this threshold based on your needs
+                    bar_length = min(int(volume_level / 500), 40)
+                    print(f"\rVolume: {'|' * bar_length}{' ' * (40 - bar_length)} {played_chunks} chunks played",
+                          end='', flush=True)
+
+                await asyncio.to_thread(stream.write, data)
+                played_chunks += 1
+
+        except asyncio.CancelledError:
+            print("\nStopping audio playback...")
+        except Exception as e:
+            print(f"\nError in audio playback: {e}")
+        finally:
+            if stream:
+                stream.stop_stream()
+                stream.close()
+            audio.terminate()
+            print("\nAudio playback cleaned up")
+
+
+# Global set to track all connected clients
+connected = set()
+
+
+async def websocket_server(websocket):
+    """
+    WebSocket server that broadcasts received audio to all connected clients.
+
+    Parameters:
+        websocket (websockets.WebSocketServerProtocol): The WebSocket connection for the client.
+    """
+    global connected
+    try:
+        connected.add(websocket)
+        print(f"New client connected. Total clients: {len(connected)}")
+
+        messages_handled = 0
+        async for message in websocket:
+            # Broadcast the audio data to all other connected clients
+            broadcast_targets = [other for other in connected if other != websocket]
+            if broadcast_targets:
+                for target in broadcast_targets:
+                    await target.send(message)
+                messages_handled += 1
+                if messages_handled % 100 == 0:
+                    print(f"Server handled {messages_handled} messages. Active clients: {len(connected)}")
+    except websockets.exceptions.ConnectionClosed:
+        print("Client connection closed normally")
+    except Exception as e:
+        print(f"Error in websocket server: {e}")
+    finally:
+        connected.remove(websocket)
+        print(f"Client disconnected. Remaining clients: {len(connected)}")
+
+
+async def start_server(host="0.0.0.0", port=8765):
+    """
+    Starts the WebSocket server.
+
+    Parameters:
+        host (str): The host address for the server. Defaults to "0.0.0.0".
+        port (int): The port number for the server. Defaults to 8765.
+    """
+    async with websockets.serve(websocket_server, host, port):
+        print(f"Starting WebSocket server on ws://{host}:{port}")
+        await asyncio.Future()  # run forever
+
+
+if __name__ == "__main__":
+    import sys
+
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "server":
+            # Run as server
+            asyncio.run(start_server())
+        elif sys.argv[1] in ["send", "receive", "both"]:
+            # Run as client with specified mode
+            client = AudioStreamer(mode=sys.argv[1])
+            asyncio.run(client.start())
+        else:
+            print("Usage: python script.py [server|send|receive|both]")
+    else:
+        # Default to both mode
+        client = AudioStreamer(mode="both")
+        asyncio.run(client.start())
+```
+
+### Code Summary
+The provided code implements an audio streaming application using WebSocket technology. It allows users to capture audio from a microphone, send it to a WebSocket server, receive audio data from the server, and play it back through speakers. The application can operate in three modes: sending audio, receiving audio, or both. It utilizes the `pyaudio` library for audio input and output, and `websockets` for real-time communication.
+
+### Tree Structure
+```
+AudioStreamer
+├── __init__(self, websocket_url=None, mode="both")
+├── find_audio_device(self, audio, is_input=True)
+├── start(self)
+├── capture_audio(self, websocket)
+├── receive_audio(self, websocket)
+└── play_audio(self)
+
+websocket_server(websocket)
+start_server(host="0.0.0.0", port=8765)
+
+```
+
+### Detailed Descriptions
+- **AudioStreamer Class**
+  - **Purpose**: Manages audio streaming functionality, including capturing, sending, receiving, and playing audio.
+  - **Methods**:
+    - `__init__(self, websocket_url=None, mode="both")`: Initializes the audio streamer with specified WebSocket URL and mode.
+    - `find_audio_device(self, audio, is_input=True)`: Finds an appropriate audio device for input or output.
+    - `start(self)`: Starts the audio streaming process.
+    - `capture_audio(self, websocket)`: Captures audio from the microphone and sends it over the WebSocket.
+    - `receive_audio(self, websocket)`: Receives audio data from the WebSocket and stores it in a queue.
+    - `play_audio(self)`: Plays audio from the queue through the speakers.
+
+- **websocket_server(websocket)**
+  - **Purpose**: Handles incoming WebSocket connections and broadcasts received audio to all connected clients.
+  - **Parameters**:
+    - `websocket`: The WebSocket connection for the client.
+
+- **start_server(host="0.0.0.0", port=8765)**
+  - **Purpose**: Starts the WebSocket server.
+  - **Parameters**:
+    - `host`: The host address for the server.
+    - `port`: The port number for the server.
+
+This documentation adheres to Pydoc conventions and provides
