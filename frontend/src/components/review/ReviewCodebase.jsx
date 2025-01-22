@@ -304,7 +304,7 @@ const ReviewCodebase = () => {
       const data = await response.json();
       
       if (response.ok) {
-        sessionStorage.setItem('CodeFilereviewId', data.reviewId);
+        sessionStorage.setItem('CodeBasereviewId', data.reviewId);
         navigate('/output');
       } else {
         setShowError(true);
