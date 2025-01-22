@@ -245,7 +245,7 @@ router.get('/reviewfiles', async (req, res) => {
 
 router.get('/generated_knowledge_graph', async(req, res) => {
   try {
-    const graphData = await session.run('MATCH (n)-[r]->(m) RETURN n, r, m LIMIT 100');
+    const graphData = await session.run('MATCH (n)-[r]->(m) RETURN n, r, m LIMIT 1000');
     
     // Transform Neo4j data into a format suitable for visualization
     const graph = graphData.records.map(record => ({

@@ -5,6 +5,7 @@ const apiGuidelines = require('./routes/guidelines_api');
 const apiReviewfile = require('./routes/reviewfile_api');
 const apiReviewcodebase = require('./routes/reviewcodebase_api');
 const morgan = require("morgan");
+const apiKnowledgeGraph = require('./routes/knowledgegraph_api');
 const apiOutput = require('./routes/outputs_api');
 const path = require('path');
 const session = require('express-session'); // Add this line
@@ -45,6 +46,7 @@ app.use('/api', apiGuidelines);
 app.use('/api', apiReviewfile);
 app.use('/api', apiReviewcodebase);
 app.use('/api/output', apiOutput);
+app.use('/api/output',apiKnowledgeGraph);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
