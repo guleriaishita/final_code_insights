@@ -19,58 +19,6 @@ const password = process.env.NEO4J_PASSWORD;
 const driver = neo4j.driver('neo4j://20.193.154.253:7687', neo4j.auth.basic(username, password));
 const session = driver.session();
 
-router.get('/generated_guidelines_docs', async (req, res) => {
-  try {
-    const { guidelineId } = req.query;  // Get guidelineId from query parameters
-
-    if (!guidelineId) {
-      return res.status(400).json({ message: 'guidelineId is required' });
-    }
-
-    // Fetch the guideline by its ID from the database
-    const guideline = await Guideline.findById(guidelineId)
-      .select('result status createdAt provider modelType'); // Select specific fields
-
-    if (!guideline) {
-      return res.status(404).json({ message: 'Guideline not found' });
-    }
-
-    res.json(guideline);  // Send the specific guideline as JSON
-  } catch (error) {
-    console.error('Error fetching guideline:', error);
-    res.status(500).json({ message: 'Failed to fetch guideline', error: error.message });
-  }
-});
-router.get('/guideline', async (req, res) => {
-  try {
-    // Find the most recent guideline by sorting in descending order of creation date
-    const latestGuideline = await Guideline.findOne()
-      .sort({ createdAt: -1 })  // Sort by creation date in descending order
-      .select('_id result status provider modelType createdAt');  // Select the fields we want
-
-    if (!latestGuideline) {
-      return res.status(404).json({ 
-        success: false,
-        message: 'No guidelines found' 
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      guidelineId: latestGuideline._id,
-      data: latestGuideline
-    });
-
-  } catch (error) {
-    console.error('Error fetching latest guideline:', error);
-    res.status(500).json({ 
-      success: false,
-      message: 'Error fetching latest guideline',
-      error: error.message 
-    });
-  }
-});
-
 
 router.get('/generated_analyzed_codebase_docs', async (req, res) => {
   try {

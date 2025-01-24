@@ -74,95 +74,6 @@ const ReviewFile = () => {
     setAdditionalFiles(newFiles);
   };
 
- 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  
-  //   if (files.length === 0) {
-  //     setShowError(true);
-  //     return;
-  //   }
-  
-  //   // Validate file types and sizes
-  //   const validFiles = files.every(file => {
-  //     const isValidSize = file.size <= 10 * 1024 * 1024; // 10MB limit
-  //     return isValidSize;
-  //   });
-  
-  //   if (!validFiles) {
-  //     console.error("Invalid file size or type");
-  //     return;
-  //   }
-  
-  //   const formData = new FormData();
-    
-  //   files.forEach(file => {
-  //     formData.append('files', file);
-  //   });
-  
-  //   if (complianceFile) {
-  //     formData.append('compliance', complianceFile);
-  //   }
-  
-  //   additionalFiles.forEach(file => {
-  //     formData.append('additionalFiles', file);
-  //   });
-  
-  //   formData.append('selectedOptions', JSON.stringify(selectedOptions));
-  //   formData.append('provider', provider);
-  //   formData.append('modelType', modelType);
-  
-  //   // Log the FormData contents for debugging
-  //   for (let pair of formData.entries()) {
-  //     console.log(pair[0], pair[1]);
-  //   }
-  
-  //   try {
-  //     setProcessing(true);
-  
-  //     console.log('Sending request to:', "http://localhost:5000/api/analyzefile");
-  
-  //     const response = await fetch("http://localhost:5000/api/analyzefile", {
-  //       method: "POST",
-  //       headers: {
-  //         'Accept': 'application/json',
-  //       },
-  //       body: formData
-  //     });
-  
-  //     console.log('Response status:', response.status);
-  //     console.log('Response headers:', Object.fromEntries(response.headers));
-  
-  //     // Get the raw text response first
-  //     const textResponse = await response.text();
-  //     console.log('Raw response:', textResponse);
-  
-  //     if (textResponse.trim().startsWith('<!DOCTYPE')) {
-  //       console.error('Received HTML instead of JSON. Server might be returning an error page.');
-  //       setProcessing(false);
-  //       return;
-  //     }
-  
-  //     // Only try to parse as JSON if it's not HTML
-  //     const data = JSON.parse(textResponse);
-  
-  //     if (response.ok) {
-  //       sessionStorage.setItem('CodeFilereviewId', data.reviewId);
-  //       setProcessing(false);
-  //       navigate('/output');
-  //     } else {
-  //       console.error("Error response:", data);
-  //       setProcessing(false);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error details:", {
-  //       name: error.name,
-  //       message: error.message,
-  //       stack: error.stack
-  //     });
-  //     setProcessing(false);
-  //   }
-  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
   
@@ -171,80 +82,47 @@ const ReviewFile = () => {
       return;
     }
   
-    // Validate file types and sizes
-    const validFiles = files.every(file => {
-      const isValidSize = file.size <= 10 * 1024 * 1024; // 10MB limit
-      return isValidSize;
-    });
-  
+    const validFiles = files.every(file => file.size <= 10 * 1024 * 1024);
     if (!validFiles) {
       console.error("Invalid file size or type");
       return;
     }
   
     const formData = new FormData();
-    
-    files.forEach(file => {
-      formData.append('files', file);
-    });
-  
-    if (complianceFile) {
-      formData.append('compliance', complianceFile);
-    }
-  
-    additionalFiles.forEach(file => {
-      formData.append('additionalFiles', file);
-    });
-  
+    files.forEach(file => formData.append('files', file));
+    if (complianceFile) formData.append('compliance', complianceFile);
+    additionalFiles.forEach(file => formData.append('additionalFiles', file));
     formData.append('selectedOptions', JSON.stringify(selectedOptions));
     formData.append('provider', provider);
     formData.append('modelType', modelType);
   
     try {
       setProcessing(true);
-  
       const response = await fetch("http://localhost:5000/api/analyzefile", {
         method: "POST",
-        headers: {
-          'Accept': 'application/json',
-        },
+        headers: { 'Accept': 'application/json' },
         body: formData
       });
   
-      // Get the raw text response first
       const textResponse = await response.text();
-      
       if (textResponse.trim().startsWith('<!DOCTYPE')) {
-        console.error('Received HTML instead of JSON. Server might be returning an error page.');
-        setProcessing(false);
-        return;
+        throw new Error('Received HTML instead of JSON');
       }
   
       const data = JSON.parse(textResponse);
   
-      if (response.ok && data.reviewId) {
-        // Store the review ID in both sessionStorage and localStorage for redundancy
-        sessionStorage.setItem('FilesreviewId', data.reviewId);
-       
-        // Optional: Store timestamp for session management
-        const timestamp = new Date().getTime();
-        sessionStorage.setItem('FilesreviewId', timestamp);
-        
-        setProcessing(false);
+      if (response.ok && data.FilesreviewId) {
+        sessionStorage.setItem('FilesreviewId', data.FilesreviewId);
         navigate('/output');
       } else {
-        console.error("Error response:", data);
-        setProcessing(false);
+        throw new Error(data.error || 'Failed to process files');
       }
     } catch (error) {
-      console.error("Error details:", {
-        name: error.name,
-        message: error.message,
-        stack: error.stack
-      });
+      console.error("Error:", error);
+    } finally {
       setProcessing(false);
     }
-};
+  };
   
   return (
     <div className="min-h-screen bg-white">

@@ -9,28 +9,7 @@ const Output = () => {
   const [loadingKG, setLoadingKG] = useState(false);
   const [error,setError] = useState(null);
   const handleGenerated_guide = async () => {
-    try {
-      setLoadingguide(true);
-      setError(null);
-      
-      // First, get the latest guideline
-      const response = await axios.get('http://localhost:5000/api/output/guideline');
-      
-      if (response.data.success && response.data.guidelineId) {
-        // Store the guideline ID in sessionStorage
-        sessionStorage.setItem('guidelineId', response.data.guidelineId);
-        
-        // Navigate to the output page
-        navigate('/output/generated_guidelines_docs');
-      } else {
-        throw new Error('No guideline ID received');
-      }
-    } catch (err) {
-      console.error('Error:', err);
-      setError(err.response?.data?.message || 'Failed to fetch guideline');
-    } finally {
-      setLoadingguide(false);
-    }
+    navigate('/output/generated_guidelines_docs');
   };
 
   const handleGenerated_codebase = async () => {

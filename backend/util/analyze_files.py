@@ -376,128 +376,6 @@ class CodeReviewSystem:
             print(f"Error in documentation generation: {e}")
             return "Documentation generation failed. Default placeholder."
 
-
-    # def generate_review(self, file_content: str, file_type: str, compliance_sections: Dict[str, str],
-    #                    additional_content: str, model_name: str, provider: str) -> str:
-    #     try:
-    #         if file_type == "source":
-    #             with open(self.design_patterns_path, "r") as patterns_file:
-    #                 design_patterns = patterns_file.read()
-                   
-    #             prompt = f"""
-    #             CONTEXTUAL INPUTS:
-    #             - Primary Source Code: {file_content}
-    #             - Compliance Guidelines: {compliance_sections['review']}
-    #             - Additional Files Context: {additional_content}
-    #             - Design Patterns Reference: {design_patterns}
-
-
-    #     DETAILED ANALYTICAL REVIEW PROTOCOL
-    #     I. DESIGN PATTERNS AND ARCHITECTURAL ANALYSIS
-    #     Objective: Comprehensive Design Pattern Mapping and Architectural Evaluation
-
-
-    #     Design Patterns Identification:
-    #     - Systematically cross-reference the provided design patterns with the current source code implementation
-    #     - Detailed Pattern Mapping:
-    #     * Identify explicitly implemented design patterns
-    #     * Specify exact location and implementation method
-    #     * Assess pattern application effectiveness
-    #     * Evaluate architectural coherence
-
-
-    #     Unimplemented Design Pattern Recommendations:
-    #     - Analyze code structure to suggest:
-    #     * Most appropriate unimplemented design patterns
-    #     * Specific implementation strategies
-    #     * Potential architectural improvements
-    #     * Performance and maintainability benefits of recommended patterns
-
-
-    #     II. ADDITIONAL FILES CONTEXTUAL INTEGRATION
-    #     Comprehensive Interdependency Analysis:
-    #     - Examine interactions between provided additional files from and primary source code
-    #     - Deep Dive Investigations:
-    #     * Shared dependency mapping
-    #     * Cross-file architectural connections
-    #     * Module interaction patterns
-    #     * Potential refactoring opportunities
-
-
-    #     III. CODING STYLE AND NAMING CONVENTION ASSESSMENT
-    #     Naming Convention Evaluation:
-    #     - Systematic Analysis of Naming Practices:
-    #     * Class Naming: Consistency, descriptiveness, semantic clarity
-    #     * Method/Function Naming: Action-driven nomenclature, verb usage, scope clarity
-    #     * Variable Naming: Context-rich, type-indicative naming strategies
-    #     * Constant Naming: Standardization, semantic meaning
-
-
-    #     Coding Style Comprehensive Review:
-    #     - Formatting Consistency
-    #     - Indentation and Structural Uniformity
-    #     - Whitespace and Line Break Optimization
-    #     - Adherence to Language-Specific Styling Guidelines
-
-
-    #     IV. CODE QUALITY AND PERFORMANCE INSIGHTS
-    #     Technical Depth Analysis:
-    #     - Detailed Functionality Explanation
-    #     - Performance Characteristic Assessment
-    #     - Complexity Metrics Evaluation
-    #     - Optimization Potential Identification
-    #     - Scalability and Future-Proofing Considerations
-
-
-    #     V. STRATEGIC IMPROVEMENT RECOMMENDATIONS
-    #     Actionable Enhancement Framework:
-    #     - Prioritized Improvement Suggestions
-    #         * Impact Assessment
-    #         * Implementation Ease
-    #         * Long-Term Maintainability
-    #     - Concrete Refactoring Strategies
-    #     - Best Practices Alignment
-    #     - Performance Optimization Pathways
-
-
-    #     Delivery Specifications:
-    #     - Professional, Constructive Tone
-    #     - Code-Specific Reference Points
-    #     - Strategic, Forward-Looking Recommendations
-    #     - Clear, Implementable Guidance
-
-
-    #     GENERATE a comprehensive, context-aware review that transforms code analysis into a strategic architectural and quality enhancement roadmap.
-    #             """
-    #         else:
-    #             prompt = f"""
-    #             Configuration File:
-    #             {file_content}
-    #             Review Guidelines:
-    #             {compliance_sections['review']}
-    #             Additional Files:
-    #             {additional_content}
-    #             Generate review for the provided Source code , strictly adhering to the specified Review guidelines while ensuring all instructions outlined below remain intact.
-    #     Instructions:
-    #         1. Summarize the configuration file's purpose, structure, and key settings.
-    #         2. Explain its integration with the system, referencing additional files where applicable.
-    #         3. Review the code for adherence to best practices provided above , referring to the provided guidelines.
-    #             - If the code follows best practices mentioned in the guidelines, highlight them.
-    #             - If the code doesn't adhere to the best practices, suggest improvements or alternatives that align with the provided guidelines.
-    #         4. Evaluate clarity, maintainability, and organization, recommending better structuring if needed.
-    #         5. Analyze external references (e.g., dependencies, imported files) and their relevance from the additional files section mentioned above.
-    #         6. Identify potential issues (e.g., hardcoded data, incomplete settings) and provide actionable fixes.
-    #         7. Suggest enhancements for flexibility, scalability, and alignment with project requirements.
-    #         8. Recommend strategies for testing and validation to ensure correctness and compatibility.
-    #             """
-
-
-    #         response = self.generate_litellm_response(prompt, model_name, provider)
-    #         return response['choices'][0]['message']['content']
-    #     except Exception as e:
-    #         print(f"Error in review generation: {e}")
-    #         return "Review generation failed. Default placeholder."
-
     def generate_review(self, file_content: str, file_type: str, compliance_sections: Dict[str, str],
                     additional_content: str, model_name: str, provider: str) -> str:
         try:
@@ -655,20 +533,33 @@ def process_files(files_data, temp_dir):
     
     file_paths = []
     for file_info in files_data:
+        if not isinstance(file_info, dict):
+            logging.warning(f"Invalid file info format: {file_info}")
+            continue
+            
+        filename = file_info.get('filename')
+        content = file_info.get('content', '')
+        
+        if not filename:
+            logging.warning("Missing filename in file info")
+            continue
+        
         # Create file path maintaining any directory structure
-        file_path = os.path.join(temp_dir, file_info['filename'])
+        file_path = os.path.join(temp_dir, filename)
         
         # Create directories if they don't exist
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         
         # Write file content
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(file_info['content'])
-        
-        file_paths.append(file_path)
+        try:
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(content)
+            file_paths.append(file_path)
+        except Exception as e:
+            logging.error(f"Failed to write file {filename}: {str(e)}")
+            continue
     
     return file_paths
-
 
 def create_temp_compliance_file(compliance_data, temp_dir):
     """
