@@ -152,6 +152,20 @@ class FileManagementHelper {
             return null;
         }
     }
+    async listFilesInFolder(prefix) {
+        try {
+          const params = {
+            Bucket: this.bucket,
+            Prefix: prefix
+          };
+      
+          const response = await this.s3.listObjectsV2(params).promise();
+          return response.Contents;
+        } catch (error) {
+          console.error('Error listing files:', error);
+          return [];
+        }
+      }
 }
 
 module.exports = FileManagementHelper;

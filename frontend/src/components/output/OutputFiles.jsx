@@ -1,122 +1,90 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { FileDown, Loader } from 'lucide-react';
 import axios from 'axios';
 
-const OutputFiles = () => {
-  const [reviewData, setReviewData] = useState(null);
+const OutputDisplay = () => {
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('review');
 
   useEffect(() => {
-   
+    const processId = sessionStorage.getItem('processId');
+    if (!processId) return;
 
-    const fetchReview = async () => {
-      const currentReviewId = sessionStorage.getItem('currentReviewId');
-      if (!currentReviewId) {
-        throw new Error('No file ID found');
-      }
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/generated_analyzed_files_docs/${currentReviewId}`);
-        const { status, results, error: responseError } = response.data;
-
-        if (responseError) {
-          throw new Error(responseError);
+        const response = await axios.get(`http://localhost:5000/api/generated_analyzed_files_docs/${processId}`);
+        if (response.data.results) {
+          setData(response.data);
+          setLoading(false);
+        } else {
+          setTimeout(fetchData, 2000);
         }
-
-        setReviewData(response.data);
-        
-        // Stop polling if we have a final status
-        if (status === 'completed' || status === 'failed') {
-          return true;
-        }
-      } catch (error) {
-        setError(error.message);
-        return true;
-      }
-      return false;
-    };
-
-    const poll = async () => {
-      const shouldStop = await fetchReview();
-      if (shouldStop) {
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError(err.message);
         setLoading(false);
       }
     };
-
-    const interval = setInterval(poll, 2000);
-    return () => clearInterval(interval);
+    fetchData();
+    return () => clearTimeout();
   }, []);
 
-  const renderResults = (results) => {
-    if (!results) return null;
-    
-    return Object.entries(results).map(([type, content]) => (
-      <div key={type} className="bg-white p-4 rounded-lg shadow mt-6">
-        <h4 className="text-lg font-semibold mb-3 capitalize">{type.replace(/_/g, ' ')}</h4>
-        <div className="whitespace-pre-wrap prose max-w-none">
-          {typeof content === 'string' ? content : JSON.stringify(content, null, 2)}
-        </div>
-      </div>
-    ));
-  };
+
+
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600" />
+      <div className="flex flex-col items-center justify-center h-64 gap-4">
+        <Loader className="animate-spin text-purple-600" size={32} />
+        <p>Fetching results...</p>
       </div>
     );
   }
 
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          {error}
-        </div>
-      </div>
-    );
-  }
+  if (error) return <div className="text-red-500 text-center p-4">Error: {error}</div>;
+  if (!data?.results) return <div className="text-gray-600 text-center p-4">No results found</div>;
 
+  console.log(data.resultUrl)
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        <h2 className="text-2xl font-bold mb-6">Files Analysis Results</h2>
-        {reviewData ? (
-          <div className="bg-white shadow rounded-lg p-6">
-            <div className="grid grid-cols-2 gap-4 text-sm mb-6">
-              <div>
-                <p className="font-medium">Status</p>
-                <p>{reviewData.status}</p>
-              </div>
-              <div>
-                <p className="font-medium">Provider</p>
-                <p>{reviewData.provider}</p>
-              </div>
-              <div>
-                <p className="font-medium">Model Type</p>
-                <p>{reviewData.modelType}</p>
-              </div>
-              <div>
-                <p className="font-medium">Created At</p>
-                <p>{new Date(reviewData.createdAt).toLocaleString()}</p>
-              </div>
-            </div>
+    <div className="max-w-6xl mx-auto p-4">
+      {data.resultUrl && (
+        <div className="mb-6">
+          <a href={data.resultUrl}
+             target="_blank"
+             rel="noopener noreferrer"
+             className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors inline-flex items-center gap-2">
+            <FileDown size={20} />
+            Download Results
+          </a>
+        </div>
+      )}
 
-            {reviewData.status === 'processing' && (
-              <div className="flex items-center mt-4 text-purple-600">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
-                Processing your files...
-              </div>
-            )}
-            
-            {renderResults(reviewData.results)}
+      <div className="bg-white rounded-lg shadow">
+        <div className="flex border-b">
+          <button onClick={() => setActiveTab('review')}
+                  className={`px-4 py-3 font-medium ${activeTab === 'review' ? 
+                    'bg-purple-100 text-purple-600 border-b-2 border-purple-600' : 
+                    'text-gray-600 hover:bg-gray-50'}`}>
+            Code Review
+          </button>
+          <button onClick={() => setActiveTab('documentation')}
+                  className={`px-4 py-3 font-medium ${activeTab === 'documentation' ? 
+                    'bg-purple-100 text-purple-600 border-b-2 border-purple-600' : 
+                    'text-gray-600 hover:bg-gray-50'}`}>
+            Documentation
+          </button>
+        </div>
+        
+        <div className="p-6 prose max-w-none">
+          <div className="whitespace-pre-wrap">
+            {activeTab === 'review' ? data.results.review : data.results.documentation}
           </div>
-        ) : (
-          <p className="text-gray-500">No analysis data available.</p>
-        )}
+        </div>
       </div>
     </div>
   );
 };
 
-export default OutputFiles;
+export default OutputDisplay;
