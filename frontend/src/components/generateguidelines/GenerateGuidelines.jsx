@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-
+import axios from "axios";
 const GenerateGuidelines = () => {
   const navigate = useNavigate();
   const [selectedOption, setSelectedOption] = useState("codebase");
@@ -48,24 +48,23 @@ const GenerateGuidelines = () => {
   
       files.forEach(file => formData.append("files", file));
   
-      const response = await fetch("http://localhost:5000/api/generate_guidelines", {
-        method: "POST",
-        body: formData,
+      const response = await axios.post('http://localhost:5000/api/generate_guidelines', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       });
   
-      const data = await response.json();
-      if (response.ok) {
-        sessionStorage.setItem('guidelineId', data.guidelineId);
+      console.log('Full Response:', response.data);
+  
+      if (response.data && response.data.guidelineId) {
+        sessionStorage.setItem('fileId', response.data.fileId);
         navigate('/output');
       } else {
-        throw new Error(data.error || 'Failed to generate guidelines');
+        throw new Error('No guideline ID received');
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert("Error generating guidelines. Please try again.");
-    } finally {
-      setProcessing(false);
-      setUploadProgress(0);
+      console.error('Submission Error:', error.response?.data || error.message);
+      // Handle error (show message to user, etc.)
     }
   };
 

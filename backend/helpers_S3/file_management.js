@@ -1,7 +1,8 @@
 const AWS = require('aws-sdk');
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
-
+const axios = require('axios')
+const mammoth = require('mammoth')
 class FileManagementHelper {
     constructor(tableName = 'testgen-test', region = 'ap-south-1') {
         AWS.config.update({ region: region });
@@ -9,6 +10,32 @@ class FileManagementHelper {
         this.s3 = new AWS.S3();
         this.tableName = tableName;
         this.bucket = 'testgen-bucket';
+    }
+
+    async readDocxContent(fileId) {
+        try {
+            const fileUrl = await this.getDownloadUrl(fileId);
+            if (!fileUrl) {
+                throw new Error('Could not generate download URL');
+            }
+
+            const response = await axios({
+                method: 'get',
+                url: fileUrl,
+                responseType: 'arraybuffer',
+                timeout: 10000
+            });
+
+            const result = await mammoth.extractRawText({
+                buffer: Buffer.from(response.data)
+            });
+
+            return result.value || 'No content found';
+
+        } catch (error) {
+            console.error('Error reading DOCX content:', error);
+            throw new Error('Failed to extract document content');
+        }
     }
 
     async saveFileToS3AndDB(localFilePath, s3Subfolder = '', extraArgs = {}) {

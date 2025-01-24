@@ -22,6 +22,7 @@
     "express-session": "^1.18.1",
     "litellm": "^0.12.0",
     "magic": "^2.3.5-alpha.1",
+    "mammoth": "^1.9.0",
     "mongoose": "^8.9.5",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",

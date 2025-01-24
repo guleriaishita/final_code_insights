@@ -584,7 +584,6 @@ def create_temp_compliance_file(compliance_data, temp_dir):
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
 def main():
     parser = argparse.ArgumentParser(description='Process code review')
     parser.add_argument('--input', required=True, help='Input JSON file path')
@@ -592,71 +591,48 @@ def main():
     args = parser.parse_args()
 
     try:
-        # Read input from file instead of stdin
         with open(args.input, 'r') as f:
             input_data = json.load(f)
         
-        logging.info("Input data successfully parsed")
-        
         reviewer = CodeReviewSystem()
         
-        # Extract and validate input data
         output_types = input_data.get('output_types', [])
         if isinstance(output_types, str):
             output_types = [t.strip() for t in output_types.split(",")]
         elif not isinstance(output_types, list):
             raise ValueError("Invalid output_types format")
 
-        # Process files in the temporary directory
-        temp_dir = input_data.get('temp_dir')
-        if not temp_dir or not os.path.isdir(temp_dir):
-            raise ValueError("Invalid temporary directory")
+        if not input_data.get('files_data'):
+            raise ValueError("No files data provided")
 
-        main_files = process_files(input_data.get('files_data', []), temp_dir)
-        if not main_files:
-            raise ValueError("No valid files to process")
-
-        # Process the code review with proper error handling
+        results = reviewer.process_code(
+            output_types=output_types,
+            file_data=input_data['files_data'][0],
+            provider=input_data['provider'],
+            model_name=input_data['model_name'],
+            compliance_data=input_data.get('compliance_file_data'),
+            additional_files=input_data.get('additional_files', [])
+        )
+        
+        with open(args.output, 'w') as f:
+            json.dump({
+                'status': 'success',
+                'results': results
+            }, f)
+        
+        sys.exit(0)
+        
+    except Exception as e:
+        error_message = str(e)
+        print(f"Error: {error_message}")
         try:
-            results = reviewer.process_code(
-                output_types=output_types,
-                file_path=main_files[0],  # Use the first file as main file
-                provider=input_data['provider'],
-                model_name=input_data['model_name'],
-                compliance_file_path=create_temp_compliance_file(
-                    input_data.get('compliance_file_data'), temp_dir
-                ),
-                additional_files=process_files(
-                    input_data.get('additional_files', []), temp_dir
-                )
-            )
-            
-            # Write results to output file
-            with open(args.output, 'w') as f:
-                json.dump({
-                    'status': 'success',
-                    'results': results
-                }, f)
-                
-            logging.info("Processing completed successfully")
-            sys.exit(0)
-            
-        except Exception as e:
-            logging.error(f"Processing error: {str(e)}", exc_info=True)
             with open(args.output, 'w') as f:
                 json.dump({
                     'status': 'error',
-                    'message': str(e)
+                    'message': error_message
                 }, f)
-            sys.exit(1)
-            
-    except Exception as e:
-        logging.error(f"Fatal error: {str(e)}", exc_info=True)
-        with open(args.output, 'w') as f:
-            json.dump({
-                'status': 'error',
-                'message': str(e)
-            }, f)
+        except Exception as write_error:
+            print(f"Failed to write error output: {write_error}")
         sys.exit(1)
 
 if __name__ == "__main__":

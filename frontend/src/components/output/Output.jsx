@@ -8,10 +8,14 @@ const Output = () => {
   const [loadingfiles, setLoadingfiles] = useState(false);
   const [loadingKG, setLoadingKG] = useState(false);
   const [error,setError] = useState(null);
-  const handleGenerated_guide = async () => {
-    navigate('/output/generated_guidelines_docs');
-  };
+ const handleGenerated_guide = async () => {
+ 
+    
 
+    // Navigate to the output page
+    navigate('/output/generated_guidelines_docs');
+ 
+};
   const handleGenerated_codebase = async () => {
     try {
       setLoadingcodebase(true); // Assuming setLoading is a state handler
@@ -39,24 +43,9 @@ const Output = () => {
   
   
   const handleGenerated_files = async () => {
-    try {
-      setLoadingfiles(true);
-      setError(null);
-      
-      const response = await axios.get('http://localhost:5000/api/output/reviewfiles');
-      
-      if (response.data.success && response.data.fileId) {
-        sessionStorage.setItem('FilesreviewId', response.data.fileId);
+   
         navigate('/output/generated_analyzed_files_docs');
-      } else {
-        throw new Error(response.data.message || 'No file review ID received');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      setError(error.response?.data?.message || 'Failed to fetch file review');
-    } finally {
-      setLoadingfiles(false);
-    }
+      
   };
 
   const handleGenerated_KG = async () => {

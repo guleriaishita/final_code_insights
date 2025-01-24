@@ -9,12 +9,12 @@ const OutputGuideline = () => {
   useEffect(() => {
     const fetchGuidelineStatus = async () => {
       try {
-        const guidelineId = sessionStorage.getItem('guidelineId');
-        if (!guidelineId) {
-          throw new Error('No guideline ID found');
+        const fileId = sessionStorage.getItem('fileId');
+        if (!fileId) {
+          throw new Error('No file ID found');
         }
 
-        const response = await axios.get(`http://localhost:5000/api/generated_guidelines_docs/${guidelineId}`);
+        const response = await axios.get(`http://localhost:5000/api/generated_guidelines_docs/${fileId}`);
         if (response.data?.fileUrl) {
           setFileData(response.data);
           window.open(response.data.fileUrl, '_blank');
@@ -53,8 +53,19 @@ const OutputGuideline = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              View Generated Document
+              Donwload The Document
             </a>
+          </div>
+        ) : (
+          <p className="text-gray-500">No document available.</p>
+        )}
+
+      </div>
+      <div className='max-w-6xl mx-auto mt-6'>
+      {fileData?.content ? (
+          <div className="bg-white shadow rounded-lg p-6">
+            
+            {fileData.content}
           </div>
         ) : (
           <p className="text-gray-500">No document available.</p>

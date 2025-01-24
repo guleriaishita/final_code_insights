@@ -4,92 +4,120 @@ const multer = require('multer');
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs').promises;
-const os = require('os');
-const FileReview = require('../models/FileReview');
-const FileManagementHelper = require("../helpers_S3/file_management");
+const FileManagementHelper = require('../helpers_S3/file_management');
+const { v4: uuidv4 } = require('uuid');
 
 const fileManager = new FileManagementHelper();
 const storage = multer.memoryStorage();
-const upload = multer({
-  storage,
-  limits: { fileSize: 10 * 1024 * 1024 }
-}).fields([
-  { name: 'files', maxCount: 50 },
-  { name: 'compliance', maxCount: 1 },
-  { name: 'additionalFiles', maxCount: 20 }
-]);
+const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } })
+  .fields([
+    { name: 'files', maxCount: 50 },
+    { name: 'compliance', maxCount: 1 },
+    { name: 'additionalFiles', maxCount: 20 }
+  ]);
 
-const executePythonScript = async (inputData, tempDir) => {
+async function executePythonScript(inputData) {
   try {
-    const inputFile = path.join(tempDir, 'input.json');
-    const outputFile = path.join(tempDir, 'output.json');
-    
-    // Transform file data to match Python script expectations
-    const transformedData = {
-      ...inputData,
-      files_data: inputData.files_data.map(file => ({
-        filename: file.s3_key.split('/').pop(),
-        // Convert buffer to string content
-        content: file.buffer ? file.buffer.toString('utf8') : ''
-      })),
-      compliance_file_data: inputData.compliance_file ? {
-        filename: inputData.compliance_file.s3_key.split('/').pop(),
-        content: inputData.compliance_file.buffer.toString('utf8')
-      } : null,
-      additional_files: (inputData.additional_files || []).map(file => ({
-        filename: file.s3_key.split('/').pop(),
-        content: file.buffer ? file.buffer.toString('utf8') : ''
-      }))
-    };
+    const scriptPath = path.resolve(__dirname, '../util/analyze_files.py');
+    const inputFile = path.join(__dirname, `input-${Date.now()}.json`);
+    const outputFile = path.join(__dirname, `output-${Date.now()}.json`);
 
-    await fs.writeFile(inputFile, JSON.stringify(transformedData));
-    
+    await fs.writeFile(inputFile, JSON.stringify(inputData));
+
     return new Promise((resolve, reject) => {
-      const scriptPath = path.resolve(__dirname, '../util/analyze_files.py');
-      const pythonProcess = spawn('python3', [
-        scriptPath,
-        '--input', inputFile,
-        '--output', outputFile
-      ]);
-
+      const pythonProcess = spawn('python3', [scriptPath, '--input', inputFile, '--output', outputFile]);
       let errorData = '';
-      pythonProcess.stderr.on('data', data => {
+
+      pythonProcess.stderr.on('data', (data) => {
         errorData += data.toString();
-        console.error('Python stderr:', data.toString());
+        console.error(`Python Error: ${data}`);
       });
 
-      pythonProcess.on('close', async code => {
-        if (code !== 0) {
-          reject(new Error(`Python process failed: ${errorData}`));
-          return;
-        }
+      pythonProcess.on('error', (error) => {
+        console.error('Failed to start Python process:', error);
+        reject(error);
+      });
 
+      pythonProcess.on('close', async (code) => {
         try {
           const resultData = await fs.readFile(outputFile, 'utf8');
+          await Promise.all([
+            fs.unlink(inputFile).catch(console.error),
+            fs.unlink(outputFile).catch(console.error)
+          ]);
+          
+          if (code !== 0) {
+            reject(new Error(`Python process failed: ${errorData}`));
+            return;
+          }
+          
           resolve(JSON.parse(resultData));
         } catch (error) {
-          reject(new Error(`Failed to read output: ${error.message}`));
+          reject(error);
         }
       });
     });
   } catch (error) {
-    throw new Error(`Script execution failed: ${error.message}`);
+    console.error('Execute Python Script Error:', error);
+    throw error;
   }
-};
+}
+
+async function processFiles(files, complianceFile, additionalFiles, reviewId, provider, modelType, selectedOptions) {
+  try {
+    const s3Prefix = `reviews/${reviewId}`;
+
+    // Save files to S3 first
+    const savedFiles = await Promise.all(files.map(file => 
+      fileManager.saveTextContentToS3AndDB(
+        file.buffer, 
+        file.originalname, 
+        `${s3Prefix}/files/${file.originalname}`
+      )
+    ));
+
+    // Process files for analysis
+    const filesData = files.map(file => ({
+      filename: file.originalname,
+      content: file.buffer.toString('utf-8')
+    }));
+
+    // Run analysis
+    const result = await executePythonScript({
+      files_data: filesData,
+      output_types: selectedOptions,
+      provider,
+      model_name: modelType
+    });
+
+    // Save results
+    const resultFile = await fileManager.saveTextContentToS3AndDB(
+      JSON.stringify(result),
+      'analysis_results.json',
+      `${s3Prefix}/results/analysis_results.json`
+    );
+
+    const fileUrl = await fileManager.getDownloadUrl(resultFile.id);
+
+    return {
+      fileUrl,
+      content: result,
+      fileId: resultFile.id,
+      savedFiles: savedFiles.map(f => f.id)
+    };
+  } catch (error) {
+    console.error('Process Files Error:', error);
+    throw error;
+  }
+}
 
 router.post('/analyzefile', (req, res) => {
   upload(req, res, async (err) => {
-    const tempDir = path.join(os.tmpdir(), 'codeinsights', Date.now().toString());
-    let review = null;
-
     try {
-      await fs.mkdir(tempDir, { recursive: true });
-
-      if (err) throw new Error(err instanceof multer.MulterError ? 
-        `Upload error: ${err.message}` : 'Server error during file upload');
+      
 
       if (!req.files?.files?.length) {
-        throw new Error('No files were uploaded');
+        throw new Error('No files uploaded');
       }
 
       const { provider, modelType, selectedOptions } = req.body;
@@ -97,112 +125,47 @@ router.post('/analyzefile', (req, res) => {
         throw new Error('Missing required fields');
       }
 
-      const s3Subfolder = `reviews/${Date.now()}`;
-      const uploadPromises = req.files.files.map(file => 
-        fileManager.saveTextContentToS3AndDB(file.buffer, file.originalname, s3Subfolder)
+      const reviewId = uuidv4();
+      console.log('Processing review:', reviewId);
+
+      const result = await processFiles(
+        req.files.files,
+        req.files.compliance?.[0],
+        req.files.additionalFiles,
+        reviewId,
+        provider,
+        modelType,
+        JSON.parse(selectedOptions)
       );
 
-      if (req.files.compliance) {
-        uploadPromises.push(fileManager.saveTextContentToS3AndDB(
-          req.files.compliance[0].buffer,
-          req.files.compliance[0].originalname,
-          `${s3Subfolder}/compliance`
-        ));
-      }
-
-      if (req.files.additionalFiles) {
-        uploadPromises.push(...req.files.additionalFiles.map(file =>
-          fileManager.saveTextContentToS3AndDB(file.buffer, file.originalname, `${s3Subfolder}/additional`)
-        ));
-      }
-
-      const uploadedFiles = await Promise.all(uploadPromises);
-
-      review = new FileReview({
-        modelType,
-        provider,
-        selectedOptions: JSON.parse(selectedOptions),
-        s3Folder: s3Subfolder,
-        status: 'pending'
-      });
-      await review.save();
-
-      // Send initial response
-      res.status(202).json({
+      res.status(200).json({
         success: true,
-        message: 'Analysis started',
-        FilesreviewId: review._id.toString(),
-        filesProcessed: req.files.files.length
+        reviewId,
+        fileId: result.fileId,
+        fileUrl: result.fileUrl,
+        content: result.content
       });
-
-      // Process files asynchronously
-      try {
-        review.status = 'processing';
-        await review.save();
-
-        const inputData = {
-          files_data: uploadedFiles.filter(f => !f.s3_key.includes('/compliance') && !f.s3_key.includes('/additional')),
-          compliance_file: uploadedFiles.find(f => f.s3_key.includes('/compliance')),
-          additional_files: uploadedFiles.filter(f => f.s3_key.includes('/additional')),
-          output_types: JSON.parse(selectedOptions),
-          provider,
-          model_name: modelType,
-          temp_dir: tempDir
-        };
-
-        const result = await executePythonScript(inputData, tempDir);
-        
-        if (result.status === 'success') {
-          review.status = 'completed';
-          review.results = result.results;
-          await review.save();
-        } else {
-          throw new Error(result.message);
-        }
-      } catch (error) {
-        console.error('Processing error:', error);
-        review.status = 'failed';
-        review.error = error.message;
-        await review.save();
-      }
     } catch (error) {
       console.error('API Error:', error);
-      if (!res.headersSent) {
-        res.status(400).json({
-          success: false,
-          error: error.message
-        });
-      }
-      if (review) {
-        review.status = 'failed';
-        review.error = error.message;
-        await review.save();
-      }
-    } finally {
-      try {
-        await fs.rm(tempDir, { recursive: true, force: true });
-      } catch (err) {
-        console.error('Failed to clean up temp directory:', err);
-      }
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
     }
   });
 });
 
-router.get('/reviews/:id', async (req, res) => {
-  try {
-    const review = await FileReview.findById(req.params.id);
-    if (!review) {
-      return res.status(404).json({ error: 'Review not found' });
-    }
 
-    res.json({
-      status: review.status,
-      results: review.results,
-      provider: review.provider,
-      modelType: review.modelType,
-      createdAt: review.createdAt,
-      error: review.error
+router.get('/generated_analyzed_files/:id', async (req, res) => {
+  try {
+    const reviewId = req.params.id;
+    const resultData = await fileManager.readTextContent({
+      id: reviewId,
+      s3_key: `reviews/${reviewId}/results/analysis_results.json`
     });
+
+    if (!resultData) return res.status(404).json({ error: 'Review not found' });
+    res.json(JSON.parse(resultData));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
