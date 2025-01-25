@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const OutputGuideline = () => {
+  const navigate = useNavigate();
+
   const [fileData, setFileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,6 +32,11 @@ const OutputGuideline = () => {
     fetchGuidelineStatus();
   }, []);
 
+  const handle_dashboard = async () => {
+    navigate('/dashboard');
+  }
+
+
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
@@ -42,6 +50,20 @@ const OutputGuideline = () => {
   }
 
   return (
+    <><nav className="bg-white">
+    <div className="container px-8">
+      <div className="flex h-16 items-center justify-between">
+        {/* Logo and text */}
+        <div className="flex items-center text-xl font-medium">
+          <div onClick={handle_dashboard}
+          className="flex items-start" >  
+            <img src="../../../public/Logo.png" alt="CodeInsight Logo" className="h-8 w-8" />
+            <span className="ml-2" >Code Insight</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
     <div className="min-h-screen bg-white p-8">
       <div className="max-w-4xl mx-auto">
         <h2 className="text-2xl font-bold mb-6">Generated Guideline</h2>
@@ -72,6 +94,7 @@ const OutputGuideline = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

@@ -3,263 +3,227 @@ const router = express.Router();
 const multer = require('multer');
 const { spawn } = require('child_process');
 const path = require('path');
-const fs = require('fs');
-const { Document, Packer, Paragraph, TextRun } = require('docx');
-const CodebaseReview = require('../models/CodebaseReview');
+const os = require('os');
+const fs = require('fs').promises;
+const FileManagementHelper = require('../helpers_S3/file_management');
+const axios = require('axios')
 
+const fileManager = new FileManagementHelper();
 const storage = multer.memoryStorage();
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 10 * 1024 * 1024 
-  }
-}).fields([
-  { name: 'files', maxCount: 50 },
-  { name: 'compliance', maxCount: 1 }
-]);
-
-async function executePythonScript(data) {
-  return new Promise((resolve, reject) => {
+const upload = multer({ storage: storage }).array('files', 50);
+async function executePythonScript(inputData, tempDir) {
+  try {
     const scriptPath = path.resolve(__dirname, '../util/analyze_codebase.py');
     const pythonProcess = spawn('python3', [scriptPath]);
-    let resultData = '';
-    let errorData = '';
 
-    pythonProcess.stdin.write(JSON.stringify(data));
+    let stdoutData = '';
+    let stderrData = '';
+
+    pythonProcess.stdin.write(JSON.stringify(inputData));
     pythonProcess.stdin.end();
 
-    pythonProcess.stdout.on('data', (data) => {
-      resultData += data.toString();
-      console.log('Python stdout:', data.toString()); // Debug log
-    });
+    return new Promise((resolve, reject) => {
+      pythonProcess.stdout.on('data', (data) => {
+        stdoutData += data.toString();
+      });
 
-    pythonProcess.stderr.on('data', (data) => {
-      errorData += data.toString();
-      console.error("Python stderr:", data.toString());
-    });
+      pythonProcess.stderr.on('data', (data) => {
+        stderrData += data.toString();
+        console.error('[Python stderr]:', data.toString());
+      });
 
-    pythonProcess.on('close', (code) => {
-      console.log('Python process closed with code:', code); // Debug log
-      console.log('Full result data:', resultData); // Debug log
-      
-      try {
-        // Try to parse the entire output as JSON first
-        const result = JSON.parse(resultData);
-        if (result.success === false) {
-          reject(new Error(result.error || 'Unknown error in Python script'));
-        } else {
-          resolve(result);
-        }
-      } catch (e) {
-        // If that fails, try to find a JSON object in the output
+      pythonProcess.on('close', (code) => {
         try {
-          const jsonMatch = resultData.match(/\{(?:[^{}]|{[^{}]*})*\}/g);
-          if (jsonMatch) {
-            const lastJson = jsonMatch[jsonMatch.length - 1];
-            const result = JSON.parse(lastJson);
-            resolve(result);
+          // Clean the output and find JSON
+          const lines = stdoutData.split('\n');
+          const jsonLine = lines.find(line => {
+            try {
+              line = line.trim();
+              return line.startsWith('{') && line.endsWith('}') && JSON.parse(line);
+            } catch {
+              return false;
+            }
+          });
+
+          if (jsonLine) {
+            resolve(JSON.parse(jsonLine));
           } else {
-            reject(new Error(`No valid JSON found in Python output: ${resultData}`));
+            console.error('Python output:', stdoutData);
+            console.error('Python errors:', stderrData);
+            reject(new Error(stderrData || 'No valid JSON output found'));
           }
-        } catch (e2) {
-          reject(new Error(`Failed to parse Python response: ${resultData}\nErrors: ${errorData}`));
+        } catch (e) {
+          reject(new Error(`Failed to parse Python output: ${e.message}`));
         }
-      }
-    });
+      });
 
-    pythonProcess.on('error', (error) => {
-      console.error('Python process error:', error);
-      reject(error);
+      pythonProcess.on('error', (error) => {
+        reject(new Error(`Failed to start Python process: ${error.message}`));
+      });
     });
-  });
+  } catch (error) {
+    console.error('[Python Execution] Error:', error);
+    throw error;
+  }
 }
-
-async function processCodebaseFiles(files, complianceFile, codebaseReviewId, provider, modelType) {
+// Update the processCodebaseFiles function
+async function processCodebaseFiles(files, provider, modelType) {
+  const processId = Date.now().toString();
+  const tempDir = path.join(os.tmpdir(), 'codebase', processId);
+  
   try {
-    const review = await CodebaseReview.findById(codebaseReviewId);
-    if (!review) {
-      throw new Error(`Review with ID ${codebaseReviewId} not found`);
-    }
+    await fs.mkdir(tempDir, { recursive: true });
 
-    review.status = 'processing';
-    await review.save();
+    const fileContents = files.map(file => ({
+      filename: file.originalname,
+      content: file.buffer.toString('utf-8')
+    }));
 
-    // Create temporary directory for processing
-    const tempDir = path.join(__dirname, '../temp', codebaseReviewId.toString());
-    fs.mkdirSync(tempDir, { recursive: true });
-
-    // Prepare data for Python script
-    const pythonData = {
-      files: files.map(file => ({
-        filename: file.originalname,
-        content: file.buffer.toString('utf-8')
-      })),
-      compliance: complianceFile ? {
-        filename: complianceFile.originalname,
-        content: complianceFile.buffer.toString('utf-8')
-      } : null,
+    const inputData = {
+      files: fileContents,
       provider,
       modelType,
       temp_dir: tempDir
     };
 
-    console.log('Sending data to Python script...');
-    const analysisResult = await executePythonScript(pythonData);
-    console.log('Received result from Python script:', analysisResult);
+    const analysisResult = await executePythonScript(inputData, tempDir);
 
-    if (!analysisResult || (!analysisResult.content && !analysisResult.analysis)) {
+    if (!analysisResult) {
       throw new Error('Invalid or empty result from analysis');
     }
 
-    // Generate doc file with analysis results
-    const doc = new Document({
-      sections: [{
-        properties: {},
-        children: [
-          new Paragraph({
-            text: "Codebase Review Report",
-            heading: 1
-          }),
-          new Paragraph({
-            children: [
-              new TextRun({
-                text: "Generated on: " + new Date().toISOString(),
-                italic: true
-              })
-            ]
-          }),
-          new Paragraph({
-            text: "Analysis Results",
-            heading: 2
-          }),
-          new Paragraph({
-            text: analysisResult.content || analysisResult.analysis || "No content available",
-            spacing: {
-              before: 200,
-              after: 200
-            }
-          })
-        ]
-      }]
-    });
+    // Save results to S3 and handle potential null result
+    const resultItem = await fileManager.saveTextContentToS3AndDB(
+      JSON.stringify(analysisResult),
+      'result.json',
+      `reviews/${processId}`
+    );
 
-    const docPath = path.join(__dirname, `../output/review_${codebaseReviewId}.docx`);
-    const outputDir = path.dirname(docPath);
-    fs.mkdirSync(outputDir, { recursive: true });
+    if (!resultItem) {
+      throw new Error('Failed to save analysis results to S3');
+    }
 
-    const buffer = await Packer.toBuffer(doc);
-    fs.writeFileSync(docPath, buffer);
+    const fileUrl = await fileManager.getDownloadUrl(resultItem.id);
 
-    // Clean up temp directory
-    fs.rmSync(tempDir, { recursive: true, force: true });
-
-    // Update review document
-    review.status = 'completed';
-    review.result = {
-        analysisDate: new Date(),
-        content: {
-            codebaseStructure: analysisResult.content.codebaseStructure,
-            knowledgeGraph: analysisResult.content.knowledgeGraph
-        },
-        docPath: docPath,
-        metadata: {
-            ...analysisResult.metadata,  // Include all Python metadata
-            filesAnalyzed: files.length,
-            completionTime: new Date()
-        },
-        files: {
-            ...analysisResult.files,     // Include all file references
-            reportDoc: docPath           // Add the generated doc file
-        }
-    };
-    await review.save();
+    if (!fileUrl) {
+      throw new Error('Failed to generate download URL');
+    }
 
     return {
       success: true,
-      filePath: docPath,
-      result: review.result
+      processId,
+      fileUrl,
+      content: analysisResult,
+      fileId: resultItem.id
     };
+
   } catch (error) {
-    console.error('Error processing files:', error);
-    const review = await CodebaseReview.findById(codebaseReviewId);
-    if (review) {
-      review.status = 'failed';
-      review.result = {
+    console.error('[Process] Error:', error);
+    
+    // Save error to S3 and handle potential null result
+    const errorItem = await fileManager.saveTextContentToS3AndDB(
+      JSON.stringify({
+        status: 'failed',
         error: error.message,
-        failureDate: new Date()
-      };
-      await review.save();
+        failureDate: new Date().toISOString()
+      }),
+      'error.json',
+      `reviews/${processId}`
+    );
+
+    const errorResult = {
+      success: false,
+      processId,
+      error: error.message
+    };
+
+    if (errorItem) {
+      errorResult.fileId = errorItem.id;
+      errorResult.fileUrl = await fileManager.getDownloadUrl(errorItem.id);
     }
-    throw error;
+
+    throw errorResult;
+  } finally {
+    try {
+      await fs.rm(tempDir, { recursive: true, force: true });
+    } catch (err) {
+      console.error('[Cleanup] Error:', err);
+    }
   }
 }
 
+// Update the route handler
 router.post('/analyzecodebase', (req, res) => {
   upload(req, res, async (err) => {
     try {
-      if (err instanceof multer.MulterError) {
-        return res.status(400).json({ error: err.message });
-      } else if (err) {
-        return res.status(500).json({ error: 'Server error during file upload' });
+      if (err) {
+        throw new Error(err.message);
       }
 
-      if (!req.files?.files || req.files.files.length === 0) {
-        return res.status(400).json({ error: 'No files were uploaded' });
+      if (!req.files || req.files.length === 0) {
+        throw new Error('No files uploaded');
       }
 
-      const { provider, modelType } = req.body;
+      const provider = req.body.provider;
+      const modelType = req.body.modelType; // Changed from model_name to modelType
+      
       if (!provider || !modelType) {
-        return res.status(400).json({ error: 'Provider and model type are required' });
+        throw new Error('Provider and model type are required');
       }
 
-      const review = new CodebaseReview({
-        modelType,
-        provider,
-        folderPath: req.files.files.map(file => ({
-          filename: file.originalname,
-          relativePath: file.originalname,
-        })),
-        complianceFile: req.files.compliance?.[0]
-          ? { filename: req.files.compliance[0].originalname }
-          : undefined,
-        status: 'pending',
-        result: null
-      });
-
-      await review.save();
-
-      // Process files in the background
-      processCodebaseFiles(
-        req.files.files,
-        req.files.compliance?.[0],
-        review._id,
+      const result = await processCodebaseFiles(
+        req.files,
         provider,
         modelType
-      ).catch(async (error) => {
-        console.error('Error in file processing:', error.message);
-        review.status = 'failed';
-        review.result = {
-          error: error.message,
-          failureDate: new Date()
-        };
-        await review.save();
-      });
+      );
 
       res.status(201).json({
         message: 'Codebase analysis started',
-        reviewId: review._id,
-        filesProcessed: req.files.files.length,
-        success: true,
+        processId: result.processId,
+        fileId: result.fileId,
+        fileUrl: result.fileUrl,
+        content: result.content,
+        success: true
       });
+
     } catch (error) {
-      console.error('API Error:', error);
-      res.status(500).json({
-        error: 'Failed to analyze codebase',
-        details: error.message,
+      console.error('[API] Error:', error);
+      let errorMessage = error.message;
+      if (error.message.includes('Python process failed')) {
+        errorMessage = 'Analysis failed: ' + (error.message.split('Python process failed:')[1] || 'Unknown error');
+      }
+      res.status(400).json({
         success: false,
+        error: errorMessage,
+        details: error.message
       });
     }
   });
+});
+
+
+router.get('/generated_analyzed_codebase_docs/:reviewId', async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+    const url = await fileManager.getDownloadUrl(reviewId);
+    
+    if (!url) {
+      return res.status(404).json({ error: 'Review not found' });
+    }
+
+    // Fetch content from S3 using the signed URL
+    const response = await axios.get(url);
+    const result = response.data;
+
+    return res.json({
+      result,
+      resultUrl: url
+    });
+
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 module.exports = router;

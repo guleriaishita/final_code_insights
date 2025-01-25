@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { FileDown, Loader } from 'lucide-react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 
 const OutputDisplay = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('review');
@@ -31,7 +35,9 @@ const OutputDisplay = () => {
     return () => clearTimeout();
   }, []);
 
-
+  const handle_dashboard = async () => {
+    navigate('/dashboard');
+  }
 
 
   if (loading) {
@@ -48,6 +54,21 @@ const OutputDisplay = () => {
 
   console.log(data.resultUrl)
   return (
+    <>
+    <nav className="bg-white">
+    <div className="container px-8">
+      <div className="flex h-16 items-center justify-between">
+        {/* Logo and text */}
+        <div className="flex items-center text-xl font-medium">
+          <div onClick={handle_dashboard}
+          className="flex items-start" >  
+            <img src="../../../public/Logo.png" alt="CodeInsight Logo" className="h-8 w-8" />
+            <span className="ml-2" >Code Insight</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
     <div className="max-w-6xl mx-auto p-4">
       {data.resultUrl && (
         <div className="mb-6">
@@ -75,15 +96,28 @@ const OutputDisplay = () => {
                     'text-gray-600 hover:bg-gray-50'}`}>
             Documentation
           </button>
+          <button onClick={() => setActiveTab('comments')}
+                  className={`px-4 py-3 font-medium ${activeTab === 'comments' ? 
+                    'bg-purple-100 text-purple-600 border-b-2 border-purple-600' : 
+                    'text-gray-600 hover:bg-gray-50'}`}>
+            Comments
+          </button>
         </div>
         
         <div className="p-6 prose max-w-none">
           <div className="whitespace-pre-wrap">
-            {activeTab === 'review' ? data.results.review : data.results.documentation}
+          {activeTab === 'review' 
+  ? data.results.review // Render the review content when activeTab is 'review'
+  : activeTab === 'comments' 
+  ? data.results.comments // Render the comment content when activeTab is 'comment'
+  : data.results.documentation // Render the documentation content as the default fallback
+}
           </div>
         </div>
       </div>
     </div>
+    
+      </>
   );
 };
 

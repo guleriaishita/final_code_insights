@@ -17,28 +17,7 @@ const Output = () => {
  
 };
   const handleGenerated_codebase = async () => {
-    try {
-      setLoadingcodebase(true); // Assuming setLoading is a state handler
-      setError(null);   // Assuming setError is a state handler
-  
-      // Fetch the latest generated codebase data
-      const response = await axios.get('http://localhost:5000/api/output/reviewcodebase');
-  
-      if (response.data.success && response.data.codebaseId) {
-        // Store the codebase ID in sessionStorage
-        sessionStorage.setItem('CodeBasereviewId', response.data.codebaseId);
-  
-        // Navigate to the output page
-        navigate('/output/generated_analyzed_codebase_docs');
-      } else {
-        throw new Error('No codebase ID received');
-      }
-    } catch (err) {
-      console.error('Error:', err);
-      setError(err.response?.data?.message || 'Failed to fetch codebase');
-    } finally {
-      setLoadingcodebase(false);
-    }
+   navigate('/output/generated_analyzed_codebase_docs');
   };
   
   
@@ -49,45 +28,19 @@ const Output = () => {
   };
 
   const handleGenerated_KG = async () => {
-    try {
-      setLoadingKG(true);
-      setError(null);
-      
-      const response = await axios.get('http://localhost:5000/api/output/generated_knowledge_graph');
-      
-      if (response.data.success && response.data.graphData) {
-        // Store the graph data in sessionStorage if needed
-        sessionStorage.setItem('knowledgeGraphData', JSON.stringify(response.data.graphData));
-        navigate('/output/generated_knowledge_graph');
-      } else {
-        throw new Error(response.data.message || 'No knowledge graph data received');
-      }
-    } catch (err) {
-      console.error('Error:', err);
-      setError(err.response?.data?.message || 'Failed to fetch knowledge graph');
-    } finally {
-      setLoadingKG(false);
-    }
+   navigate('/output/generated_knowledge_graph');
   };
   
+  const handle_dashboard = async () => {
+    navigate('/dashboard');
+  }
 
 
   return (
+    
     <div className="min-h-screen bg-white">
       {/* Navbar */}
-      <nav className="bg-white">
-        <div className="container px-8">
-          <div className="flex h-16 items-center justify-between">
-            {/* Logo and text */}
-            <div className="flex items-center text-xl font-medium">
-              <div className="flex items-start">  
-                <img src="../../../public/Logo.png" alt="CodeInsight Logo" className="h-8 w-8" />
-                <span className="ml-2">Code Insight</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
+    
 
       {/* Main Content - Added more top padding */}
       <div className="container mx-auto px-4 py-40">

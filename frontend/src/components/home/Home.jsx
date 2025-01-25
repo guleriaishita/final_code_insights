@@ -22,12 +22,7 @@ const handleDashboard = () => {
               </div>
             </div>
             {/* Navigation links with more left spacing */}
-            <div className="flex space-x-6 ml-32">
-              <a href="#" className="text-gray-600 hover:text-gray-900">Home</a>
-              <a href="#" className="text-gray-600 hover:text-gray-900">About</a>
-              <a href="#" className="text-gray-600 hover:text-gray-900">Contact Us</a>
-              <a href="#" className="text-gray-600 hover:text-gray-900" onClick={handleDashboard}>Dashboard</a>
-            </div>
+           
           </div>
         </div>
       </nav>
@@ -44,16 +39,13 @@ const handleDashboard = () => {
             helping you unlock the full potential of your code. Get started today and elevate your coding
             experience.
           </p>
-          <div className="mt-24 flex justify-center gap-9">
-            {/* Updated button styles with more rounded corners and shadows */}
-            <button className="w-32 py-2 px-6 border border-purple-500 text-purple-500 rounded-full shadow-lg hover:bg-purple-50 transition-all">
-              Sign In
+          <button 
+              onClick={handleDashboard}
+              className="px-8 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all mt-8"
+            >
+              Get Started
             </button>
-            <button className="w-32 py-2 px-6 bg-purple-500 text-white rounded-full shadow-lg hover:bg-purple-600 transition-all">
-              Sign Up
-            </button>
-            
-          </div>
+          
         </div>
       </main>
     </div>

@@ -1000,112 +1000,66 @@ def create_temp_compliance_file(compliance_data, temp_dir):
     
     return compliance_path
 def main():
-    """
-    Main function to process JSON input from stdin and handle file operations
-    """
     try:
-        # Read JSON input from stdin
         input_data = json.load(sys.stdin)
-        
-        # Extract required data
         files_data = input_data.get('files', [])
         temp_dir = input_data.get('temp_dir', '')
         compliance_data = input_data.get('compliance', None)
         provider = input_data.get('provider', '')
-        model_type = input_data.get('modelType', '')
+        modelType = input_data.get('modelType', '')  # Changed from model_type to modelType
         
-        # Convert temp_dir to absolute path and ensure it exists
         temp_dir = os.path.abspath(temp_dir)
         os.makedirs(temp_dir, exist_ok=True)
         
-        print(f"Using temporary directory: {temp_dir}")
-        
-        # Process files
         created_files = process_files(files_data, temp_dir)
-        
-        # Process compliance file if provided
         compliance_file = create_temp_compliance_file(compliance_data, temp_dir)
         
-        # Generate codebase structure
-        generate_codebase_structure(model_type, provider, temp_dir, compliance_file)
+        # Pass modelType instead of model_type
+        generate_codebase_structure(modelType, provider, temp_dir, compliance_file)
         
-        # Read the generated files with proper error handling
         analysis_content = {}
         
-        # Read codebase structure
         codebase_file = os.path.join(temp_dir, 'codebasestructure.txt')
         try:
             if os.path.exists(codebase_file):
                 with open(codebase_file, 'r', encoding='utf-8') as f:
                     analysis_content['codebaseStructure'] = f.read()
             else:
-                print(f"Warning: Codebase structure file not found at {codebase_file}")
                 analysis_content['codebaseStructure'] = "Codebase structure analysis could not be generated"
         except Exception as e:
-            print(f"Error reading codebase structure file: {e}")
             analysis_content['codebaseStructure'] = f"Error reading codebase structure: {str(e)}"
             
-        # Read knowledge graph structure
         knowledge_graph_file = os.path.join(temp_dir, 'knowledge_graph_structure.txt')
         try:
             if os.path.exists(knowledge_graph_file):
                 with open(knowledge_graph_file, 'r', encoding='utf-8') as f:
                     analysis_content['knowledgeGraph'] = f.read()
             else:
-                print(f"Warning: Knowledge graph file not found at {knowledge_graph_file}")
                 analysis_content['knowledgeGraph'] = "Knowledge graph structure could not be generated"
         except Exception as e:
-            print(f"Error reading knowledge graph file: {e}")
             analysis_content['knowledgeGraph'] = f"Error reading knowledge graph: {str(e)}"
             
-        # Prepare MongoDB-friendly result object
         result = {
             'success': True,
             'content': {
                 'codebaseStructure': analysis_content['codebaseStructure'],
                 'knowledgeGraph': analysis_content['knowledgeGraph']
-            },
-            'metadata': {
-                'provider': provider,
-                'model_type': model_type,
-                'analysis_timestamp': datetime.now().isoformat(),
-                'temp_dir': temp_dir,
-                'files_processed': len(created_files),
-                'has_compliance_file': compliance_file is not None
-            },
-            'files': {
-                'created': created_files,
-                'compliance': compliance_file,
-                'codebaseStructure': codebase_file if os.path.exists(codebase_file) else None,
-                'knowledgeGraph': knowledge_graph_file if os.path.exists(knowledge_graph_file) else None
             }
         }
         
-        # Write result to stdout
         print(json.dumps(result))
         sys.stdout.flush()
         
-    except json.JSONDecodeError as e:
-        error_result = {
-            'success': False,
-            'error': f"Invalid JSON input: {str(e)}",
-            'content': {
-                'codebaseStructure': "Error: Invalid JSON input",
-                'knowledgeGraph': "Error: Invalid JSON input"
-            }
-        }
-        print(json.dumps(error_result))
     except Exception as e:
         error_result = {
             'success': False,
             'error': str(e),
-            'content': {
-                'codebaseStructure': f"Error: {str(e)}",
-                'knowledgeGraph': f"Error: {str(e)}"
-            }
+            'content': None
         }
         print(json.dumps(error_result))
+        sys.stderr.write(str(e))
 
-
-if __name__=="__main__":
+if __name__ == "__main__":
     main()
+
+

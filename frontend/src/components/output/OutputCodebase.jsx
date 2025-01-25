@@ -1,153 +1,134 @@
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { FileDown, Loader } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
 
 const OutputCodebase = () => {
-  const [codebaseReview, setCodebaseReview] = useState(null);
+  const navigate = useNavigate();
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('structure');
 
   useEffect(() => {
-    const fetchCodebaseReview = async () => {
-      const codebaseId = sessionStorage.getItem('CodeBasereviewId');
+    const fileId = sessionStorage.getItem('fileId_review_codebase');
+    if (!fileId) {
+      setError('No review ID found');
+      setLoading(false);
+      return;
+    }
 
-      if (!codebaseId) {
-        setError('No review ID found. Please generate a codebase review first.');
-        setLoading(false);
-        return;
-      }
-
+    const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/output/generated_analyzed_codebase_docs', {
-          params: { CodeBasereviewId: codebaseId }
-        });
-        
-        if (response.data) {
-          setCodebaseReview(response.data);
-          console.log(response.data)
-        } else {
-          throw new Error('No codebase review data received');
-        }
-      } catch (error) {
-        const errorMessage = error.response?.data?.message || error.message;
-        setError(`Failed to fetch codebase review: ${errorMessage}`);
+        const response = await axios.get(`http://localhost:5000/api/generated_analyzed_codebase_docs/${fileId}`);
+        setData(response.data);
+      } catch (err) {
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCodebaseReview();
+    fetchData();
   }, []);
+
+  const handle_dashboard = async () => {
+    navigate('/dashboard');
+  }
+
+
+  const handleDownload = async (url, filename = 'analysis_result.json') => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error('Download failed:', error);
+    }
+  };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600" />
-          <p className="text-gray-600">Loading codebase review...</p>
-        </div>
+      <div className="flex flex-col items-center justify-center h-64 gap-4">
+        <Loader className="animate-spin text-purple-600" size={32} />
+        <p>Fetching results...</p>
       </div>
     );
   }
 
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg max-w-md">
-          {error}
-        </div>
-      </div>
-    );
-  }
+  if (error) return (
+    <div className="text-red-500 text-center p-4">Error: {error}</div>
+  );
 
-  if (!codebaseReview) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-6 py-4 rounded-lg max-w-md">
-          No codebase review data available.
-        </div>
-      </div>
-    );
-  }
+  if (!data) return (
+    <div className="text-gray-600 text-center p-4">No results found</div>
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          {/* Header */}
-          <div className="border-b border-gray-200 px-6 py-4">
-            <h2 className="text-2xl font-bold text-gray-800">Codebase Review Results</h2>
-          </div>
-
-          {/* Content */}
-          <div className="px-6 py-4">
-            <div className="space-y-6">
-            <div className="px-6 py-4">
-            <div className="space-y-6">
-              {/* Codebase Structure Section */}
-              {codebaseReview.result.content.codebaseStructure && (
-                <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                  <h3 className="text-xl font-semibold mb-4">Codebase Structure</h3>
-                  <div className="prose max-w-none">
-                    <pre className="whitespace-pre-wrap text-sm text-gray-700 bg-gray-50 p-4 rounded-lg">
-                      {codebaseReview.result.content.codebaseStructure}
-                    </pre>
-                  </div>
-                </div>
-              )}
-
-              {/* Knowledge Graph Section */}
-              {codebaseReview.result.content.knowledgeGraph && (
-                <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                  <h3 className="text-xl font-semibold mb-4">Knowledge Graph</h3>
-                  <div className="prose max-w-none">
-                    <pre className="whitespace-pre-wrap text-sm text-gray-700 bg-gray-50 p-4 rounded-lg">
-                      {codebaseReview.result.content.knowledgeGraph}
-                    </pre>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-                  
-
-              {/* Metadata Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="font-medium text-gray-700">Status</p>
-                  <p className="mt-1">{codebaseReview.status}</p>
-                </div>
-                
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="font-medium text-gray-700">Provider</p>
-                  <p className="mt-1">{codebaseReview.provider}</p>
-                </div>
-
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="font-medium text-gray-700">Model Type</p>
-                  <p className="mt-1">{codebaseReview.modelType}</p>
-                </div>
-
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="font-medium text-gray-700">Created At</p>
-                  <p className="mt-1">
-                    {new Date(codebaseReview.createdAt).toLocaleString()}
-                  </p>
-                </div>
-
-                {codebaseReview.docPath && (
-                  <div className="bg-gray-50 p-4 rounded-lg md:col-span-2">
-                    <p className="font-medium text-gray-700">Document Path</p>
-                    <p className="mt-1 break-all">{codebaseReview.docPath}</p>
-                  </div>
-                )}
-              </div>
-            </div>
+    <>
+    <nav className="bg-white">
+    <div className="container px-8">
+      <div className="flex h-16 items-center justify-between">
+        {/* Logo and text */}
+        <div className="flex items-center text-xl font-medium">
+          <div onClick={handle_dashboard}
+          className="flex items-start" >  
+            <img src="../../../public/Logo.png" alt="CodeInsight Logo" className="h-8 w-8" />
+            <span className="ml-2" >Code Insight</span>
           </div>
         </div>
       </div>
     </div>
+  </nav>
+    <div className="max-w-6xl mx-auto p-4">
+      {data.resultUrl && (
+  <button
+    onClick={() => handleDownload(data.resultUrl)}
+    className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors inline-flex items-center gap-2"
+  >
+    <FileDown size={20} />
+    Download Results
+  </button>
+)}
+
+      <div className="bg-white rounded-lg shadow">
+        <div className="flex border-b">
+          <button 
+            onClick={() => setActiveTab('structure')}
+            className={`px-4 py-3 font-medium ${activeTab === 'structure' ? 
+              'bg-purple-100 text-purple-600 border-b-2 border-purple-600' : 
+              'text-gray-600 hover:bg-gray-50'}`}>
+            Codebase Structure
+          </button>
+          <button 
+            onClick={() => setActiveTab('graph')}
+            className={`px-4 py-3 font-medium ${activeTab === 'graph' ? 
+              'bg-purple-100 text-purple-600 border-b-2 border-purple-600' : 
+              'text-gray-600 hover:bg-gray-50'}`}>
+            Knowledge Graph
+          </button>
+        </div>
+        
+        <div className="p-6 prose max-w-none">
+          <div className="whitespace-pre-wrap">
+            {activeTab === 'structure' 
+              ? data.result.content.codebaseStructure 
+              : data.result.content.knowledgeGraph}
+          </div>
+        </div>
+      </div>
+    </div>
+    </>
   );
+  
 };
 
 export default OutputCodebase;
