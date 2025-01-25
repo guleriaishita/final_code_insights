@@ -30,18 +30,18 @@ const handleDashboard = () => {
       {/* Hero Section */}
       <main className="max-w-4xl mx-auto px-4 pt-32">
         <div className="text-center">
-          <h1 className="text-4xl font-semibold text-gray-900">
+          <h1 className="text-5xl font-semibold text-gray-900">
             Transform Your Analysis with Intelligence
-            <div className="mt-2">– Welcome to CodeInsight</div>
+            <div className="mt-3 text-purple-600">– Welcome to CodeInsight</div>
           </h1>
-          <p className="mt-6 text-gray-600 text-lg max-w-2xl mx-auto">
+          <p className="mt-6 text-gray-900 text-lg max-w-2xl mx-auto">
             CodeInsight delivers AI-driven analysis, smart documentation, and interactive knowledge graphs,
             helping you unlock the full potential of your code. Get started today and elevate your coding
             experience.
           </p>
           <button 
               onClick={handleDashboard}
-              className="px-8 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all mt-8"
+              className="px-8 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all mt-10"
             >
               Get Started
             </button>
