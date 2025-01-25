@@ -10,7 +10,11 @@ const axios = require('axios')
 
 const fileManager = new FileManagementHelper();
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage }).array('files', 50);
+const upload = multer({ storage: storage }).fields([
+  { name: 'files', maxCount: 50 },
+  { name: 'compliance_file', maxCount: 1 }
+]);
+
 async function executePythonScript(inputData, tempDir) {
   try {
     const scriptPath = path.resolve(__dirname, '../util/analyze_codebase.py');
@@ -67,7 +71,8 @@ async function executePythonScript(inputData, tempDir) {
   }
 }
 // Update the processCodebaseFiles function
-async function processCodebaseFiles(files, provider, modelType) {
+
+async function processCodebaseFiles(files, complianceFile, provider, modelType) {
   const processId = Date.now().toString();
   const tempDir = path.join(os.tmpdir(), 'codebase', processId);
   
@@ -81,6 +86,10 @@ async function processCodebaseFiles(files, provider, modelType) {
 
     const inputData = {
       files: fileContents,
+      compliance_file: complianceFile ? {
+        filename: complianceFile.originalname,
+        content: complianceFile.buffer.toString('utf-8')
+      } : null,
       provider,
       modelType,
       temp_dir: tempDir
@@ -88,91 +97,47 @@ async function processCodebaseFiles(files, provider, modelType) {
 
     const analysisResult = await executePythonScript(inputData, tempDir);
 
-    if (!analysisResult) {
-      throw new Error('Invalid or empty result from analysis');
-    }
-
-    // Save results to S3 and handle potential null result
-    const resultItem = await fileManager.saveTextContentToS3AndDB(
+    const result = await fileManager.saveTextContentToS3AndDB(
       JSON.stringify(analysisResult),
       'result.json',
       `reviews/${processId}`
     );
 
-    if (!resultItem) {
-      throw new Error('Failed to save analysis results to S3');
-    }
-
-    const fileUrl = await fileManager.getDownloadUrl(resultItem.id);
-
-    if (!fileUrl) {
-      throw new Error('Failed to generate download URL');
-    }
-
     return {
       success: true,
       processId,
-      fileUrl,
-      content: analysisResult,
-      fileId: resultItem.id
+      fileId: result.id,
+      fileUrl: await fileManager.getDownloadUrl(result.id),
+      content: analysisResult
     };
 
   } catch (error) {
-    console.error('[Process] Error:', error);
-    
-    // Save error to S3 and handle potential null result
-    const errorItem = await fileManager.saveTextContentToS3AndDB(
-      JSON.stringify({
-        status: 'failed',
-        error: error.message,
-        failureDate: new Date().toISOString()
-      }),
-      'error.json',
-      `reviews/${processId}`
-    );
-
-    const errorResult = {
+    throw {
       success: false,
       processId,
       error: error.message
     };
-
-    if (errorItem) {
-      errorResult.fileId = errorItem.id;
-      errorResult.fileUrl = await fileManager.getDownloadUrl(errorItem.id);
-    }
-
-    throw errorResult;
-  } finally {
-    try {
-      await fs.rm(tempDir, { recursive: true, force: true });
-    } catch (err) {
-      console.error('[Cleanup] Error:', err);
-    }
   }
 }
 
-// Update the route handler
 router.post('/analyzecodebase', (req, res) => {
   upload(req, res, async (err) => {
     try {
-      if (err) {
-        throw new Error(err.message);
-      }
-
-      if (!req.files || req.files.length === 0) {
+      if (err) throw new Error(err.message);
+      if (!req.files?.files || req.files.files.length === 0) {
         throw new Error('No files uploaded');
       }
 
       const provider = req.body.provider;
-      const modelType = req.body.modelType; // Changed from model_name to modelType
+      const modelType = req.body.modelType;
       
       if (!provider || !modelType) {
         throw new Error('Provider and model type are required');
       }
 
       const result = await processCodebaseFiles(
-        req.files,
+        req.files.files,
+        req.files?.compliance_file?.[0],
         provider,
         modelType
       );
@@ -188,14 +153,9 @@ router.post('/analyzecodebase', (req, res) => {
 
     } catch (error) {
       console.error('[API] Error:', error);
-      let errorMessage = error.message;
-      if (error.message.includes('Python process failed')) {
-        errorMessage = 'Analysis failed: ' + (error.message.split('Python process failed:')[1] || 'Unknown error');
-      }
       res.status(400).json({
         success: false,
-        error: errorMessage,
-        details: error.message
+        error: error.message
       });
     }
   });

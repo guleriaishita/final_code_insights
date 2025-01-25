@@ -41,44 +41,43 @@ const ReviewCodebase = () => {
       return;
     }
   
-    const formData = new FormData();
-    files.forEach(file => {
-      formData.append('files', file);
-    });
-  
-    if (complianceFile) {
-      formData.append('compliance', complianceFile);
-    }
-  
-    formData.append('provider', provider);
-    formData.append('modelType', modelType); // Changed from model_name to modelType
-  
     try {
       setProcessing(true);
+      const formData = new FormData();
+      
+      files.forEach(file => {
+        formData.append('files', file);
+      });
+  
+      if (complianceFile) {
+        formData.append('compliance_file', complianceFile);
+      }
+  
+      formData.append('provider', provider);
+      formData.append('modelType', modelType);
+  
       const response = await fetch("http://localhost:5000/api/analyzecodebase", {
         method: "POST",
-        body: formData
+        body: formData,
       });
   
       const data = await response.json();
       
-      if (response.ok && data.success) {
-        // Store both fileId and processId
+      if (!response.ok) throw new Error(data.error || 'Server error');
+  
+      if (data.success) {
         sessionStorage.setItem('fileId_review_codebase', data.fileId);
         sessionStorage.setItem('processId_review_codebase', data.processId);
         navigate('/output');
-      } else {
-        setShowError(true);
-        console.error("Error:", data.error);
       }
+      
     } catch (error) {
-      setShowError(true);
       console.error("Error:", error);
+      setShowError(true);
     } finally {
       setProcessing(false);
     }
   };
-  
 
   return (
     <div className="min-h-screen bg-white">

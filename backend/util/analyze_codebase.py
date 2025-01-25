@@ -48,7 +48,7 @@ def generate_codebase_structure(model_name, provider, repo_path, compliance_file
                 model=model_name,
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0,
-                max_tokens=3000,
+                
                 seed=42,
                 top_p=0.95,
                 api_key=open_api_key

@@ -37,10 +37,23 @@ const Output = () => {
 
 
   return (
-    
     <div className="min-h-screen bg-white">
       {/* Navbar */}
-    
+      <nav className="bg-white">
+        <div className="container px-8">
+          <div className="flex h-16 items-center justify-between">
+            {/* Logo and text */}
+            <div className="flex items-center text-xl font-medium">
+              <div 
+              onClick={handle_dashboard}
+              className="flex items-start" >  
+                <img src="../../../public/Logo.png" alt="CodeInsight Logo" className="h-8 w-8" />
+                <span className="ml-2" >Code Insight</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
 
       {/* Main Content - Added more top padding */}
       <div className="container mx-auto px-4 py-40">

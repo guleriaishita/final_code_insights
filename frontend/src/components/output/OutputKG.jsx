@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 
-const ClassRelationships = () => {
+const OutputKG = () => {
     const navigate = useNavigate();
   
   const [data, setData] = useState(null);
@@ -211,4 +211,4 @@ const ClassRelationships = () => {
   );
 };
 
-export default ClassRelationships;
+export default OutputKG;
