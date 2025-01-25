@@ -23,16 +23,14 @@ const ReviewFile = () => {
     }
   };
 
+  const handleDashboard = () => {
+    navigate("/dashboard");
+    };
 
   const modelTypes = ["gpt-4o-mini", "gpt3.5", "gpt4", "claude-1"];
   const providers = ["openai", "anthropic"];
 
 
-  // const handleMainFileChange = (e) => {
-  //   const selectedFiles = Array.from(e.target.files || []);
-  //   setFiles(selectedFiles);
-  //   setShowError(false);
-  // };
   const handleMainFileChange = (e) => {
     try {
       if (!e.target.files || e.target.files.length === 0) {
@@ -59,7 +57,6 @@ const ReviewFile = () => {
       setShowError(false);
 
 
-      // Update placeholder with selected file names
       if (selectedFiles.length === 1) {
         setPlaceholder(selectedFiles[0].name); // Single file selected
       } else {
@@ -85,83 +82,6 @@ const ReviewFile = () => {
   };
 
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-    
-  //   if (files.length === 0 || selectedOptions.length === 0) {
-  //     setShowError(true);
-  //     return;
-  //   }
-  
-  //   const formData = new FormData();
-  //   for (const file of files) {
-  //     if (file.size > 10 * 1024 * 1024) {
-  //       alert(`File ${file.name} exceeds 10MB limit`);
-  //       return;
-  //     }
-  //     formData.append('files', file);
-  //   }
-  
-  //   if (complianceFile) formData.append('compliance', complianceFile);
-  //   additionalFiles.forEach(file => formData.append('additionalFiles', file));
-  //   formData.append('selectedOptions', JSON.stringify(selectedOptions));
-  //   formData.append('provider', provider);
-  //   formData.append('modelType', modelType);
-  
-  //   try {
-  //     setProcessing(true);
-  //     const response = await fetch("http://localhost:5000/api/analyzefile", {
-  //       method: "POST",
-  //       body: formData
-  //     });
-  
-  //     const data = await response.json();
-  //     if (!response.ok || !data.success) {
-  //       throw new Error(data.error || 'Failed to process files');
-  //     }
-  
-  //     const processId = data.processId;
-  //     let resultData = null;
-  //     let attempts = 0;
-  //     const maxAttempts = 30; // 5 minutes with 10s interval
-  
-  //     while (attempts < maxAttempts) {
-  //       try {
-  //         const resultResponse = await fetch(`http://localhost:5000/api/generated_analyzed_files_docs/${processId}`);
-  //         const result = await resultResponse.json();
-  
-  //         if (result.status === 'completed') {
-  //           resultData = result;
-  //           break;
-  //         } else if (result.status === 'failed') {
-  //           throw new Error(result.error);
-  //         }
-  //       } catch (error) {
-  //         console.error('Polling error:', error);
-  //       }
-  
-  //       attempts++;
-  //       await new Promise(resolve => setTimeout(resolve, 10000)); // 10s interval
-  //     }
-  
-  //     if (!resultData) {
-  //       throw new Error('Processing timeout');
-  //     }
-  
-  //     console.log('Processing completed:', resultData);
-  //     localStorage.setItem('processId', processId);
-  //     localStorage.setItem('results', JSON.stringify(resultData.results));
-  //     navigate('/output');
-  
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //     alert(error.message);
-  //     setShowError(true);
-  //   } finally {
-  //     setProcessing(false);
-  //   }
-  // };
-  // Add loading progress
 
 
 const handleSubmit = async (e) => {
@@ -224,7 +144,7 @@ const handleSubmit = async (e) => {
         <div className="container px-8">
           <div className="flex h-16 items-center">
             <div className="flex items-center text-xl font-medium">
-              <div className="flex items-start">  
+              <div onClick={handleDashboard} className="flex items-start">  
                 <img src="/Logo.png" alt="CodeInsight Logo" className="h-8 w-8" />
                 <span className="ml-2">Code Insight</span>
               </div>

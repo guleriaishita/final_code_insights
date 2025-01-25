@@ -21,6 +21,10 @@ const GenerateGuidelines = () => {
   const handleCodebaseClick = () => codebaseInputRef.current?.click();
   const handleFilePathsClick = () => filePathsInputRef.current?.click();
 
+  const handleDashboard = () => {
+    navigate("/dashboard");
+    };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
   
@@ -90,7 +94,7 @@ const GenerateGuidelines = () => {
         <div className="container px-8">
           <div className="flex h-16 items-center">
             <div className="flex items-center text-xl font-medium">
-              <div className="flex items-start">
+              <div onClick={handleDashboard} className="flex items-start">
                 <img src="/Logo.png" alt="CodeInsight Logo" className="h-8 w-8" />
                 <span className="ml-2">Code Insight</span>
               </div>

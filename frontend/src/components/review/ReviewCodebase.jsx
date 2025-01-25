@@ -13,6 +13,9 @@ const ReviewCodebase = () => {
   const modelTypes = ["gpt-4o-mini", "gpt3.5", "gpt4", "claude-1"];
   const providers = ["openai", "anthropic"];
 
+  const handleDashboard = () => {
+    navigate("/dashboard");
+    };
 
   const handleFolderSelect = (e) => {
     const selectedFiles = e.target.files;
@@ -83,7 +86,7 @@ const ReviewCodebase = () => {
         <div className="container px-8">
           <div className="flex h-16 items-center">
             <div className="flex items-center text-xl font-medium">
-              <div className="flex items-start">  
+              <div onClick={handleDashboard} className="flex items-start">  
                 <img src="/Logo.png" alt="CodeInsight Logo" className="h-8 w-8" />
                 <span className="ml-2">Code Insight</span>
               </div>
