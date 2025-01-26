@@ -1,4 +1,3 @@
-
 import sys
 import json
 import litellm
@@ -18,50 +17,23 @@ from dotenv import load_dotenv
 from datetime import datetime
 from py2neo import Graph, Node, Relationship
 
-def generate_codebase_structure(model_name, provider, repo_path, compliance_file_path):
+def generate_codebase_structure(repo_path):
     """
     Main function to generate codebase structure and create knowledge graph
     
     Args:
-        model_name (str): Name of the AI model to use
-        provider (str): AI provider name (openai/anthropic)
         repo_path (str): Path to the repository
-        compliance_file_path (str): Path to compliance file
     
     Returns:
         None: Creates codebasestructure.txt and Neo4j knowledge graph
     """
-    
-    load_dotenv()
-    claude_api_key = os.getenv("CLAUD_API_KEY")
-    open_api_key = os.getenv("OPENAI_API_KEY")
-
-    codebase_structure_file = os.path.join(repo_path, 'codebasestructure.txt')
-    knowledge_graph_file = os.path.join(repo_path, 'knowledge_graph_structure.txt')
-    
     def connect_to_neo4j(uri, username, password):
-        return Graph(uri, auth=(username, password))
-
-    def generate_litellm_response(prompt, model_name, provider):
-        if provider.lower() == "openai":
-            return litellm.completion(
-                model=model_name,
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0,
-                
-                seed=42,
-                top_p=0.95,
-                api_key=open_api_key
-            )
-        elif provider.lower() == "anthropic":
-            return litellm.completion(
-                model=model_name,
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0,
-                seed=42,
-                top_p=0.85,
-                api_key=claude_api_key
-            )
+        try:
+            return Graph(uri, auth=(username, password))
+        except Exception as e:
+            print(f"Neo4j Connection Error: {e}")
+            traceback.print_exc()
+            return None
 
     def detect_file_type(file_path):
         try:
@@ -73,11 +45,15 @@ def generate_codebase_structure(model_name, provider, repo_path, compliance_file
             return None
 
     def sanitize_input_content(content):
-        max_content_length = 100000
-        if len(content) > max_content_length:
-            print(f"Content truncated to {max_content_length} characters")
-            return content[:max_content_length]
-        return content
+        try:
+            max_content_length = 100000
+            if len(content) > max_content_length:
+                print(f"Content truncated to {max_content_length} characters")
+                return content[:max_content_length]
+            return content
+        except Exception as e:
+            print(f"Content sanitization error: {e}")
+            return content
 
     class RepositoryAnalyzer:
         def __init__(self, repo_path):
@@ -85,63 +61,77 @@ def generate_codebase_structure(model_name, provider, repo_path, compliance_file
             self.repository_structure = {}
 
         def analyze_repository(self):
-            self.repository_structure = {
-                'root': self.repo_path,
-                'directories': [],
-                'files': []
-            }
-            
-            for root, dirs, files in os.walk(self.repo_path):
-                current_dir = {
-                    'path': root,
-                    'name': os.path.basename(root),
-                    'subdirectories': dirs,
+            try:
+                self.repository_structure = {
+                    'root': self.repo_path,
+                    'directories': [],
                     'files': []
                 }
                 
-                for file in files:
-                    file_path = os.path.join(root, file)
-                    file_info = self._analyze_file(file_path)
-                    current_dir['files'].append(file_info)
+                for root, dirs, files in os.walk(self.repo_path):
+                    try:
+                        current_dir = {
+                            'path': root,
+                            'name': os.path.basename(root),
+                            'subdirectories': dirs,
+                            'files': []
+                        }
+                        
+                        for file in files:
+                            try:
+                                file_path = os.path.join(root, file)
+                                file_info = self._analyze_file(file_path)
+                                current_dir['files'].append(file_info)
+                            except Exception as file_error:
+                                print(f"Error analyzing file {file}: {file_error}")
+                        
+                        self.repository_structure['directories'].append(current_dir)
+                    except Exception as dir_error:
+                        print(f"Error processing directory {root}: {dir_error}")
                 
-                self.repository_structure['directories'].append(current_dir)
-            
-            return self.repository_structure
+                return self.repository_structure
+            except Exception as e:
+                print(f"Repository analysis error: {e}")
+                return {}
 
         def _analyze_file(self, file_path):
-            file_name = os.path.basename(file_path)
-            file_extension = os.path.splitext(file_name)[1].lower()
-            
-            file_info = {
-                'name': file_name,
-                'path': file_path,
-                'extension': file_extension,
-                'size': os.path.getsize(file_path)
-            }
-            
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
+                file_name = os.path.basename(file_path)
+                file_extension = os.path.splitext(file_name)[1].lower()
                 
-                if file_extension == '.py':
-                    file_info.update(self._parse_python_file(content))
-                elif file_extension == '.java':
-                    file_info.update(self._parse_java_file(content))
-                elif file_extension in ['.js', '.jsx', '.ts', '.tsx']:
-                    file_info.update(self._parse_javascript_file(content))
-                elif file_extension == '.json':
-                    file_info.update(self._parse_json_file(content))
-                elif file_extension == '.xml':
-                    file_info.update(self._parse_xml_file(content))
-                elif file_extension in ['.cpp', '.h']:
-                    file_info.update(self._parse_cpp_file(content))
-                elif file_extension == '.cs':
-                    file_info.update(self._parse_csharp_file(content))
-            
+                file_info = {
+                    'name': file_name,
+                    'path': file_path,
+                    'extension': file_extension,
+                    'size': os.path.getsize(file_path)
+                }
+                
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                    
+                    if file_extension == '.py':
+                        file_info.update(self._parse_python_file(content))
+                    elif file_extension == '.java':
+                        file_info.update(self._parse_java_file(content))
+                    elif file_extension in ['.js', '.jsx', '.ts', '.tsx']:
+                        file_info.update(self._parse_javascript_file(content))
+                    elif file_extension == '.json':
+                        file_info.update(self._parse_json_file(content))
+                    elif file_extension == '.xml':
+                        file_info.update(self._parse_xml_file(content))
+                    elif file_extension in ['.cpp', '.h']:
+                        file_info.update(self._parse_cpp_file(content))
+                    elif file_extension == '.cs':
+                        file_info.update(self._parse_csharp_file(content))
+                
+                except Exception as parsing_error:
+                    file_info['parsing_error'] = str(parsing_error)
+                
+                return file_info
             except Exception as e:
-                file_info['parsing_error'] = str(e)
-            
-            return file_info
+                print(f"File analysis error for {file_path}: {e}")
+                return {'name': os.path.basename(file_path), 'error': str(e)}
 
         def _parse_python_file(self, content):
             try:
@@ -303,104 +293,9 @@ def generate_codebase_structure(model_name, provider, repo_path, compliance_file
                 return {'python_parsing_error': str(e)}
                 
 
-    def ai_extract_compliance_sections(file_content,model_name, provider):
-        prompt = f"""
-        Task: Extract and Structure Guidelines from the Compliance Document
-        
-        Input Document:
-        {sanitize_input_content(file_content)}
-        
-        Please analyze the document and extract guidelines for the following sections. Format your response using the exact structure below:
-        
-        ##review##
-        [Extract all guidelines related to code review, best practices, and quality standards]
-        ##
-        
-        ##documentation##
-        [Extract all guidelines related to documentation requirements and standards]
-        ##
-        
-        ##comments##
-        [Extract all guidelines related to code comments and inline documentation]
-        ##
-        
-        ##knowledge_graph##
-        [Extract all guidelines related to knowledge graph structure and representation]
-        ##
-        
-        If any section is not explicitly covered in the document, provide sensible default guidelines based on industry standards.
-        """
-        
-        try:
-            response = generate_litellm_response(prompt,model_name,provider)
-            extracted_content = response['choices'][0]['message']['content']
-            
-            sections = {
-                'review': 'Default review guidelines.',
-                'documentation': 'Default documentation guidelines.',
-                'comments': 'Default comments guidelines.',
-                'knowledge_graph': 'Default knowledge graph guidelines.'
-            }
-            
-            
-            patterns = {
-                'review': r'##review##\s*(.*?)\s*##',
-                'documentation': r'##documentation##\s*(.*?)\s*##',
-                'comments': r'##comments##\s*(.*?)\s*##',
-                'knowledge_graph': r'##knowledge_graph##\s*(.*?)\s*##'
-            }
-            
-            for section, pattern in patterns.items():
-                match = re.search(pattern, extracted_content, re.DOTALL)
-                if match and match.group(1).strip():
-                    sections[section] = match.group(1).strip()
-            
-            return sections
-            
-        except Exception as e:
-            print(f"Error extracting compliance sections: {e}")
-            return {
-                'review': 'Error occurred. Using default review guidelines.',
-                'documentation': 'Error occurred. Using default documentation guidelines.',
-                'comments': 'Error occurred. Using default comments guidelines.',
-                'knowledge_graph': 'Error occurred. Using default knowledge graph guidelines.'
-            }
-            pass
+    
 
-    def load_compliance_file(compliance_file_path):
-        default_sections = {
-        "review": "Default review guidelines.",
-        "documentation": "Default documentation guidelines.",
-        "comments": "Default comments guidelines.",
-        "knowledge_graph" : "Default Knowledge graph"
-        }
-        if compliance_file_path is None or not os.path.exists(compliance_file_path):
-            print("No compliance file provided or file not found. Using default guidelines.")
-            return default_sections
-        try:
-            file_type = detect_file_type(compliance_file_path)
-            
-            with open(compliance_file_path, "r", encoding='utf-8') as file:
-                content = file.read()
-            if not content.strip():
-                print("Compliance file is empty. Using default guidelines.")
-                return default_sections
-            max_file_size = 50000
-            if len(content) > max_file_size:
-                print(f"File size exceeds {max_file_size} characters. Truncating...")
-                content = content[:max_file_size]
-            extracted_sections = ai_extract_compliance_sections(
-                content, model_name, provider
-            )
-            for section in ['review', 'documentation', 'comments','knowledge_graph']:
-                if not extracted_sections[section]:
-                    extracted_sections[section] = default_sections[section]
-            return extracted_sections
-        except Exception as e:
-            print(f"Unexpected error processing compliance file: {e}")
-            return default_sections
-            pass
-
+    
     def build_repository_knowledge_graph(graph, repository_details):
         """
         Build an enhanced knowledge graph with improved class relationships and method details
@@ -676,276 +571,280 @@ def generate_codebase_structure(model_name, provider, repo_path, compliance_file
             parent_module_node = create_module_hierarchy(directory['path'])
             for file_info in directory['files']:
                 process_python_file(file_info, parent_module_node)
-    def export_knowledge_graph_structure(graph, output_file):
+        # i=build_repository_knowledge_graph(graph,repository_details)
+        # print(i)
+    def export_knowledge_graph_json_structure(graph, output_file='knowledge_graph_structure.json'):
         """
-        Export all nodes and relationships from the knowledge graph with enhanced class relationship details
+        Export a comprehensive JSON representation of the knowledge graph 
+        with all relationships, inheritance hierarchies, and detailed node information
+        
+        Args:
+            graph (Graph): Neo4j graph connection
+            output_file (str): Path to output JSON file
+        
+        Returns:
+            dict: Comprehensive knowledge graph structure
         """
         try:
-            os.makedirs(os.path.dirname(output_file), exist_ok=True)
+            
+            knowledge_graph = {
+                'nodes': {},
+                'relationships': {
+                    'inheritance': [],
+                    'method_overrides': [],
+                    'sibling_relationships': [],
+                    'import_relationships': []
+                },
+                'hierarchies': {
+                    'class_hierarchies': {},
+                    'method_inheritance': {}
+                }
+            }
 
-            with open(output_file, 'w', encoding='utf-8') as file:
-                file.write("=== KNOWLEDGE GRAPH STRUCTURE ===\n\n")
+           
+            node_query = """
+            MATCH (n)
+            RETURN 
+                labels(n)[0] as type, 
+                id(n) as node_id, 
+                properties(n) as properties
+            """
+            
+            nodes = graph.run(node_query).data()
+            for node in nodes:
+                node_type = node['type']
+                node_id = node['node_id']
+                properties = node['properties']
                 
+               
+                if node_type not in knowledge_graph['nodes']:
+                    knowledge_graph['nodes'][node_type] = {}
                 
-                node_query = """
-                MATCH (n)
-                WITH labels(n)[0] as type, collect(n) as nodes
-                RETURN type, nodes
-                ORDER BY type
-                """
-                
-                file.write("### NODES ###\n\n")
-                node_results = graph.run(node_query).data()
-                
-                for result in node_results:
-                    node_type = result['type']
-                    nodes = result['nodes']
-                    
-                    file.write(f"[{node_type} Nodes]\n")
-                    for node in nodes:
-                        file.write(f"\nNode ID: {node.identity}\n")
-                        for key, value in node.items():
-                            if value:
-                                file.write(f"  {key}: {value}\n")
-                    file.write("\n" + "="*50 + "\n\n")
-                
-                
-                file.write("\n### CLASS INHERITANCE HIERARCHIES ###\n\n")
-                
-                
-                root_class_query = """
-                MATCH (c:Class)
-                WHERE NOT (c)-[:INHERITS_FROM]->()
-                RETURN c.name as class_name
-                ORDER BY c.name
-                """
-                
-                root_classes = graph.run(root_class_query).data()
-                
-                for root in root_classes:
-                    file.write(f"\nClass Hierarchy starting from: {root['class_name']}\n")
-                    
-                     
-                    hierarchy_query = """
-                    MATCH path = (derived:Class)-[:INHERITS_FROM*]->(base:Class {name: $root_class})
-                    RETURN derived.name as derived, 
-                        base.name as base,
-                        length(path) as depth
-                    ORDER BY depth
-                    """
-                    
-                    hierarchy = graph.run(hierarchy_query, root_class=root['class_name']).data()
-                    
-                    
-                    processed = set()
-                    def print_hierarchy(class_name, level=0):
-                        if class_name in processed:
-                            return
-                        processed.add(class_name)
-                        file.write("  " * level + f"└── {class_name}\n")
-                        
-                        
-                        children_query = """
-                        MATCH (parent:Class {name: $class_name})<-[:INHERITS_FROM {direct: true}]-(child:Class)
-                        RETURN child.name as child_name
-                        ORDER BY child.name
-                        """
-                        children = graph.run(children_query, class_name=class_name).data()
-                        for child in children:
-                            print_hierarchy(child['child_name'], level + 1)
-                    
-                    print_hierarchy(root['class_name'])
-                
-                
-                file.write("\n### DETAILED CLASS RELATIONSHIPS ###\n\n")
-                
-                class_query = """
-                MATCH (c:Class)
-                RETURN c.name as class_name
-                ORDER BY c.name
-                """
-                
-                classes = graph.run(class_query).data()
-                
-                for cls in classes:
-                    class_name = cls['class_name']
-                    file.write(f"\nClass: {class_name}\n")
-                    
-                    
-                    parent_query = """
-                    MATCH (c:Class {name: $class_name})-[:INHERITS_FROM]->(parent:Class)
-                    RETURN parent.name as parent_name
-                    """
-                    parents = graph.run(parent_query, class_name=class_name).data()
-                    if parents:
-                        file.write("Parents:\n")
-                        for parent in parents:
-                            file.write(f"  - {parent['parent_name']}\n")
-                    
-                    
-                    children_query = """
-                    MATCH (c:Class {name: $class_name})<-[:INHERITS_FROM {direct: true}]-(child:Class)
-                    RETURN child.name as child_name
-                    """
-                    children = graph.run(children_query, class_name=class_name).data()
-                    if children:
-                        file.write("Direct Children:\n")
-                        for child in children:
-                            file.write(f"  - {child['child_name']}\n")
-                    
-                    
-                    grandchildren_query = """
-                    MATCH (c:Class {name: $class_name})<-[:INHERITS_FROM*2]-(grandchild:Class)
-                    RETURN DISTINCT grandchild.name as grandchild_name
-                    """
-                    grandchildren = graph.run(grandchildren_query, class_name=class_name).data()
-                    if grandchildren:
-                        file.write("Grandchildren:\n")
-                        for grandchild in grandchildren:
-                            file.write(f"  - {grandchild['grandchild_name']}\n")
-                    
-                    
-                    sibling_query = """
-                    MATCH (c:Class {name: $class_name})-[r:IS_SIBLING_OF]->(sibling:Class)
-                    RETURN sibling.name as sibling_name, r.common_parent as common_parent
-                    """
-                    siblings = graph.run(sibling_query, class_name=class_name).data()
-                    if siblings:
-                        file.write("Siblings:\n")
-                        for sibling in siblings:
-                            file.write(f"  - {sibling['sibling_name']} (Common Parent: {sibling['common_parent']})\n")
-                
-                
-                file.write("\n### METHOD INHERITANCE ###\n\n")
-                
-                method_query = """
-                MATCH (c:Class)-[:HAS_METHOD]->(m:Method)
-                OPTIONAL MATCH (m)-[o:OVERRIDES]->(parent_m:Method)<-[:HAS_METHOD]-(parent:Class)
-                RETURN 
-                    c.name as class_name,
-                    m.name as method_name,
-                    m.parameters as parameters,
-                    m.returns as returns,
-                    parent.name as overridden_in,
-                    parent_m.name as parent_method
-                ORDER BY class_name, method_name
-                """
-                
-                methods = graph.run(method_query).data()
-                current_class = None
-                
-                for method in methods:
-                    if method['class_name'] != current_class:
-                        current_class = method['class_name']
-                        file.write(f"\n[Class: {current_class}]\n")
-                    
-                    file.write(f"\nMethod: {method['method_name']}")
-                    if method['parameters']:
-                        file.write(f"\n  Parameters: {method['parameters']}")
-                    if method['returns']:
-                        file.write(f"\n  Returns: {method['returns']}")
-                    if method['overridden_in']:
-                        file.write(f"\n  Overrides: {method['overridden_in']}.{method['parent_method']}")
-                    file.write("\n")
-                
-                print(f"Knowledge graph structure has been exported to {output_file}")
-                return True
-            if os.path.exists(output_file):
-                return True
-            else:
-                print(f"File was not created at: {output_file}")
-                return False
-                    
+                knowledge_graph['nodes'][node_type][str(node_id)] = {
+                    'name': properties.get('name', ''),
+                    'details': properties
+                }
+
+            
+            inheritance_query = """
+            MATCH (derived:Class)-[r:INHERITS_FROM]->(base:Class)
+            RETURN 
+                id(derived) as derived_id, 
+                derived.name as derived_name,
+                id(base) as base_id, 
+                base.name as base_name,
+                r.direct as is_direct,
+                r.inheritance_level as inheritance_level
+            """
+            
+            inheritance_relationships = graph.run(inheritance_query).data()
+            for rel in inheritance_relationships:
+                knowledge_graph['relationships']['inheritance'].append({
+                    'derived_id': str(rel['derived_id']),
+                    'derived_name': rel['derived_name'],
+                    'base_id': str(rel['base_id']),
+                    'base_name': rel['base_name'],
+                    'is_direct': rel['is_direct'],
+                    'inheritance_level': rel['inheritance_level']
+                })
+
+           
+            override_query = """
+            MATCH (method:Method)-[o:OVERRIDES]->(parent_method:Method)
+            MATCH (method)<-[:HAS_METHOD]-(derived_class:Class)
+            MATCH (parent_method)<-[:HAS_METHOD]-(parent_class:Class)
+            RETURN 
+                method.name as method_name,
+                id(method) as method_id,
+                derived_class.name as derived_class,
+                id(derived_class) as derived_class_id,
+                parent_method.name as parent_method_name,
+                id(parent_method) as parent_method_id,
+                parent_class.name as parent_class,
+                id(parent_class) as parent_class_id
+            """
+            
+            override_relationships = graph.run(override_query).data()
+            for rel in override_relationships:
+                knowledge_graph['relationships']['method_overrides'].append({
+                    'method': {
+                        'id': str(rel['method_id']),
+                        'name': rel['method_name'],
+                        'class': {
+                            'id': str(rel['derived_class_id']),
+                            'name': rel['derived_class']
+                        }
+                    },
+                    'overridden': {
+                        'method_id': str(rel['parent_method_id']),
+                        'method_name': rel['parent_method_name'],
+                        'class': {
+                            'id': str(rel['parent_class_id']),
+                            'name': rel['parent_class']
+                        }
+                    }
+                })
+
+            
+            sibling_query = """
+            MATCH (c:Class)-[r:IS_SIBLING_OF]->(sibling:Class)
+            RETURN 
+                id(c) as class_id, 
+                c.name as class_name,
+                id(sibling) as sibling_id, 
+                sibling.name as sibling_name,
+                r.common_parent as common_parent
+            """
+            
+            sibling_relationships = graph.run(sibling_query).data()
+            for rel in sibling_relationships:
+                knowledge_graph['relationships']['sibling_relationships'].append({
+                    'class': {
+                        'id': str(rel['class_id']),
+                        'name': rel['class_name']
+                    },
+                    'sibling': {
+                        'id': str(rel['sibling_id']),
+                        'name': rel['sibling_name']
+                    },
+                    'common_parent': rel['common_parent']
+                })
+
+            # Imports Relationships
+            import_query = """
+            MATCH (module:ModuleNamespace)-[:IMPORTS]->(import:Import)
+            RETURN 
+                module.name as module_name,
+                id(module) as module_id,
+                import.name as import_name,
+                id(import) as import_id,
+                import.base_package as base_package,
+                import.is_relative as is_relative
+            """
+            
+            import_relationships = graph.run(import_query).data()
+            for rel in import_relationships:
+                knowledge_graph['relationships']['import_relationships'].append({
+                    'module': {
+                        'id': str(rel['module_id']),
+                        'name': rel['module_name']
+                    },
+                    'import': {
+                        'id': str(rel['import_id']),
+                        'name': rel['import_name'],
+                        'base_package': rel['base_package'],
+                        'is_relative': rel['is_relative']
+                    }
+                })
+
+            
+            class_hierarchy_query = """
+            MATCH path = (root:Class)-[:INHERITS_FROM*]->(ancestor:Class)
+            WITH root, 
+                collect(distinct ancestor.name) as ancestors,
+                length(path) as depth
+            RETURN 
+                root.name as root_class,
+                ancestors,
+                depth
+            ORDER BY depth DESC
+            """
+            
+            class_hierarchies = graph.run(class_hierarchy_query).data()
+            for hierarchy in class_hierarchies:
+                knowledge_graph['hierarchies']['class_hierarchies'][hierarchy['root_class']] = {
+                    'ancestors': hierarchy['ancestors'],
+                    'depth': hierarchy['depth']
+                }
+
+            
+            method_inheritance_query = """
+MATCH (base:Class)-[:HAS_METHOD]->(base_method:Method)
+MATCH (derived:Class)-[:INHERITS_FROM*]->(base)
+MATCH (derived)-[:HAS_METHOD]->(derived_method:Method)
+WHERE derived_method.name = base_method.name
+WITH base_method.name as base_method, 
+     base.name as base_class, 
+     collect(DISTINCT derived.name) as derived_classes,
+     collect(DISTINCT derived_method.name) as derived_methods
+RETURN 
+    base_method, 
+    base_class, 
+    derived_classes, 
+    derived_methods
+            """
+            
+            method_inheritance = graph.run(method_inheritance_query).data()
+            for inheritance in method_inheritance:
+                knowledge_graph['hierarchies']['method_inheritance'][inheritance['base_method']] = {
+                    'base_class': inheritance['base_class'],
+                    'inherited_by': {
+                        'classes': inheritance['derived_classes'],
+                        'methods': inheritance['derived_methods']
+                    }
+                }
+
+            
+            with open(output_file, 'w', encoding='utf-8') as f:
+                json.dump(knowledge_graph, f, indent=2)
+
+            print(f"Comprehensive knowledge graph JSON exported to {output_file}")
+            return knowledge_graph
+
         except Exception as e:
-            print(f"Error exporting knowledge graph: {e}")
+            print(f"Error exporting knowledge graph JSON: {e}")
             traceback.print_exc()
-            return False
+            return None
 
 
     def create_knowledge_graph(repository_details):
-            try:
-                graph = connect_to_neo4j(
-                    uri=os.getenv('NEO4J_URI'),
-                    username=os.getenv('NEO4J_USER'),
-                    password=os.getenv('NEO4J_PASSWORD')
-                )
-                
-                # Test Neo4j connection
-                try:
-                    test_query = graph.run("MATCH (n) RETURN count(n) as count LIMIT 1").data()
-                    print("Successfully connected to Neo4j")
-                except Exception as e:
-                    print(f"Neo4j connection error: {e}")
-                    return
-                
-                build_repository_knowledge_graph(graph, repository_details)
-                print("Knowledge graph created successfully!")
-                
-                # Export knowledge graph structure with absolute path
-                if export_knowledge_graph_structure(graph, knowledge_graph_file):
-                    print(f"Knowledge graph structure exported to: {knowledge_graph_file}")
-                else:
-                    print("Failed to export knowledge graph structure")
-                
-                result = graph.run("""
-                    MATCH (n)
-                    RETURN 
-                        count(n) as nodes,
-                        count(DISTINCT labels(n)) as node_types
-                """).data()[0]
-                
-                print(f"Graph Statistics:")
-                print(f"Total nodes: {result['nodes']}")
-                print(f"Node types: {result['node_types']}")
-                
-            except Exception as e:
-                print(f"Error creating knowledge graph: {e}")
-                traceback.print_exc()
+        try:
+            graph = connect_to_neo4j(
+                uri=os.getenv('NEO4J_URI'),
+                username=os.getenv('NEO4J_USER'),
+                password=os.getenv('NEO4J_PASSWORD')
+            )
+            
+            build_repository_knowledge_graph(graph, repository_details)
+            print("Knowledge graph created successfully!")
+            
+            
+            json_graph_structure = export_knowledge_graph_json_structure(graph)
+            print("JSON representation of knowledge graph generated.")
+            
+            result = graph.run("""
+                MATCH (n)
+                RETURN 
+                    count(n) as nodes,
+                    count(DISTINCT labels(n)) as node_types
+            """).data()[0]
+            
+            print(f"Graph Statistics:")
+            print(f"Total nodes: {result['nodes']}")
+            print(f"Node types: {result['node_types']}")
+            
+            return json_graph_structure
+        except Exception as e:
+            print(f"Error creating knowledge graph: {e}")
 
+    
     try:
         
         analyzer = RepositoryAnalyzer(repo_path)
         repository_details = analyzer.analyze_repository()
 
         
-        compliance_sections = load_compliance_file(compliance_file_path)
-
         
-        structure_analysis = generate_litellm_response(
-            f"""
-            Analyze the following repository structure and create a detailed report:
-            {repository_details}
-            
-            Compliance guidelines:
-            {compliance_sections}
-            """,
-            model_name,
-            provider
-        )
 
-        
-        codebase_structure_file = os.path.join(repo_path, 'codebasestructure.txt')
-        try:
-            with open(codebase_structure_file, 'w', encoding='utf-8') as f:
-                content = structure_analysis['choices'][0]['message']['content']
-                f.write(content)
-            print(f"Successfully wrote codebase structure to: {codebase_structure_file}")
-        except Exception as e:
-            print(f"Error writing codebase structure: {e}")
-            traceback.print_exc()
         
         create_knowledge_graph(repository_details)
-        
-        # Verify files were created
-        files_status = {
-            'codebase': os.path.exists(codebase_structure_file),
-            'knowledge_graph': os.path.exists(os.path.join(repo_path, 'knowledge_graph_structure.txt'))
-        }
-        print(f"Files creation status: {files_status}")
-        
+
+        print("Codebase analysis and knowledge graph creation completed successfully!")
+
     except Exception as e:
         print(f"Error in generate_codebase_structure: {e}")
         traceback.print_exc()
+
 
 
 def process_files(files_data, temp_dir):
@@ -978,6 +877,7 @@ def process_files(files_data, temp_dir):
     
     return file_paths
 
+
 def create_temp_compliance_file(compliance_data, temp_dir):
     """
     Create temporary compliance file if provided
@@ -999,67 +899,80 @@ def create_temp_compliance_file(compliance_data, temp_dir):
         f.write(compliance_data['content'])
     
     return compliance_path
+
+
 def main():
     try:
-        input_data = json.load(sys.stdin)
-        files_data = input_data.get('files', [])
-        temp_dir = input_data.get('temp_dir', '')
-        compliance_data = input_data.get('compliance', None)
-        provider = input_data.get('provider', '')
-        modelType = input_data.get('modelType', '')  # Changed from model_type to modelType
-        
+        # Parse input JSON from stdin with error handling
+        try:
+            input_json = json.load(sys.stdin)
+        except json.JSONDecodeError as e:
+            raise Exception(f"Invalid JSON input: {str(e)}")
+
+        # Extract required fields
+        files_data = input_json.get('files', [])
+        temp_dir = input_json.get('temp_dir', '')
+        compliance_data = input_json.get('compliance')
+
+        if not temp_dir:
+            raise ValueError("Temporary directory path is required")
+
+        # Create absolute temp directory path
         temp_dir = os.path.abspath(temp_dir)
         os.makedirs(temp_dir, exist_ok=True)
-        
+
+        # Process files and generate analysis
         created_files = process_files(files_data, temp_dir)
         compliance_file = create_temp_compliance_file(compliance_data, temp_dir)
-        
-        # Pass modelType instead of model_type
-        generate_codebase_structure(modelType, provider, temp_dir, compliance_file)
-        
+        generate_codebase_structure(temp_dir)
+
+        # Initialize analysis content
         analysis_content = {}
-        
-        codebase_file = os.path.join(temp_dir, 'codebasestructure.txt')
-        try:
-            if os.path.exists(codebase_file):
-                with open(codebase_file, 'r', encoding='utf-8') as f:
-                    analysis_content['codebaseStructure'] = f.read()
-            else:
-                analysis_content['codebaseStructure'] = "Codebase structure analysis could not be generated"
-        except Exception as e:
-            analysis_content['codebaseStructure'] = f"Error reading codebase structure: {str(e)}"
-            
-        knowledge_graph_file = os.path.join(temp_dir, 'knowledge_graph_structure.txt')
+
+        # Read knowledge graph with proper error handling
+        knowledge_graph_file = os.path.join(temp_dir, 'knowledge_graph_structure.json')
         try:
             if os.path.exists(knowledge_graph_file):
                 with open(knowledge_graph_file, 'r', encoding='utf-8') as f:
-                    analysis_content['knowledgeGraph'] = f.read()
+                    analysis_content['knowledgeGraph'] = json.load(f)
             else:
-                analysis_content['knowledgeGraph'] = "Knowledge graph structure could not be generated"
+                analysis_content['knowledgeGraph'] = {
+                    "error": "Knowledge graph structure was not generated",
+                    "timestamp": datetime.now().isoformat()
+                }
         except Exception as e:
-            analysis_content['knowledgeGraph'] = f"Error reading knowledge graph: {str(e)}"
-            
+            analysis_content['knowledgeGraph'] = {
+                "error": f"Error reading knowledge graph: {str(e)}",
+                "timestamp": datetime.now().isoformat()
+            }
+
+        # Return success result
         result = {
             'success': True,
-            'content': {
-                'codebaseStructure': analysis_content['codebaseStructure'],
-                'knowledgeGraph': analysis_content['knowledgeGraph']
-            }
+            'content': analysis_content,
+            'timestamp': datetime.now().isoformat(),
+            'files_processed': len(created_files),
+            'compliance_included': compliance_file is not None
         }
-        
+
         print(json.dumps(result))
         sys.stdout.flush()
-        
+
     except Exception as e:
+        # Detailed error response
         error_result = {
             'success': False,
-            'error': str(e),
-            'content': None
+            'error': {
+                'message': str(e),
+                'type': type(e).__name__,
+                'details': traceback.format_exc(),
+                'timestamp': datetime.now().isoformat()
+            }
         }
         print(json.dumps(error_result))
-        sys.stderr.write(str(e))
+        sys.stderr.write(f"Error in main: {str(e)}\n")
+        sys.stderr.write(traceback.format_exc())
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
-
-

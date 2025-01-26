@@ -225,15 +225,8 @@ def generate_guidelines_prompt(analyzed_data: Dict, file_contents: Dict[str, str
 def generate_guidelines_document(input_data: Dict) -> Dict:
     """Generate guidelines document from codebase analysis"""
     try:
-        file_contents = {}
+        file_contents = parse_file_contents(input_data['files'])
         
-        if input_data['selectedOption'] == 'files':
-            file_contents = parse_file_contents(input_data['files'])
-        elif input_data['selectedOption'] == 'codebase' and 'repoPath' in input_data:
-            file_contents = parse_repository_files(input_data['repoPath'])
-        else:
-            raise ValueError("Invalid input option or missing repository path")
-
         if not file_contents:
             raise ValueError("No valid files found to analyze")
 
@@ -241,26 +234,22 @@ def generate_guidelines_document(input_data: Dict) -> Dict:
         prompt = generate_guidelines_prompt(analyzed_data, file_contents)
         response = generate_litellm_response(prompt, input_data['modelType'], input_data['provider'])
         
-        result = {
+        return {
             'content': response['choices'][0]['message']['content'],
             'status': 'success'
         }
-        
-        print(json.dumps(result))
-        return result
 
     except Exception as e:
-        error_result = {
+        return {
             'status': 'error',
             'message': str(e)
         }
-        print(json.dumps(error_result))
-        return error_result
 
 if __name__ == "__main__":
     try:
         input_data = json.loads(sys.stdin.read())
-        generate_guidelines_document(input_data)
+        result = generate_guidelines_document(input_data)
+        print(json.dumps(result))
     except json.JSONDecodeError as e:
         print(json.dumps({
             'status': 'error',
@@ -270,4 +259,4 @@ if __name__ == "__main__":
         print(json.dumps({
             'status': 'error',
             'message': str(e)
-        }))                                                                                         
+        }))                                                                                      

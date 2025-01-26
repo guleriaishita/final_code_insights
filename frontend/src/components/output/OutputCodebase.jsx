@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FileDown, Loader } from 'lucide-react';
+import { FileDown, Loader, Search, Code, BookOpen, GitBranch, Network, ArrowUpSquare, Users, Share2, Workflow, TreeDeciduous, FileJson } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
 
 const OutputCodebase = () => {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('structure');
+  const [selectedNode, setSelectedNode] = useState('');
+  const [classOptions, setClassOptions] = useState([]);
+  const [showJson, setShowJson] = useState(false);
+  const [nodeData, setNodeData] = useState(null);
+  const [nodeLoading, setNodeLoading] = useState(false);
+  const [nodeError, setNodeError] = useState(null);
 
   useEffect(() => {
     const fileId = sessionStorage.getItem('fileId_review_codebase');
@@ -23,6 +27,7 @@ const OutputCodebase = () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/generated_analyzed_codebase_docs/${fileId}`);
         setData(response.data);
+        fetchClasses();
       } catch (err) {
         setError(err.message);
       } finally {
@@ -33,10 +38,37 @@ const OutputCodebase = () => {
     fetchData();
   }, []);
 
-  const handle_dashboard = async () => {
-    navigate('/dashboard');
-  }
+  const fetchClasses = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/output/generated_knowledge_graph');
+      const jsonData = await response.json();
+      if (jsonData.success) {
+        const classes = new Set();
+        jsonData.graphData.forEach(item => {
+          if (item.node1?.name) classes.add(`${item.node1.name} (${item.node1.type || 'Class'})`);
+          if (item.node2?.name) classes.add(`${item.node2.name} (${item.node2.type || 'Class'})`);
+        });
+        setClassOptions(Array.from(classes).sort());
+      }
+    } catch (err) {
+      setError('Failed to fetch classes');
+    }
+  };
 
+  const handleSearch = async () => {
+    if (!selectedNode) return;
+    setNodeLoading(true);
+    try {
+      const [nodeName] = selectedNode.split(' (');
+      const response = await fetch(`http://localhost:5000/api/output/node-relationships?nodeName=${encodeURIComponent(nodeName)}&nodeType=Class`);
+      const jsonData = await response.json();
+      setNodeData(jsonData.data);
+      setNodeError(null);
+    } catch (err) {
+      setNodeError(err.message);
+    }
+    setNodeLoading(false);
+  };
 
   const handleDownload = async (url, filename = 'analysis_result.json') => {
     try {
@@ -53,6 +85,63 @@ const OutputCodebase = () => {
     } catch (error) {
       console.error('Download failed:', error);
     }
+  };
+
+  const renderClassCard = (classItem) => (
+    <div key={classItem.id} className="bg-purple-50 p-4 rounded-lg mb-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Code className="w-4 h-4 text-purple-600" />
+          <h4 className="font-semibold text-purple-900">{classItem.name}</h4>
+        </div>
+        <div className="text-sm text-purple-600">ID: {classItem.id}</div>
+      </div>
+      {Object.entries(classItem).map(([key, value]) => 
+        key !== 'id' && key !== 'name' && (
+          <p key={key} className="text-sm text-purple-600 mt-1">
+            {key}: {JSON.stringify(value)}
+          </p>
+        )
+      )}
+    </div>
+  );
+
+  const renderMethodCard = (method) => (
+    <div key={method.id} className="bg-purple-50 p-4 rounded-lg mb-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Code className="w-4 h-4 text-purple-600" />
+          <h4 className="font-semibold text-purple-900">{method.name}</h4>
+        </div>
+        <div className="text-sm text-purple-600">ID: {method.id}</div>
+      </div>
+      <div className="mt-2 space-y-2 text-sm">
+        {Object.entries(method).map(([key, value]) => 
+          key !== 'id' && key !== 'name' && (
+            <div key={key} className="text-purple-700">
+              <span className="font-medium">{key}:</span> 
+              <span className="ml-2 whitespace-pre-wrap">{JSON.stringify(value, null, 2)}</span>
+            </div>
+          )
+        )}
+      </div>
+    </div>
+  );
+
+  const renderSection = (title, items, icon, renderFn = renderMethodCard) => {
+    if (!items?.length) return null;
+    return (
+      <div className="bg-white p-6 rounded-xl shadow mb-6 border border-purple-100">
+        <div className="flex items-center gap-2 mb-4">
+          {React.cloneElement(icon, { className: "w-5 h-5 text-purple-600" })}
+          <h3 className="text-lg font-semibold text-purple-900">{title}</h3>
+          <span className="text-sm text-purple-500 ml-2">({items.length} items)</span>
+        </div>
+        <div className="space-y-4">
+          {items.map(item => renderFn(item))}
+        </div>
+      </div>
+    );
   };
 
   if (loading) {
@@ -74,61 +163,109 @@ const OutputCodebase = () => {
 
   return (
     <>
-    <nav className="bg-white">
-    <div className="container px-8">
-      <div className="flex h-16 items-center justify-between">
-        {/* Logo and text */}
-        <div className="flex items-center text-xl font-medium">
-          <div onClick={handle_dashboard}
-          className="flex items-start" >  
-            <img src="../../../public/Logo.png" alt="CodeInsight Logo" className="h-8 w-8" />
-            <span className="ml-2" >Code Insight</span>
+      <nav className="bg-white">
+        <div className="container px-8">
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center text-xl font-medium">
+              <div onClick={() => navigate('/dashboard')} className="flex items-start cursor-pointer">  
+                <img src="../../../public/Logo.png" alt="CodeInsight Logo" className="h-8 w-8" />
+                <span className="ml-2">Code Insight</span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </nav>
-    <div className="max-w-6xl mx-auto p-4">
-      {data.resultUrl && (
-  <button
-    onClick={() => handleDownload(data.resultUrl)}
-    className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors inline-flex items-center gap-2"
-  >
-    <FileDown size={20} />
-    Download Results
-  </button>
-)}
+      </nav>
 
-      <div className="bg-white rounded-lg shadow">
-        <div className="flex border-b">
-          <button 
-            onClick={() => setActiveTab('structure')}
-            className={`px-4 py-3 font-medium ${activeTab === 'structure' ? 
-              'bg-purple-100 text-purple-600 border-b-2 border-purple-600' : 
-              'text-gray-600 hover:bg-gray-50'}`}>
-            Codebase Structure
+      <div className="max-w-7xl mx-auto p-6">
+        {data.resultUrl && (
+          <button
+            onClick={() => handleDownload(data.resultUrl)}
+            className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors inline-flex items-center gap-2 mb-6"
+          >
+            <FileDown size={20} />
+            Download Results
           </button>
-          <button 
-            onClick={() => setActiveTab('graph')}
-            className={`px-4 py-3 font-medium ${activeTab === 'graph' ? 
-              'bg-purple-100 text-purple-600 border-b-2 border-purple-600' : 
-              'text-gray-600 hover:bg-gray-50'}`}>
-            Knowledge Graph
-          </button>
-        </div>
-        
-        <div className="p-6 prose max-w-none">
-          <div className="whitespace-pre-wrap">
-            {activeTab === 'structure' 
-              ? data.result.content.codebaseStructure 
-              : data.result.content.knowledgeGraph}
+        )}
+
+        <div className="grid grid-cols-2 gap-6">
+          {/* Knowledge Graph Section */}
+          <div className="bg-white rounded-xl shadow p-6 border border-purple-100">
+            <h2 className="text-xl font-semibold mb-4">Knowledge Graph</h2>
+            <div className="whitespace-pre-wrap">
+              {data.result.content.knowledgeGraph}
+            </div>
+          </div>
+
+          {/* Class Relationships Section */}
+          <div className="bg-white rounded-xl shadow p-6 border border-purple-100">
+            <h2 className="text-xl font-semibold mb-4">Class Relationships</h2>
+            
+            <div className="flex gap-4 mb-4">
+              <select
+                value={selectedNode}
+                onChange={(e) => setSelectedNode(e.target.value)}
+                className="flex-1 p-2 border border-purple-200 rounded focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              >
+                <option value="">Select a class...</option>
+                {classOptions.map((option, index) => (
+                  <option key={index} value={option}>{option}</option>
+                ))}
+              </select>
+              <button
+                onClick={handleSearch}
+                disabled={nodeLoading}
+                className="p-2 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:bg-purple-400"
+              >
+                <Search className="w-5 h-5" />
+              </button>
+            </div>
+
+            {nodeData && (
+              <button
+                onClick={() => setShowJson(!showJson)}
+                className="flex items-center gap-2 p-2 mb-4 bg-purple-100 text-purple-700 rounded hover:bg-purple-200"
+              >
+                <FileJson className="w-4 h-4" />
+                {showJson ? 'Hide' : 'Show'} Raw JSON
+              </button>
+            )}
+
+            {nodeLoading && (
+              <div className="flex justify-center p-4">
+                <div className="animate-spin h-8 w-8 border-4 border-purple-500 border-t-transparent rounded-full" />
+              </div>
+            )}
+
+            {nodeError && (
+              <div className="mt-4 p-4 bg-red-50 text-red-600 rounded-lg border border-red-100">
+                {nodeError}
+              </div>
+            )}
+
+            {showJson && nodeData && (
+              <pre className="mt-4 p-4 bg-gray-50 rounded-lg overflow-auto max-h-96 text-sm">
+                {JSON.stringify(nodeData, null, 2)}
+              </pre>
+            )}
+
+            {nodeData && (
+              <div className="space-y-6">
+                {renderSection("Parents", nodeData.inheritance?.parents, <ArrowUpSquare />, renderClassCard)}
+                {renderSection("Children", nodeData.inheritance?.children, <Share2 />, renderClassCard)}
+                {renderSection("Grandchildren", nodeData.inheritance?.grandchildren, <TreeDeciduous />, renderClassCard)}
+                {renderSection("Siblings", nodeData.inheritance?.siblings, <Users />, renderClassCard)}
+                {renderSection("Descendants", nodeData.inheritance?.descendants, <Workflow />, renderClassCard)}
+                {renderSection("Direct Methods", nodeData.methods?.direct, <BookOpen />)}
+                {renderSection("Parent Methods", nodeData.methods?.parent, <Network />)}
+                {renderSection("Child Methods", nodeData.methods?.child, <Network />)}
+                {renderSection("Attributes", nodeData.attributes, <GitBranch />)}
+              </div>
+            )}
           </div>
         </div>
       </div>
-    </div>
     </>
   );
-  
 };
 
 export default OutputCodebase;

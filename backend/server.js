@@ -3,8 +3,11 @@ const cors = require('cors');
 const apiGuidelines = require('./routes/guidelines_api');
 const apiReviewfile = require('./routes/reviewfile_api');
 const apiReviewcodebase = require('./routes/reviewcodebase_api');
+const documentationRoutes = require('./routes/docfile_api');
+const commentsRoutes = require("./routes/comment_api");
 const morgan = require("morgan");
 const apiKnowledgeGraph = require('./routes/knowledgegraph_api');
+
 const path = require('path');
 const session = require('express-session'); // Add this line
 require('dotenv').config();
@@ -42,8 +45,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.use('/api', apiGuidelines);
 app.use('/api', apiReviewfile);
 app.use('/api', apiReviewcodebase);
-
+app.use('/api', documentationRoutes);
 app.use('/api/output',apiKnowledgeGraph);
+app.use('/api',commentsRoutes )
 
 // Error handling middleware
 app.use((err, req, res, next) => {

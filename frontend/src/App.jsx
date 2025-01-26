@@ -7,11 +7,16 @@ import Dashboard from './components/dashboard/Dashboard'
 import GenerateGuidelines from "./components/generateguidelines/GenerateGuidelines"
 import ReviewFile from "./components/review/ReviewFile";
 import ReviewCodebase from "./components/review/ReviewCodebase";
+import Comments from "./components/review/Comments";
 import Output from "./components/output/Output";
+import Documentation from "./components/review/Documentation";
 import OutputGuideline from "./components/output/OutputGuideline";
 import OutputCodebase from "./components/output/OutputCodebase";
-import OutputFile from "./components/output/OutputFiles";
+import OutputReview from "./components/output/OutputReview";
+import OutputDocumentation from "./components/output/OutputDocumentation";
 import OutputKG from "./components/output/OutputKG";
+import OutputComments from "./components/output/OutputComments";
+
 import "./App.css";
 
 function App() {
@@ -24,11 +29,17 @@ function App() {
           <Route path="/dashboard" element={<Dashboard/>} />
           <Route path="/api/analyzecodebase" element={<ReviewCodebase/>} />
           <Route path="/api/analyzefile" element={<ReviewFile/>} />
+          <Route path="/api/generate_documentation" element={<Documentation/>} />
+          <Route path="/api/generate_comments" element={<Comments/>} />
+          
           <Route path="/output" element={<Output/>} />
           <Route path="/output/generated_guidelines_docs" element={<OutputGuideline/>}/>
           <Route path="/output/generated_analyzed_codebase_docs" element={<OutputCodebase/>}/>
-          <Route path="/output/generated_analyzed_files_docs" element={<OutputFile/>}/>
+          <Route path="/output/generated_analyzed_files_docs" element={<OutputReview/>}/>
           <Route path="/output/generated_knowledge_graph" element={<OutputKG/>}/>
+          <Route path="/output/generated_documentation_docs" element={<OutputDocumentation/>}/>
+          <Route path="/output/generated_comments_docs" element={<OutputComments/>}/>
+
           <Route
             path="/"
             element={
@@ -70,6 +81,23 @@ function App() {
             </PrivateRoute>
           }
           />
+           <Route
+          path="/api/generate_documentation"
+          element={
+            <PrivateRoute>
+              <Documentation/>
+            </PrivateRoute>
+          }
+          />
+           <Route
+          path="/api/generate_comments"
+          element={
+            <PrivateRoute>
+              <Comments/>
+            </PrivateRoute>
+          }
+          />
+          
           <Route
           path="/output"
           element={
@@ -99,12 +127,27 @@ function App() {
             path="/output/generated_knowledge_graph"
             element={
               <PrivateRoute>
-<OutputKG/>
+                <OutputKG/>
 
               </PrivateRoute>
               }
               />
-
+             <Route
+            path="/output/generated_documentation_docs"
+            element={
+              <PrivateRoute>
+                <OutputDocumentation/>
+              </PrivateRoute>
+            }
+            />
+            <Route
+            path="/output/generated_comments_docs"
+            element={
+              <PrivateRoute>
+                <OutputComments/>
+              </PrivateRoute>
+            }
+            />
          
         </Routes>
       </Router>

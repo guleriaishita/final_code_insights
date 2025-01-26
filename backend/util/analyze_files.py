@@ -312,18 +312,8 @@ class CodeReviewSystem:
     def generate_comments_or_docstrings(self, file_snippet: str, model_name: str, provider: str, compliance_sections: Dict[str, str]) -> str:
         comments_guidelines = compliance_sections.get('comments', 'Default comments guidelines.')
         prompt = f"""
-            Source Code:
-            {file_snippet}
-            Comments Guidelines:
-            {comments_guidelines}
-
-
-
-
-            Generate comments and docstrings for the provided source code, strictly adhering to the specified comment guidelines while ensuring all instructions outlined below remain intact.
-
-
-
+           
+            Generate comments and docstrings for the provided source code, strictly adhering to the specified comment guidelines while ensuring all instructions outlined below remain intact
 
             Instructions:
             1. Generate detailed and meaningful inline comments or docstrings for every part of the code.
@@ -334,6 +324,11 @@ class CodeReviewSystem:
             6. Use language-appropriate comment styles, such as docstrings for functions/classes and inline comments for specific code lines.
             7. Prioritize readability and maintainability, ensuring the code's purpose is easily understandable.
             8. Make sure to provide context for the code and explain how different components interact.
+
+             Source Code:
+            {file_snippet}
+            Comments Guidelines:
+            {comments_guidelines}
         """
         try:
             response = self.generate_litellm_response(prompt, model_name, provider)

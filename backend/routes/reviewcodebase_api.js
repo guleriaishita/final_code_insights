@@ -6,184 +6,201 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs').promises;
 const FileManagementHelper = require('../helpers_S3/file_management');
-const axios = require('axios')
+const axios = require('axios');
 
 const fileManager = new FileManagementHelper();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }).fields([
   { name: 'files', maxCount: 50 },
-  { name: 'compliance_file', maxCount: 1 }
+  { name: 'compliance', maxCount: 1 }
 ]);
 
-async function executePythonScript(inputData, tempDir) {
-  try {
-    const scriptPath = path.resolve(__dirname, '../util/analyze_codebase.py');
+async function executePythonScript(inputData) {
+  const scriptPath = path.resolve(__dirname, '../util/analyze_codebase.py');
+  
+  return new Promise((resolve, reject) => {
     const pythonProcess = spawn('python3', [scriptPath]);
-
     let stdoutData = '';
     let stderrData = '';
 
-    pythonProcess.stdin.write(JSON.stringify(inputData));
+    pythonProcess.stdin.write(JSON.stringify(inputData) + '\n');
     pythonProcess.stdin.end();
 
-    return new Promise((resolve, reject) => {
-      pythonProcess.stdout.on('data', (data) => {
-        stdoutData += data.toString();
-      });
-
-      pythonProcess.stderr.on('data', (data) => {
-        stderrData += data.toString();
-        console.error('[Python stderr]:', data.toString());
-      });
-
-      pythonProcess.on('close', (code) => {
-        try {
-          // Clean the output and find JSON
-          const lines = stdoutData.split('\n');
-          const jsonLine = lines.find(line => {
-            try {
-              line = line.trim();
-              return line.startsWith('{') && line.endsWith('}') && JSON.parse(line);
-            } catch {
-              return false;
-            }
-          });
-
-          if (jsonLine) {
-            resolve(JSON.parse(jsonLine));
-          } else {
-            console.error('Python output:', stdoutData);
-            console.error('Python errors:', stderrData);
-            reject(new Error(stderrData || 'No valid JSON output found'));
-          }
-        } catch (e) {
-          reject(new Error(`Failed to parse Python output: ${e.message}`));
-        }
-      });
-
-      pythonProcess.on('error', (error) => {
-        reject(new Error(`Failed to start Python process: ${error.message}`));
-      });
+    pythonProcess.stdout.on('data', (data) => {
+      stdoutData += data.toString();
     });
-  } catch (error) {
-    console.error('[Python Execution] Error:', error);
-    throw error;
-  }
-}
-// Update the processCodebaseFiles function
 
-async function processCodebaseFiles(files, complianceFile, provider, modelType) {
+    pythonProcess.stderr.on('data', (data) => {
+      stderrData += data.toString();
+      console.error('[Python stderr]:', data.toString());
+    });
+
+    pythonProcess.on('close', (code) => {
+      if (code !== 0) {
+        console.error('Python script error:', stderrData);
+        reject(new Error(`Python process exited with code ${code}: ${stderrData}`));
+        return;
+      }
+
+      try {
+        const jsonStr = stdoutData.trim();
+        const result = JSON.parse(jsonStr);
+        resolve(result);
+      } catch (e) {
+        console.error('Failed to parse Python output:', stdoutData);
+        reject(new Error(`Failed to parse Python output: ${e.message}`));
+      }
+    });
+  });
+}
+
+async function processCodebaseFiles(files, complianceFile) {
   const processId = Date.now().toString();
   const tempDir = path.join(os.tmpdir(), 'codebase', processId);
   
   try {
     await fs.mkdir(tempDir, { recursive: true });
 
-    const fileContents = files.map(file => ({
+    // Prepare files data
+    const fileContents = await Promise.all(files.map(async (file) => ({
       filename: file.originalname,
       content: file.buffer.toString('utf-8')
-    }));
+    })));
 
     const inputData = {
       files: fileContents,
-      compliance_file: complianceFile ? {
+      compliance: complianceFile ? {
         filename: complianceFile.originalname,
         content: complianceFile.buffer.toString('utf-8')
       } : null,
-      provider,
-      modelType,
       temp_dir: tempDir
     };
 
-    const analysisResult = await executePythonScript(inputData, tempDir);
-
-    const result = await fileManager.saveTextContentToS3AndDB(
-      JSON.stringify(analysisResult),
-      'result.json',
-      `reviews/${processId}`
-    );
+    console.log('Executing Python script with input:', JSON.stringify(inputData));
+    const analysisResult = await executePythonScript(inputData);
+    
+    if (!analysisResult || !analysisResult.success) {
+      throw new Error(analysisResult?.error || 'Analysis failed');
+    }
 
     return {
       success: true,
       processId,
-      fileId: result.id,
-      fileUrl: await fileManager.getDownloadUrl(result.id),
-      content: analysisResult
+      content: analysisResult.content
     };
 
   } catch (error) {
-    throw {
-      success: false,
-      processId,
-      error: error.message
-    };
+    console.error('[Process Files] Error:', error);
+    throw error;
+  } finally {
+    try {
+      await fs.rm(tempDir, { recursive: true, force: true });
+    } catch (error) {
+      console.error('[Cleanup] Error:', error);
+    }
   }
 }
 
 router.post('/analyzecodebase', (req, res) => {
-  upload(req, res, async (err) => {
+  const maxFileSize = 50 * 1024 * 1024; // 50MB
+
+  multer({
+    storage: multer.memoryStorage(),
+    limits: {
+      fileSize: maxFileSize,
+      files: 50
+    }
+  }).fields([
+    { name: 'files', maxCount: 50 },
+    { name: 'compliance', maxCount: 1 }
+  ])(req, res, async (err) => {
     try {
-      if (err) throw new Error(err.message);
-      if (!req.files?.files || req.files.files.length === 0) {
-        throw new Error('No files uploaded');
+      if (err instanceof multer.MulterError) {
+        return res.status(400).json({
+          success: false,
+          error: `Upload error: ${err.message}`,
+          code: 'UPLOAD_ERROR'
+        });
       }
 
-      const provider = req.body.provider;
-      const modelType = req.body.modelType;
-      
-      if (!provider || !modelType) {
-        throw new Error('Provider and model type are required');
+      if (err) {
+        return res.status(500).json({
+          success: false,
+          error: `Server error during upload: ${err.message}`,
+          code: 'SERVER_ERROR'
+        });
+      }
+
+      if (!req.files?.files || req.files.files.length === 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'No files uploaded',
+          code: 'NO_FILES'
+        });
       }
 
       const result = await processCodebaseFiles(
         req.files.files,
-        req.files?.compliance_file?.[0],
-        provider,
-        modelType
+        req.files?.compliance?.[0]
       );
 
-      res.status(201).json({
-        message: 'Codebase analysis started',
-        processId: result.processId,
-        fileId: result.fileId,
-        fileUrl: result.fileUrl,
-        content: result.content,
-        success: true
-      });
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
+      res.status(201).json(result);
 
     } catch (error) {
-      console.error('[API] Error:', error);
-      res.status(400).json({
+      console.error('[API Error]:', error);
+      res.status(500).json({
         success: false,
-        error: error.message
+        error: error.message || 'Internal server error',
+        code: 'PROCESSING_ERROR',
+        timestamp: new Date().toISOString()
       });
     }
   });
 });
-
-
 router.get('/generated_analyzed_codebase_docs/:reviewId', async (req, res) => {
   try {
     const { reviewId } = req.params;
+    
+    if (!reviewId) {
+      return res.status(400).json({
+        error: 'Review ID is required',
+        code: 'MISSING_ID'
+      });
+    }
+
     const url = await fileManager.getDownloadUrl(reviewId);
     
     if (!url) {
-      return res.status(404).json({ error: 'Review not found' });
+      return res.status(404).json({
+        error: 'Review not found',
+        code: 'NOT_FOUND'
+      });
     }
 
-    // Fetch content from S3 using the signed URL
-    const response = await axios.get(url);
-    const result = response.data;
+    const response = await axios.get(url, { timeout: 5000 });
+    
+    if (!response.data) {
+      throw new Error('No data received from storage');
+    }
 
-    return res.json({
-      result,
+    res.json({
+      success: true,
+      result: response.data,
       resultUrl: url
     });
 
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('[Get Results] Error:', error);
+    res.status(error.response?.status || 500).json({
+      success: false,
+      error: error.message || 'Failed to retrieve results',
+      code: error.response?.status ? 'EXTERNAL_ERROR' : 'SERVER_ERROR',
+      timestamp: new Date().toISOString()
+    });
   }
 });
-
 module.exports = router;

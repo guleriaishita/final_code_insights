@@ -10,6 +10,7 @@ const ReviewCodebase = () => {
   const [processing, setProcessing] = useState(false);
   const [showError, setShowError] = useState(false);
   
+  
   const modelTypes = ["gpt-4o-mini", "gpt3.5", "gpt4", "claude-1"];
   const providers = ["openai", "anthropic"];
 
@@ -43,16 +44,11 @@ const ReviewCodebase = () => {
   
     try {
       setProcessing(true);
+      setShowError(false);
       const formData = new FormData();
       
-      files.forEach(file => {
-        formData.append('files', file);
-      });
-  
-      if (complianceFile) {
-        formData.append('compliance_file', complianceFile);
-      }
-  
+      files.forEach(file => formData.append('files', file));
+      if (complianceFile) formData.append('compliance', complianceFile);
       formData.append('provider', provider);
       formData.append('modelType', modelType);
   
@@ -68,7 +64,7 @@ const ReviewCodebase = () => {
       if (data.success) {
         sessionStorage.setItem('fileId_review_codebase', data.fileId);
         sessionStorage.setItem('processId_review_codebase', data.processId);
-        navigate('/output');
+        navigate('/output/generated_analyzed_codebase_docs');
       }
       
     } catch (error) {

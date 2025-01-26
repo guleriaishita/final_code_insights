@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 
-const ReviewFile = () => {
+const Documentation= () => {
   const navigate = useNavigate();
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [files, setFiles] = useState([]); // Main files
@@ -114,7 +114,7 @@ const ReviewFile = () => {
     }
   
     try {
-      const response = await fetch("http://localhost:5000/api/analyzefile", {
+      const response = await fetch("http://localhost:5000/api/generate_documentation", {
         method: "POST",
         body: formData
       });
@@ -124,11 +124,9 @@ const ReviewFile = () => {
       if (!response.ok) {
         throw new Error(data.error || 'Failed to process files');
       }
-      
-      console.log("Process ID:", data.processId);
-
-      sessionStorage.setItem('processId_review', data.processId);
-      navigate('/output/generated_analyzed_files_docs');
+  
+      sessionStorage.setItem('processId_documentation', data.processId);
+      navigate('/output/generated_documentation_docs');
   
     } catch (error) {
       console.error("Error:", error);
@@ -155,7 +153,7 @@ const ReviewFile = () => {
 
 
       <div className="max-w-3xl mx-auto px-8 pt-12 pb-8">
-        <h2 className="text-2xl font-bold text-center mb-12">Review Your Code</h2>
+        <h2 className="text-2xl font-bold text-center mb-12">Generate Documentation for you Code</h2>
 
 
         <form onSubmit={handleSubmit}>
@@ -280,6 +278,6 @@ const ReviewFile = () => {
 };
 
 
-export default ReviewFile;
+export default Documentation;
 
 

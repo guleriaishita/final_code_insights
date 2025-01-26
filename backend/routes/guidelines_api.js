@@ -45,7 +45,6 @@ async function processFiles(files, guidelineId, provider, modelType) {
     }));
 
     const result = await executePythonScript({
-        selectedOption: "files",
         files: fileContents,
         provider,
         modelType,
@@ -61,10 +60,9 @@ async function processFiles(files, guidelineId, provider, modelType) {
     });
 
     const buffer = await Packer.toBuffer(doc);
-    const docFilename = `guideline_${guidelineId}.docx`;
-    const s3Key = `guidelines/${guidelineId}/${docFilename}`;
+    const docFilename = `style_guide_${guidelineId}.docx`;
+    const s3Key = `style_guides/${guidelineId}/${docFilename}`;
     
-    // Save the file and return the saved file information
     const savedFile = await fileManager.saveTextContentToS3AndDB(buffer, docFilename, s3Key);
     if (!savedFile) {
         throw new Error('Failed to save file to S3 and DB');
@@ -73,12 +71,7 @@ async function processFiles(files, guidelineId, provider, modelType) {
     const fileUrl = await fileManager.getDownloadUrl(savedFile.id);
     const content = await fileManager.readDocxContent(savedFile.id);
 
-    return {
-        fileUrl,
-        content,
-        result,
-        fileId: savedFile.id  // Return the file ID
-    };
+    return { fileUrl, content, result, fileId: savedFile.id };
 }
 
 router.post("/generate_guidelines", upload.array("files"), async (req, res) => {
@@ -91,14 +84,12 @@ router.post("/generate_guidelines", upload.array("files"), async (req, res) => {
         }
 
         const guidelineId = Date.now().toString();
-        console.log("guideline id in /generate_guidelines", guidelineId);
-        
         const result = await processFiles(req.files, guidelineId, req.body.provider, req.body.modelType);
         
         res.status(201).json({
-            message: "Guidelines generated successfully",
+            message: "Style guide generated successfully",
             guidelineId,
-            fileId: result.fileId,  // Include the file ID in the response
+            fileId: result.fileId,
             fileUrl: result.fileUrl,
             content: result.content
         });
@@ -109,16 +100,14 @@ router.post("/generate_guidelines", upload.array("files"), async (req, res) => {
 
 router.get('/generated_guidelines_docs/:id', async (req, res) => {
     try {
-        const fileId = req.params.id;  // Use the file ID directly
-        
-        // Get the file details from DynamoDB
+        const fileId = req.params.id;
         const dbItem = await fileManager.dynamoDB.get({
             TableName: fileManager.tableName,
             Key: { id: fileId }
         }).promise();
 
         if (!dbItem.Item) {
-            throw new Error('Guideline not found');
+            throw new Error('Style guide not found');
         }
 
         const fileUrl = await fileManager.getDownloadUrl(fileId);

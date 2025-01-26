@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 
-const ReviewFile = () => {
+const Comments = () => {
   const navigate = useNavigate();
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [files, setFiles] = useState([]); // Main files
@@ -81,63 +81,60 @@ const ReviewFile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (files.length === 0 || !provider || !modelType) {
+    // Validate main files are selected
+    if (files.length === 0) {
+      alert('Please select at least one main file');
       setShowError(true);
-      alert("Please select files and ensure provider/model type are selected");
       return;
     }
   
-    setProcessing(true);
+    // Validate file sizes
+    const invalidFiles = files.filter(file => file.size > 10 * 1024 * 1024);
+    if (invalidFiles.length > 0) {
+      alert(`File(s) ${invalidFiles.map(f => f.name).join(', ')} exceed 10MB limit`);
+      return;
+    }
+  
     const formData = new FormData();
-    
-    // Add required fields
-    files.forEach(file => {
-      if (file.size > 10 * 1024 * 1024) {
-        alert(`File ${file.name} exceeds 10MB limit`);
-        setProcessing(false);
-        return;
-      }
-      formData.append('files', file);
-    });
+    files.forEach(file => formData.append('files', file));
+  
+    // Optional: Add compliance file if selected
+    if (complianceFile) formData.append('compliance', complianceFile);
+  
+    // Add additional files
+    additionalFiles.forEach(file => formData.append('additionalFiles', file));
+  
+    // Add provider and model type
     formData.append('provider', provider);
     formData.append('modelType', modelType);
-    
-    // Add optional fields if present
-    if (complianceFile) {
-      formData.append('compliance', complianceFile);
-    }
-  
-    if (additionalFiles.length > 0) {
-      additionalFiles.forEach(file => {
-        formData.append('additionalFiles', file);
-      });
-    }
   
     try {
-      const response = await fetch("http://localhost:5000/api/analyzefile", {
+      setProcessing(true);
+      setProgress(0);
+      
+      const response = await fetch("http://localhost:5000/api/generate_comments", {
         method: "POST",
         body: formData
       });
   
       const data = await response.json();
-      
-      if (!response.ok) {
+      if (!response.ok || !data.success) {
         throw new Error(data.error || 'Failed to process files');
       }
-      
-      console.log("Process ID:", data.processId);
-
-      sessionStorage.setItem('processId_review', data.processId);
-      navigate('/output/generated_analyzed_files_docs');
+  
+      // Store process ID and navigate to output page
+      const processId = data.processId;
+      sessionStorage.setItem('processId_comments', processId);
+      navigate('/output/generated_comments_docs');
   
     } catch (error) {
       console.error("Error:", error);
       alert(error.message);
     } finally {
       setProcessing(false);
+      setProgress(0);
     }
   };
-
   return (
     <div className="min-h-screen bg-white">
       <nav className="bg-white">
@@ -155,7 +152,7 @@ const ReviewFile = () => {
 
 
       <div className="max-w-3xl mx-auto px-8 pt-12 pb-8">
-        <h2 className="text-2xl font-bold text-center mb-12">Review Your Code</h2>
+        <h2 className="text-2xl font-bold text-center mb-12">Generate Comments/Docstring for you Code</h2>
 
 
         <form onSubmit={handleSubmit}>
@@ -280,6 +277,6 @@ const ReviewFile = () => {
 };
 
 
-export default ReviewFile;
+export default Comments;
 
 

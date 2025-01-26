@@ -1,0 +1,341 @@
+Generated Comments:
+```python
+import azure.cognitiveservices.speech as speechsdk  # Importing the Azure Cognitive Services Speech SDK for speech recognition and synthesis
+import time  # Importing time module for sleep functionality during translation
+import os  # Importing os module for file path operations
+from dotenv import load_dotenv  # Importing load_dotenv to load environment variables from a .env file
+
+# Load environment variables from a .env file
+load_dotenv()
+
+# Retrieve Azure API key, region, and API endpoint from environment variables
+Azure_Key = os.getenv("azure_key")
+Azure_Region = os.getenv("azure_region")
+Azure_API = os.getenv("azure_api")
+
+
+class AudioFileTranslator:
+    """A class to handle audio file translation using Azure Cognitive Services."""
+
+    def __init__(self, speech_key: str, speech_region: str):
+        """
+        Initialize the AudioFileTranslator with Azure Speech service credentials.
+
+        Args:
+            speech_key (str): The Azure Speech service subscription key.
+            speech_region (str): The Azure region for the Speech service.
+        """
+        self.speech_key = speech_key  # Store the speech key
+        self.speech_region = speech_region  # Store the speech region
+        self.is_running = False  # Flag to indicate if the translation process is running
+
+    def setup_translation(self, source_language: str, target_language: str, audio_file_path: str):
+        """
+        Setup translation configurations for the audio file.
+
+        Args:
+            source_language (str): The language code of the source audio.
+            target_language (str): The language code for the target translation.
+            audio_file_path (str): The file path of the audio file to be translated.
+        """
+        # Configure speech recognition and synthesis settings
+        self.speech_config = speechsdk.SpeechConfig(
+            subscription=self.speech_key,
+            region=self.speech_region
+        )
+        
+        # Set the source and target languages for speech recognition and synthesis
+        self.speech_config.speech_recognition_language = source_language
+        self.speech_config.speech_synthesis_language = target_language
+        
+        # Configure translation settings
+        self.translation_config = speechsdk.translation.SpeechTranslationConfig(
+            subscription=self.speech_key,
+            region=self.speech_region,
+            speech_recognition_language=source_language,
+            target_languages=[target_language]
+        )
+
+        # Configure audio input from the specified file
+        self.audio_config = speechsdk.audio.AudioConfig(filename=audio_file_path)
+        
+        # Initialize the speech synthesizer with the configured settings
+        self.synthesizer = speechsdk.SpeechSynthesizer(
+            speech_config=self.speech_config
+        )
+
+    def synthesize_speech(self, text: str, output_filename: str):
+        """
+        Synthesize speech from the provided text and save it to a file.
+
+        Args:
+            text (str): The text to be converted to speech.
+            output_filename (str): The filename for the output audio file.
+
+        Returns:
+            result: The result of the speech synthesis operation.
+        """
+        try:
+            # Configure audio output to the specified file
+            audio_output_config = speechsdk.audio.AudioOutputConfig(filename=output_filename)
+            synthesizer = speechsdk.SpeechSynthesizer(
+                speech_config=self.speech_config, 
+                audio_config=audio_output_config
+            )
+            
+            # Perform asynchronous speech synthesis
+            result = synthesizer.speak_text_async(text).get()
+            if result.reason == speechsdk.ResultReason.Canceled:
+                # Handle cancellation of speech synthesis
+                cancellation_details = result.cancellation_details
+                print(f"Speech synthesis canceled: {cancellation_details.reason}")
+                if cancellation_details.reason == speechsdk.CancellationReason.Error:
+                    print(f"Error details: {cancellation_details.error_details}")
+            return result
+        except Exception as e:
+            # Handle exceptions during speech synthesis
+            print(f"Error in speech synthesis: {str(e)}")
+            return None
+
+    def translate_audio(self):
+        """Translate the audio file and return the translated text."""
+        print("\nStarting translation...")
+        
+        # Initialize the translation recognizer with the configured settings
+        recognizer = speechsdk.translation.TranslationRecognizer(
+            translation_config=self.translation_config,
+            audio_config=self.audio_config
+        )
+
+        translation_complete = False  # Flag to indicate if translation is complete
+        translated_text = []  # List to store translated text
+
+        # Callback function to handle recognized translation results
+        def handle_result(evt):
+            if evt.result.reason == speechsdk.ResultReason.TranslatedSpeech:
+                original_text = evt.result.text  # Get the original recognized text
+                translated = evt.result.translations[list(evt.result.translations.keys())[0]]  # Get the translated text
+                
+                # Print original and translated text
+                print(f"\nOriginal: {original_text}")
+                print(f"Translated: {translated}")
+                translated_text.append(translated)  # Append translated text to the list
+
+        # Callback function to handle cancellation of translation
+        def handle_canceled(evt):
+            print(f"Translation canceled: {evt.result.cancellation_details.reason}")
+
+        # Callback function to handle completion of translation session
+        def stop_translation(evt):
+            nonlocal translation_complete
+            translation_complete = True  # Set the translation complete flag
+            print("\nTranslation completed.")
+
+        # Connect event handlers to the recognizer
+        recognizer.recognized.connect(handle_result)
+        recognizer.canceled.connect(handle_canceled)
+        recognizer.session_stopped.connect(stop_translation)
+        recognizer.session_started.connect(lambda evt: print("Translation started..."))
+
+        # Start continuous recognition for translation
+        recognizer.start_continuous_recognition()
+        while not translation_complete:
+            time.sleep(0.5)  # Wait for translation to complete
+        recognizer.stop_continuous_recognition()  # Stop recognition
+
+        return " ".join(translated_text)  # Return the concatenated translated text
+
+
+def display_language_menu():
+    """Display an interactive menu for language selection and return selected languages."""
+    # Dictionary mapping language codes to language names
+    language_names = {
+        'es-BN': 'Spanish (Bolivia)',
+        'bg-BG': 'Bulgarian',
+        'ca-ES': 'Catalan',
+        'zh-CN': 'Chinese (Mainland)',
+        'zh-HK': 'Chinese (Hong Kong)',
+        'zh-TW': 'Chinese (Taiwan)',
+        'hr-HR': 'Croatian',
+        'cs-CZ': 'Czech',
+        'da-DK': 'Danish',
+        'nl-NL': 'Dutch',
+        'en-AU': 'English (Australia)',
+        'en-CA': 'English (Canada)',
+        'en-GH': 'English (Ghana)',
+        'en-HK': 'English (Hong Kong)',
+        'en-IN': 'English (India)',
+        'en-IE': 'English (Ireland)',
+        'en-KE': 'English (Kenya)',
+        'en-NZ': 'English (New Zealand)',
+        'en-NG': 'English (Nigeria)',
+        'en-PH': 'English (Philippines)',
+        'en-SG': 'English (Singapore)',
+        'en-ZA': 'English (South Africa)',
+        'en-TZ': 'English (Tanzania)',
+        'en-GB': 'English (UK)',
+        'en-US': 'English (US)',
+        'et-EE': 'Estonian',
+        'fi-FI': 'Finnish',
+        'fr-CA': 'French (Canada)',
+        'fr-FR': 'French (France)',
+        'de-DE': 'German',
+        'el-GR': 'Greek',
+        'gu-IN': 'Gujarati',
+        'he-IL': 'Hebrew',
+        'hi-IN': 'Hindi',
+        'hu-HU': 'Hungarian',
+        'id-ID': 'Indonesian',
+        'ga-IE': 'Irish',
+        'it-IT': 'Italian',
+        'ja-JP': 'Japanese',
+        'kn-IN': 'Kannada',
+        'ko-KR': 'Korean',
+        'lv-LV': 'Latvian',
+        'lt-LT': 'Lithuanian',
+        'mt-MT': 'Maltese',
+        'mr-IN': 'Marathi',
+        'nb-NO': 'Norwegian',
+        'pl-PL': 'Polish',
+        'pt-BR': 'Portuguese (Brazil)',
+        'pt-PT': 'Portuguese (Portugal)',
+        'ro-RO': 'Romanian',
+        'ru-RU': 'Russian',
+        'sk-SK': 'Slovak',
+        'sl-SI': 'Slovenian',
+        'es-AR': 'Spanish (Argentina)',
+        'es-BO': 'Spanish (Bolivia)',
+        'es-CL': 'Spanish (Chile)',
+        'es-CO': 'Spanish (Colombia)',
+        'es-CR': 'Spanish (Costa Rica)',
+        'es-CU': 'Spanish (Cuba)',
+        'es-DO': 'Spanish (Dominican Republic)',
+        'es-EC': 'Spanish (Ecuador)',
+        'es-SV': 'Spanish (El Salvador)',
+        'es-GQ': 'Spanish (Equatorial Guinea)',
+        'es-GT': 'Spanish (Guatemala)',
+        'es-HN': 'Spanish (Honduras)',
+        'es-MX': 'Spanish (Mexico)',
+        'es-NI': 'Spanish (Nicaragua)',
+        'es-PA': 'Spanish (Panama)',
+        'es-PY': 'Spanish (Paraguay)',
+        'es-PE': 'Spanish (Peru)',
+        'es-PR': 'Spanish (Puerto Rico)',
+        'es-ES': 'Spanish (Spain)',
+        'es-UY': 'Spanish (Uruguay)',
+        'es-US': 'Spanish (US)',
+        'es-VE': 'Spanish (Venezuela)',
+        'sv-SE': 'Swedish',
+        'ta-IN': 'Tamil',
+        'te-IN': 'Telugu',
+        'th-TH': 'Thai',
+        'tr-TR': 'Turkish',
+        'uk-UA': 'Ukrainian',
+        'vi-VN': 'Vietnamese',
+        'ar-AE': 'Arabic'
+    }
+    
+    languages = list(language_names.items())  # Convert the dictionary to a list of tuples
+    
+    print("\nAvailable Languages:")
+    print("-" * 80)
+    
+    # Display available languages in a formatted manner
+    for i in range(0, len(languages), 3):
+        for j in range(3):
+            if i + j < len(languages):
+                idx = i + j
+                print(f"{idx + 1:3d}) {languages[idx][1]:<25}", end="")
+        print()  # New line after each row of languages
+    
+    # Prompt user to select source language
+    while True:
+        try:
+            print("\nSelect source language (enter number):")
+            source_idx = int(input()) - 1  # Get user input and adjust for zero-based index
+            if 0 <= source_idx < len(languages):
+                source_code = languages[source_idx][0]  # Get the language code
+                source_name = languages[source_idx][1]  # Get the language name
+                break  # Exit loop if valid selection
+            print("Invalid selection. Please try again.")
+        except ValueError:
+            print("Please enter a valid number.")
+    
+    # Prompt user to select target language
+    while True:
+        try:
+            print("\nSelect target language (enter number):")
+            target_idx = int(input()) - 1  # Get user input and adjust for zero-based index
+            if 0 <= target_idx < len(languages):
+                target_code = languages[target_idx][0]  # Get the language code
+                target_name = languages[target_idx][1]  # Get the language name
+                
+                # Ensure source and target languages are not the same
+                if source_code == target_code:
+                    print("Source and target languages cannot be the same. Please choose a different target language.")
+                    continue
+                break  # Exit loop if valid selection
+            print("Invalid selection. Please try again.")
+        except ValueError:
+            print("Please enter a valid number.")
+    
+    # Display selected languages
+    print(f"\nSelected languages:")
+    print(f"Source: {source_name} ({source_code})")
+    print(f"Target: {target_name} ({target_code})")
+    
+    return source_code, target_code  # Return the selected source and target language codes
+
+
+def main():
+    """Main function to execute the audio file translation process."""
+    SPEECH_KEY = Azure_Key  # Retrieve the Azure Speech service key
+    SPEECH_REGION = Azure_Region  # Retrieve the Azure Speech service region
+    
+    print("Audio File Translator")
+    print("-------------------")
+    
+    # Prompt user for the path to the audio file
+    while True:
+        audio_file = input("\nEnter the path to your WAV file: ")
+        if os.path.exists(audio_file) and audio_file.lower().endswith('.wav'):
+            break  # Exit loop if valid WAV file path is provided
+        print("Invalid file path or not a WAV file. Please try again.")
+
+    # Display language selection menu and get selected languages
+    source_lang, target_lang = display_language_menu()
+    
+    # Create an instance of the AudioFileTranslator class
+    translator = AudioFileTranslator(SPEECH_KEY, SPEECH_REGION)
+    
+    try:
+        # Setup translation configurations
+        translator.setup_translation(source_lang, target_lang, audio_file)
+        
+        # Perform audio translation
+        translated_text = translator.translate_audio()
+        
+        # Generate output filename for the translated audio
+        output_filename = f"translated_output_{os.path.basename(audio_file)}"
+        
+        print(f"\nGenerating translated audio file: {output_filename}")
+        # Synthesize speech from the translated text and save to file
+        translator.synthesize_speech(translated_text, output_filename)
+        
+        # Display completion message
+        print(f"\nTranslation completed!")
+        print(f"Original audio: {audio_file}")
+        print(f"Translated audio: {output_filename}")
+        
+    except Exception as e:
+        # Handle any exceptions that occur during the translation process
+        print(f"\nError: {str(e)}")
+    
+    print("\nThank you for using Audio File Translator!")  # Thank the user for using the translator
+
+
+if __name__ == "__main__":
+    main()  # Execute the main function when the script is run
+``` 
+
+This code now includes detailed comments and docstrings that explain the purpose and functionality of each component, enhancing readability and maintainability while adhering to the provided guidelines.
