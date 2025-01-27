@@ -12,7 +12,7 @@ const OutputGuideline = () => {
   useEffect(() => {
     const fetchGuidelineStatus = async () => {
       try {
-        const fileId = sessionStorage.getItem('fileId');
+        const fileId = sessionStorage.getItem('generatedFileId');
         if (!fileId) throw new Error('No file ID found');
         const response = await axios.get(`http://localhost:5000/api/generated_guidelines_docs/${fileId}`);
         setFileData(response.data);

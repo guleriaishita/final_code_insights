@@ -53,17 +53,21 @@ const GenerateStyleGuide = () => {
         }
       });
     
-      if (response.data && response.data.guidelineId) {
-        navigate(`/output/generated_guidelines_docs`);
+      if (response.data && response.data.fileId) {
+        // Store fileId in sessionStorage
+        sessionStorage.setItem('generatedFileId', response.data.fileId);
+        // Navigate to output page
+        navigate('/output/generated_guidelines_docs');
       } else {
-        throw new Error('No guideline ID received');
+        throw new Error('No file ID received');
       }
     } catch (error) {
       console.error('Submission Error:', error.response?.data || error.message);
+      setError(error.response?.data?.error || error.message);
     } finally {
       setProcessing(false);
     }
-  };
+};
 
   const handleFileChange = (e) => {
     const files = e.target.files;
