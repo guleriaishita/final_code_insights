@@ -193,24 +193,8 @@ const EnhancedOutputCodebase = () => {
           </button>
         </div>
 
-        {/* Analysis Results Section */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-  <div className="flex items-center gap-2 mb-4">
-    <BookOpen className="w-6 h-6 text-purple-600" />
-    <h2 className="text-xl font-semibold text-purple-900">Analysis Results</h2>
-  </div>
-  <div className="bg-purple-50 p-4 rounded-lg text-left">
-    <pre className="whitespace-pre-wrap break-words">
-      {data?.result?.content?.content?.knowledge_graph ? 
-        JSON.stringify(data.result.content.content.knowledge_graph, null, 2)
-        : 'No analysis data available'
-      }
-    </pre>
-  </div>
-</div>
-
-        {/* Class Relationships Section */}
-        {showRelationships && (
+         {/* Class Relationships Section */}
+         {showRelationships && (
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center gap-2 mb-4">
               <Network className="w-6 h-6 text-purple-600" />
@@ -264,6 +248,24 @@ const EnhancedOutputCodebase = () => {
             )}
           </div>
         )}
+
+        {/* Analysis Results Section */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+  <div className="flex items-center gap-2 mb-4">
+    <BookOpen className="w-6 h-6 text-purple-600" />
+    <h2 className="text-xl font-semibold text-purple-900">Analysis Results</h2>
+  </div>
+  <div className="bg-purple-50 p-4 rounded-lg text-left">
+    <pre className="whitespace-pre-wrap break-words">
+      {data?.result?.content?.content?.knowledge_graph ? 
+        JSON.stringify(data.result.content.content.knowledge_graph, null, 2)
+        : 'No analysis data available'
+      }
+    </pre>
+  </div>
+</div>
+
+       
       </div>
     </>
   );
