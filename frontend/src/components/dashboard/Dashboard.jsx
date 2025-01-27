@@ -10,13 +10,7 @@ const DASHBOARD_CARDS = [
     iconName: 'FileText',
     route: '/generate_guidelines'
   },
-  {
-    id: 'codebase',
-    title: 'Review CodeBase',
-    description: 'Create Unified Code Insights',
-    iconName: 'Code2',
-    route: '/api/analyzecodebase'
-  },
+  
   {
     id: 'file',
     title: 'Review Code File',
@@ -37,7 +31,14 @@ const DASHBOARD_CARDS = [
     description: 'Create Comments/Docstring',
     iconName: 'MessageSquareText',
     route: '/api/generate_comments'
-  }
+  },
+  {
+    id: 'codebase',
+    title: 'Review CodeBase',
+    description: 'Create Unified Code Insights',
+    iconName: 'Code2',
+    route: '/api/analyzecodebase'
+  },
 ];
 
 const Dashboard = () => {

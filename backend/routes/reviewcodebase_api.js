@@ -1,206 +1,166 @@
 const express = require('express');
-const router = express.Router();
 const multer = require('multer');
 const { spawn } = require('child_process');
 const path = require('path');
-const os = require('os');
 const fs = require('fs').promises;
+const os = require('os');
+
+const router = express.Router();
 const FileManagementHelper = require('../helpers_S3/file_management');
-const axios = require('axios');
+
+const storage = multer.memoryStorage();
+const upload = multer({ 
+  storage,
+  limits: { fileSize: 500 * 1024 * 1024 }
+});
 
 const fileManager = new FileManagementHelper();
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage }).fields([
-  { name: 'files', maxCount: 50 },
-  { name: 'compliance', maxCount: 1 }
-]);
 
-async function executePythonScript(inputData) {
+async function executePythonScript(files, tempDir) {
   const scriptPath = path.resolve(__dirname, '../util/analyze_codebase.py');
   
   return new Promise((resolve, reject) => {
     const pythonProcess = spawn('python3', [scriptPath]);
-    let stdoutData = '';
-    let stderrData = '';
+    let stdout = '', stderr = '';
 
-    pythonProcess.stdin.write(JSON.stringify(inputData) + '\n');
+    pythonProcess.stdin.write(JSON.stringify({
+      files: files.map(file => ({
+        filename: file.originalname,
+        content: file.buffer.toString('utf-8')
+      })),
+      temp_dir: tempDir
+    }) + '\n');
     pythonProcess.stdin.end();
 
-    pythonProcess.stdout.on('data', (data) => {
-      stdoutData += data.toString();
+    pythonProcess.stdout.on('data', data => {
+      console.log('[Python stdout]:', data.toString());
+      stdout += data;
     });
 
-    pythonProcess.stderr.on('data', (data) => {
-      stderrData += data.toString();
-      console.error('[Python stderr]:', data.toString());
-    });
+    pythonProcess.stderr.on('data', data => stderr += data);
 
-    pythonProcess.on('close', (code) => {
-      if (code !== 0) {
-        console.error('Python script error:', stderrData);
-        reject(new Error(`Python process exited with code ${code}: ${stderrData}`));
+    pythonProcess.on('close', code => {
+      if (code !== 0 || stderr.includes('Error:')) {
+        reject(new Error(stderr || 'Python script failed'));
         return;
       }
-
       try {
-        const jsonStr = stdoutData.trim();
-        const result = JSON.parse(jsonStr);
-        resolve(result);
+        resolve(JSON.parse(stdout.trim()));
       } catch (e) {
-        console.error('Failed to parse Python output:', stdoutData);
-        reject(new Error(`Failed to parse Python output: ${e.message}`));
+        reject(new Error(`Failed to parse output: ${stdout}`));
       }
     });
   });
 }
-
-async function processCodebaseFiles(files, complianceFile) {
+router.post('/analyzecodebase', upload.array('files', 50), async (req, res) => {
   const processId = Date.now().toString();
   const tempDir = path.join(os.tmpdir(), 'codebase', processId);
   
   try {
+    if (!req.files?.length) {
+      return res.status(400).json({ error: 'No files uploaded' });
+    }
+
     await fs.mkdir(tempDir, { recursive: true });
+    const result = await executePythonScript(req.files, tempDir);
 
-    // Prepare files data
-    const fileContents = await Promise.all(files.map(async (file) => ({
-      filename: file.originalname,
-      content: file.buffer.toString('utf-8')
-    })));
-
-    const inputData = {
-      files: fileContents,
-      compliance: complianceFile ? {
-        filename: complianceFile.originalname,
-        content: complianceFile.buffer.toString('utf-8')
-      } : null,
-      temp_dir: tempDir
-    };
-
-    console.log('Executing Python script with input:', JSON.stringify(inputData));
-    const analysisResult = await executePythonScript(inputData);
-    
-    if (!analysisResult || !analysisResult.success) {
-      throw new Error(analysisResult?.error || 'Analysis failed');
+    let analysisContent;
+    // If the Python script returns a file path, fetch and read the output
+    if (result.output_file) {
+      const outputPath = result.output_file;
+      const outputContent = await fs.readFile(outputPath, 'utf-8');
+      analysisContent = JSON.parse(outputContent);
+    } else {
+      analysisContent = result.content;
     }
 
-    return {
-      success: true,
-      processId,
-      content: analysisResult.content
-    };
+    // Save to S3 and DynamoDB using FileManagementHelper
+    const filename = `analysis_${processId}.json`;
+    const savedItem = await fileManager.saveTextContentToS3AndDB(
+      JSON.stringify({
+        content: analysisContent,
+        knowledgeGraph: analysisContent.knowledgeGraph || null
+      }),
+      filename,
+      'analyses'  // optional S3 subfolder
+    );
 
-  } catch (error) {
-    console.error('[Process Files] Error:', error);
-    throw error;
-  } finally {
-    try {
-      await fs.rm(tempDir, { recursive: true, force: true });
-    } catch (error) {
-      console.error('[Cleanup] Error:', error);
-    }
-  }
-}
-
-router.post('/analyzecodebase', (req, res) => {
-  const maxFileSize = 50 * 1024 * 1024; // 50MB
-
-  multer({
-    storage: multer.memoryStorage(),
-    limits: {
-      fileSize: maxFileSize,
-      files: 50
-    }
-  }).fields([
-    { name: 'files', maxCount: 50 },
-    { name: 'compliance', maxCount: 1 }
-  ])(req, res, async (err) => {
-    try {
-      if (err instanceof multer.MulterError) {
-        return res.status(400).json({
-          success: false,
-          error: `Upload error: ${err.message}`,
-          code: 'UPLOAD_ERROR'
-        });
-      }
-
-      if (err) {
-        return res.status(500).json({
-          success: false,
-          error: `Server error during upload: ${err.message}`,
-          code: 'SERVER_ERROR'
-        });
-      }
-
-      if (!req.files?.files || req.files.files.length === 0) {
-        return res.status(400).json({
-          success: false,
-          error: 'No files uploaded',
-          code: 'NO_FILES'
-        });
-      }
-
-      const result = await processCodebaseFiles(
-        req.files.files,
-        req.files?.compliance?.[0]
-      );
-
-      if (!result.success) {
-        throw new Error(result.error);
-      }
-
-      res.status(201).json(result);
-
-    } catch (error) {
-      console.error('[API Error]:', error);
-      res.status(500).json({
-        success: false,
-        error: error.message || 'Internal server error',
-        code: 'PROCESSING_ERROR',
-        timestamp: new Date().toISOString()
-      });
-    }
-  });
-});
-router.get('/generated_analyzed_codebase_docs/:reviewId', async (req, res) => {
-  try {
-    const { reviewId } = req.params;
-    
-    if (!reviewId) {
-      return res.status(400).json({
-        error: 'Review ID is required',
-        code: 'MISSING_ID'
-      });
-    }
-
-    const url = await fileManager.getDownloadUrl(reviewId);
-    
-    if (!url) {
-      return res.status(404).json({
-        error: 'Review not found',
-        code: 'NOT_FOUND'
-      });
-    }
-
-    const response = await axios.get(url, { timeout: 5000 });
-    
-    if (!response.data) {
-      throw new Error('No data received from storage');
+    if (!savedItem) {
+      throw new Error('Failed to save analysis results');
     }
 
     res.json({
       success: true,
-      result: response.data,
-      resultUrl: url
+      content: analysisContent,
+      processId: savedItem.id // Use the ID from the saved item
     });
 
   } catch (error) {
-    console.error('[Get Results] Error:', error);
-    res.status(error.response?.status || 500).json({
-      success: false,
-      error: error.message || 'Failed to retrieve results',
-      code: error.response?.status ? 'EXTERNAL_ERROR' : 'SERVER_ERROR',
-      timestamp: new Date().toISOString()
+    console.error('Analysis error:', error);
+    res.status(500).json({
+      error: 'Analysis failed',
+      details: error.message
+    });
+  } finally {
+    try {
+      await fs.rm(tempDir, { recursive: true, force: true });
+    } catch (error) {
+      console.error('Cleanup error:', error);
+    }
+  }
+});
+
+// Route to fetch analyzed codebase documents
+router.get('/output/generated_analyzed_codebase_docs/:processId', async (req, res) => {
+  try {
+    const fileId = req.params.processId;
+    if (!fileId) {
+      return res.status(400).json({ error: 'Process ID required' });
+    }
+
+    // Fetch file data from DynamoDB using the FileManagementHelper
+    const fileDetails = await fileManager.dynamoDB.get({
+      TableName: fileManager.tableName,
+      Key: { id: fileId }
+    }).promise();
+
+    if (!fileDetails.Item) {
+      return res.status(404).json({ error: 'Analysis results not found' });
+    }
+
+    // Get the file content from S3 
+    const s3Response = await fileManager.s3.getObject({
+      Bucket: fileManager.bucket,
+      Key: fileDetails.Item.s3_key
+    }).promise();
+
+    // Convert Buffer to string and parse JSON
+    const analysisResult = JSON.parse(s3Response.Body.toString('utf-8'));
+
+    // Get download URL for the file
+    const downloadUrl = await fileManager.getDownloadUrl(fileId);
+
+    // Prepare response
+    res.json({
+      success: true,
+      result: {
+        content: {
+          ...analysisResult.content || analysisResult,
+          knowledgeGraph: analysisResult.content?.knowledgeGraph || analysisResult.knowledgeGraph,
+          timestamp: fileDetails.Item.timestamp,
+          filename: fileDetails.Item.filename
+        }
+      },
+      resultUrl: downloadUrl
+    });
+
+  } catch (error) {
+    console.error('Failed to fetch results:', error);
+    res.status(500).json({
+      error: 'Failed to fetch results',
+      details: error.message
     });
   }
 });
+
 module.exports = router;

@@ -1,1714 +1,53 @@
 {
   "nodes": {
-    "Function": {
+    "Method": {
       "0": {
-        "name": "main",
+        "name": "clear_batch",
         "details": {
+          "docstring": "Reset the current batch of data.",
+          "is_abstract": false,
           "decorators": "",
-          "name": "main",
-          "parameter_count": 0,
-          "parameters": "",
-          "has_return_type": false
-        }
-      },
-      "1": {
-        "name": "__str__",
-        "details": {
-          "decorators": "",
-          "name": "__str__",
+          "name": "clear_batch",
           "parameter_count": 1,
-          "returns": "str",
+          "is_property": false,
           "parameters": "self",
-          "has_return_type": true
-        }
-      },
-      "2": {
-        "name": "draw",
-        "details": {
-          "decorators": "",
-          "name": "draw",
-          "parameter_count": 1,
-          "returns": "str",
-          "parameters": "self",
-          "has_return_type": true
-        }
-      },
-      "3": {
-        "name": "__init__",
-        "details": {
-          "decorators": "",
-          "name": "__init__",
-          "parameter_count": 2,
-          "parameters": "self,name",
+          "method_type": "methods",
           "has_return_type": false
         }
       },
       "4": {
-        "name": "area",
-        "details": {
-          "decorators": "property",
-          "name": "area",
-          "parameter_count": 1,
-          "returns": "float",
-          "parameters": "self",
-          "has_return_type": true
-        }
-      },
-      "5": {
-        "name": "calculate_area",
-        "details": {
-          "decorators": "",
-          "name": "calculate_area",
-          "parameter_count": 1,
-          "returns": "float",
-          "parameters": "self",
-          "has_return_type": true
-        }
-      },
-      "6": {
-        "name": "add_shape",
-        "details": {
-          "decorators": "",
-          "name": "add_shape",
-          "parameter_count": 2,
-          "parameters": "self,shape",
-          "has_return_type": false
-        }
-      },
-      "7": {
-        "name": "remove_shape",
-        "details": {
-          "decorators": "",
-          "name": "remove_shape",
-          "parameter_count": 2,
-          "parameters": "self,shape",
-          "has_return_type": false
-        }
-      },
-      "8": {
-        "name": "draw_all",
-        "details": {
-          "decorators": "",
-          "name": "draw_all",
-          "parameter_count": 1,
-          "parameters": "self",
-          "has_return_type": false
-        }
-      },
-      "9": {
-        "name": "get_total_area",
-        "details": {
-          "decorators": "",
-          "name": "get_total_area",
-          "parameter_count": 1,
-          "returns": "float",
-          "parameters": "self",
-          "has_return_type": true
-        }
-      },
-      "10": {
-        "name": "get_color_info",
-        "details": {
-          "decorators": "",
-          "name": "get_color_info",
-          "parameter_count": 1,
-          "returns": "str",
-          "parameters": "self",
-          "has_return_type": true
-        }
-      },
-      "24": {
         "name": "__init__",
         "details": {
-          "docstring": "Initialize the prompt loader with the path to the TOML file.\n\nArgs:\n    toml_path (str): Path to the TOML configuration file",
+          "is_abstract": false,
           "decorators": "",
           "name": "__init__",
           "parameter_count": 2,
-          "parameters": "self,toml_path",
-          "has_return_type": false
-        }
-      },
-      "25": {
-        "name": "_load_prompts",
-        "details": {
-          "docstring": "Load and parse prompts from the TOML file.\n\nReturns:\n    Dict[str, Any]: Parsed TOML content\n    \nRaises:\n    FileNotFoundError: If the TOML file doesn't exist\n    toml.TomlDecodeError: If the TOML file is invalid",
-          "decorators": "",
-          "name": "_load_prompts",
-          "parameter_count": 1,
-          "parameters": "self",
-          "has_return_type": false
-        }
-      },
-      "26": {
-        "name": "get_prompt",
-        "details": {
-          "docstring": "Get a prompt template and fill it with the provided kwargs.\n\nArgs:\n    prompt_type (str): The type of prompt to retrieve\n    default (Optional[str]): Default template to use if prompt_type not found\n    **kwargs: Keyword arguments to fill the template\n    \nReturns:\n    str: The filled prompt template\n    \nRaises:\n    KeyError: If prompt_type not found and no default provided\n    ValueError: If template substitution fails",
-          "decorators": "",
-          "name": "get_prompt",
-          "parameter_count": 3,
-          "returns": "str",
-          "parameters": "self,prompt_type,default",
-          "has_return_type": true
-        }
-      },
-      "27": {
-        "name": "get_section",
-        "details": {
-          "docstring": "Get a specific section from the TOML file.\n\nArgs:\n    section_name (str): Name of the section to retrieve\n    \nReturns:\n    Dict[str, Any]: The requested section content\n    \nRaises:\n    KeyError: If section not found",
-          "decorators": "",
-          "name": "get_section",
-          "parameter_count": 2,
-          "parameters": "self,section_name",
-          "has_return_type": false
-        }
-      },
-      "28": {
-        "name": "reload_prompts",
-        "details": {
-          "docstring": "Reload prompts from the TOML file.\nUseful when the underlying file has been modified.",
-          "decorators": "",
-          "name": "reload_prompts",
-          "parameter_count": 1,
-          "parameters": "self",
-          "has_return_type": false
-        }
-      },
-      "48": {
-        "name": "__init__",
-        "details": {
-          "decorators": "",
-          "name": "__init__",
-          "parameter_count": 4,
-          "parameters": "self,name,parent_name,grandparent_name",
-          "has_return_type": false
-        }
-      },
-      "49": {
-        "name": "display",
-        "details": {
-          "decorators": "",
-          "name": "display",
-          "parameter_count": 1,
-          "parameters": "self",
-          "has_return_type": false
-        }
-      },
-      "52": {
-        "name": "connect_to_neo4j",
-        "details": {
-          "decorators": "",
-          "name": "connect_to_neo4j",
-          "parameter_count": 3,
-          "parameters": "uri,username,password",
-          "has_return_type": false
-        }
-      },
-      "53": {
-        "name": "detect_file_type",
-        "details": {
-          "decorators": "",
-          "name": "detect_file_type",
-          "parameter_count": 1,
-          "parameters": "file_path",
-          "has_return_type": false
-        }
-      },
-      "54": {
-        "name": "load_litellm_config",
-        "details": {
-          "decorators": "",
-          "name": "load_litellm_config",
-          "parameter_count": 1,
-          "parameters": "yaml_path",
-          "has_return_type": false
-        }
-      },
-      "55": {
-        "name": "determine_file_type",
-        "details": {
-          "decorators": "",
-          "name": "determine_file_type",
-          "parameter_count": 1,
-          "parameters": "file_path",
-          "has_return_type": false
-        }
-      },
-      "56": {
-        "name": "sanitize_input_content",
-        "details": {
-          "decorators": "",
-          "name": "sanitize_input_content",
-          "parameter_count": 1,
-          "parameters": "content",
-          "has_return_type": false
-        }
-      },
-      "57": {
-        "name": "ai_extract_compliance_sections",
-        "details": {
-          "decorators": "",
-          "name": "ai_extract_compliance_sections",
-          "parameter_count": 4,
-          "parameters": "file_content,config,selected_model,provider",
-          "has_return_type": false
-        }
-      },
-      "58": {
-        "name": "load_compliance_file",
-        "details": {
-          "decorators": "",
-          "name": "load_compliance_file",
-          "parameter_count": 4,
-          "parameters": "compliance_file_path,config,selected_model,provider",
-          "has_return_type": false
-        }
-      },
-      "59": {
-        "name": "generate_litellm_response",
-        "details": {
-          "decorators": "",
-          "name": "generate_litellm_response",
-          "parameter_count": 4,
-          "parameters": "prompt,config,selected_model,provider",
-          "has_return_type": false
-        }
-      },
-      "60": {
-        "name": "load_additional_files",
-        "details": {
-          "decorators": "",
-          "name": "load_additional_files",
-          "parameter_count": 1,
-          "parameters": "file_paths",
-          "has_return_type": false
-        }
-      },
-      "61": {
-        "name": "generate_comments_or_docstrings",
-        "details": {
-          "decorators": "",
-          "name": "generate_comments_or_docstrings",
-          "parameter_count": 5,
-          "parameters": "file_snippet,selected_model,provider,config,compliance_sections",
-          "has_return_type": false
-        }
-      },
-      "62": {
-        "name": "generate_documentation",
-        "details": {
-          "decorators": "",
-          "name": "generate_documentation",
-          "parameter_count": 7,
-          "parameters": "file_snippet,selected_model,provider,config,compliance_sections,file_extension,file_type",
-          "has_return_type": false
-        }
-      },
-      "63": {
-        "name": "review_code_from_file",
-        "details": {
-          "decorators": "",
-          "name": "review_code_from_file",
-          "parameter_count": 13,
-          "parameters": "file_path,repository_details,design_patterns_path,best_practices_path,review_file_path,additional_file_paths,comments_file_path,documentation_file_path,selected_model,provider,config,repo_file_structure,compliance_file_path",
-          "has_return_type": false
-        }
-      },
-      "64": {
-        "name": "generate_code_base_structure",
-        "details": {
-          "decorators": "",
-          "name": "generate_code_base_structure",
-          "parameter_count": 5,
-          "parameters": "selected_model,provider,config,repository_details,compliance_sections",
-          "has_return_type": false
-        }
-      },
-      "65": {
-        "name": "build_repository_knowledge_graph",
-        "details": {
-          "docstring": "Build a knowledge graph in Neo4j from repository structure details.\n\nArgs:\n    graph: py2neo.Graph instance connected to Neo4j\n    repository_details: Dictionary containing repository structure details",
-          "decorators": "",
-          "name": "build_repository_knowledge_graph",
-          "parameter_count": 2,
-          "parameters": "graph,repository_details",
-          "has_return_type": false
-        }
-      },
-      "66": {
-        "name": "create_knowledge_graph",
-        "details": {
-          "docstring": "Create a Neo4j knowledge graph from repository details.\n\nArgs:\n    repository_details: Dictionary containing repository structure",
-          "decorators": "",
-          "name": "create_knowledge_graph",
-          "parameter_count": 1,
-          "parameters": "repository_details",
-          "has_return_type": false
-        }
-      },
-      "67": {
-        "name": "generate_guidelines_document",
-        "details": {
-          "docstring": "Generate a comprehensive guidelines document from codebase analysis.\n\nArgs:\n    files_input (Dict[str, str]): Dictionary of input files\n    config (Dict[str, Any]): Configuration parameters\n    selected_model (str): Name of the selected AI model\n    provider (str): Name of the AI provider\n    \nReturns:\n    Optional[str]: Generated guidelines content or None if generation fails\n    \nRaises:\n    ValueError: If no valid files found to analyze",
-          "decorators": "",
-          "name": "generate_guidelines_document",
-          "parameter_count": 4,
-          "parameters": "files_input,config,selected_model,provider",
-          "has_return_type": false
-        }
-      },
-      "68": {
-        "name": "main",
-        "details": {
-          "decorators": "",
-          "name": "main",
-          "parameter_count": 0,
-          "parameters": "",
-          "has_return_type": false
-        }
-      },
-      "69": {
-        "name": "process_directory",
-        "details": {
-          "docstring": "Recursively process directory and its contents",
-          "decorators": "",
-          "name": "process_directory",
-          "parameter_count": 2,
-          "parameters": "directory,parent_node",
-          "has_return_type": false
-        }
-      },
-      "108": {
-        "name": "connect_to_database",
-        "details": {
-          "docstring": "Standalone function to establish database connection.\n\nArgs:\n    host (str): Database host address\n    retries (int): Number of connection retries\n    \nReturns:\n    bool: True if connection successful, False otherwise",
-          "decorators": "",
-          "name": "connect_to_database",
-          "parameter_count": 2,
-          "parameters": "host,retries",
-          "has_return_type": false
-        }
-      },
-      "109": {
-        "name": "format_data",
-        "details": {
-          "docstring": "Format the input data into specified format.\n\nArgs:\n    data (dict): Data to format\n    output_format (str): Desired output format\n    \nReturns:\n    str: Formatted data string",
-          "decorators": "",
-          "name": "format_data",
-          "parameter_count": 2,
-          "parameters": "data,output_format",
-          "has_return_type": false
-        }
-      },
-      "110": {
-        "name": "initialize_system",
-        "details": {
-          "docstring": "System initialization function.\nReturns success status of initialization.",
-          "decorators": "",
-          "name": "initialize_system",
-          "parameter_count": 0,
-          "parameters": "",
-          "has_return_type": false
-        }
-      },
-      "111": {
-        "name": "__init__",
-        "details": {
-          "decorators": "",
-          "name": "__init__",
-          "parameter_count": 2,
+          "is_property": false,
           "parameters": "self,message",
-          "has_return_type": false
-        }
-      },
-      "112": {
-        "name": "connection_string",
-        "details": {
-          "docstring": "Returns the formatted connection string.",
-          "decorators": "property",
-          "name": "connection_string",
-          "parameter_count": 1,
-          "parameters": "self",
-          "has_return_type": false
-        }
-      },
-      "113": {
-        "name": "validate_credentials",
-        "details": {
-          "docstring": "Validate the provided credentials.\n\nArgs:\n    username (str): Username to validate\n    password (str): Password to validate\n    \nReturns:\n    bool: True if credentials are valid, False otherwise",
-          "decorators": "staticmethod",
-          "name": "validate_credentials",
-          "parameter_count": 2,
-          "parameters": "username,password",
-          "has_return_type": false
-        }
-      },
-      "114": {
-        "name": "process_data",
-        "details": {
-          "docstring": "Process the input data using specified mode.\n\nArgs:\n    data (list): Data to process\n    mode (str): Processing mode to use\n    \nReturns:\n    list: Processed data",
-          "decorators": "",
-          "name": "process_data",
-          "parameter_count": 3,
-          "parameters": "self,data,mode",
-          "has_return_type": false
-        }
-      },
-      "115": {
-        "name": "clear_batch",
-        "details": {
-          "docstring": "Reset the current batch of data.",
-          "decorators": "",
-          "name": "clear_batch",
-          "parameter_count": 1,
-          "parameters": "self",
-          "has_return_type": false
-        }
-      },
-      "129": {
-        "name": "__init__",
-        "details": {
-          "decorators": "",
-          "name": "__init__",
-          "parameter_count": 2,
-          "parameters": "self,files_input",
-          "has_return_type": false
-        }
-      },
-      "130": {
-        "name": "parse_files",
-        "details": {
-          "docstring": "Parse files based on the input type.",
-          "decorators": "",
-          "name": "parse_files",
-          "parameter_count": 1,
-          "parameters": "self",
-          "has_return_type": false
-        }
-      },
-      "131": {
-        "name": "_parse_repository_files",
-        "details": {
-          "docstring": "Parse all relevant files from a repository.",
-          "decorators": "",
-          "name": "_parse_repository_files",
-          "parameter_count": 2,
-          "parameters": "self,repo_path",
-          "has_return_type": false
-        }
-      },
-      "132": {
-        "name": "_parse_individual_files",
-        "details": {
-          "docstring": "Parse specific files provided.",
-          "decorators": "",
-          "name": "_parse_individual_files",
-          "parameter_count": 2,
-          "parameters": "self,file_paths",
-          "has_return_type": false
-        }
-      },
-      "133": {
-        "name": "analyze_code_patterns",
-        "details": {
-          "docstring": "Analyze code for patterns and conventions.",
-          "decorators": "",
-          "name": "analyze_code_patterns",
-          "parameter_count": 1,
-          "parameters": "self",
-          "has_return_type": false
-        }
-      },
-      "152": {
-        "name": "__init__",
-        "details": {
-          "decorators": "",
-          "name": "__init__",
-          "parameter_count": 2,
-          "parameters": "self,repo_path",
-          "has_return_type": false
-        }
-      },
-      "153": {
-        "name": "_analyze_repository",
-        "details": {
-          "docstring": "Analyze the repository structure and contents.",
-          "decorators": "",
-          "name": "_analyze_repository",
-          "parameter_count": 1,
-          "parameters": "self",
-          "has_return_type": false
-        }
-      },
-      "154": {
-        "name": "_analyze_file",
-        "details": {
-          "docstring": "Analyze individual files based on their type.",
-          "decorators": "",
-          "name": "_analyze_file",
-          "parameter_count": 2,
-          "parameters": "self,file_path",
-          "has_return_type": false
-        }
-      },
-      "155": {
-        "name": "_parse_python_file",
-        "details": {
-          "decorators": "",
-          "name": "_parse_python_file",
-          "parameter_count": 2,
-          "parameters": "self,content",
-          "has_return_type": false
-        }
-      },
-      "156": {
-        "name": "_parse_java_file",
-        "details": {
-          "decorators": "",
-          "name": "_parse_java_file",
-          "parameter_count": 2,
-          "parameters": "self,content",
-          "has_return_type": false
-        }
-      },
-      "157": {
-        "name": "_parse_javascript_file",
-        "details": {
-          "decorators": "",
-          "name": "_parse_javascript_file",
-          "parameter_count": 2,
-          "parameters": "self,content",
-          "has_return_type": false
-        }
-      },
-      "158": {
-        "name": "_parse_json_file",
-        "details": {
-          "decorators": "",
-          "name": "_parse_json_file",
-          "parameter_count": 2,
-          "parameters": "self,content",
-          "has_return_type": false
-        }
-      },
-      "159": {
-        "name": "_parse_xml_file",
-        "details": {
-          "decorators": "",
-          "name": "_parse_xml_file",
-          "parameter_count": 2,
-          "parameters": "self,content",
-          "has_return_type": false
-        }
-      },
-      "160": {
-        "name": "_parse_cpp_file",
-        "details": {
-          "decorators": "",
-          "name": "_parse_cpp_file",
-          "parameter_count": 2,
-          "parameters": "self,content",
-          "has_return_type": false
-        }
-      },
-      "161": {
-        "name": "_parse_csharp_file",
-        "details": {
-          "decorators": "",
-          "name": "_parse_csharp_file",
-          "parameter_count": 2,
-          "parameters": "self,content",
-          "has_return_type": false
-        }
-      },
-      "162": {
-        "name": "generate_summary_report",
-        "details": {
-          "docstring": "Generate a summary report of the repository analysis.",
-          "decorators": "",
-          "name": "generate_summary_report",
-          "parameter_count": 1,
-          "parameters": "self",
-          "has_return_type": false
-        }
-      },
-      "261": {
-        "name": "__init__",
-        "details": {
-          "decorators": "",
-          "name": "__init__",
-          "parameter_count": 1,
-          "parameters": "self",
-          "has_return_type": false
-        }
-      },
-      "262": {
-        "name": "mileage",
-        "details": {
-          "docstring": "Set current mileage",
-          "decorators": "",
-          "name": "mileage",
-          "parameter_count": 2,
-          "parameters": "self,value",
-          "has_return_type": false
-        }
-      },
-      "263": {
-        "name": "start_engine",
-        "details": {
-          "docstring": "Implementation of abstract method",
-          "decorators": "",
-          "name": "start_engine",
-          "parameter_count": 1,
-          "returns": "bool",
-          "parameters": "self",
-          "has_return_type": true
-        }
-      },
-      "264": {
-        "name": "add_maintenance_record",
-        "details": {
-          "docstring": "Add a maintenance record",
-          "decorators": "",
-          "name": "add_maintenance_record",
-          "parameter_count": 6,
-          "parameters": "self,vehicle_id,service_type,cost,technician,notes",
-          "has_return_type": false
-        }
-      },
-      "265": {
-        "name": "add_vehicle",
-        "details": {
-          "docstring": "Add a vehicle to the fleet",
-          "decorators": "",
-          "name": "add_vehicle",
-          "parameter_count": 2,
-          "parameters": "self,vehicle",
-          "has_return_type": false
-        }
-      },
-      "266": {
-        "name": "get_vehicle_count",
-        "details": {
-          "docstring": "Get total number of vehicles",
-          "decorators": "",
-          "name": "get_vehicle_count",
-          "parameter_count": 1,
-          "returns": "int",
-          "parameters": "self",
-          "has_return_type": true
-        }
-      },
-      "267": {
-        "name": "add_car",
-        "details": {
-          "docstring": "Add a car to the fleet",
-          "decorators": "",
-          "name": "add_car",
-          "parameter_count": 2,
-          "parameters": "self,car",
-          "has_return_type": false
-        }
-      },
-      "268": {
-        "name": "add_motorcycle",
-        "details": {
-          "docstring": "Add a motorcycle to the fleet",
-          "decorators": "",
-          "name": "add_motorcycle",
-          "parameter_count": 2,
-          "parameters": "self,motorcycle",
-          "has_return_type": false
-        }
-      },
-      "269": {
-        "name": "get_fleet_statistics",
-        "details": {
-          "docstring": "Get statistics about the fleet",
-          "decorators": "",
-          "name": "get_fleet_statistics",
-          "parameter_count": 1,
-          "parameters": "self",
-          "has_return_type": false
-        }
-      }
-    },
-    "Import": {
-      "11": {
-        "name": "abc.ABC",
-        "details": {
-          "name": "abc.ABC",
-          "is_relative": false,
-          "base_package": "abc"
-        }
-      },
-      "12": {
-        "name": "abc.abstractmethod",
-        "details": {
-          "name": "abc.abstractmethod",
-          "is_relative": false,
-          "base_package": "abc"
-        }
-      },
-      "13": {
-        "name": "typing.List",
-        "details": {
-          "name": "typing.List",
-          "is_relative": false,
-          "base_package": "typing"
-        }
-      },
-      "14": {
-        "name": "typing.Optional",
-        "details": {
-          "name": "typing.Optional",
-          "is_relative": false,
-          "base_package": "typing"
-        }
-      },
-      "15": {
-        "name": "dataclasses.dataclass",
-        "details": {
-          "name": "dataclasses.dataclass",
-          "is_relative": false,
-          "base_package": "dataclasses"
-        }
-      },
-      "29": {
-        "name": "toml",
-        "details": {
-          "name": "toml",
-          "is_relative": false,
-          "base_package": "toml"
-        }
-      },
-      "30": {
-        "name": "pathlib.Path",
-        "details": {
-          "name": "pathlib.Path",
-          "is_relative": false,
-          "base_package": "pathlib"
-        }
-      },
-      "31": {
-        "name": "string.Template",
-        "details": {
-          "name": "string.Template",
-          "is_relative": false,
-          "base_package": "string"
-        }
-      },
-      "32": {
-        "name": "typing.Dict",
-        "details": {
-          "name": "typing.Dict",
-          "is_relative": false,
-          "base_package": "typing"
-        }
-      },
-      "33": {
-        "name": "typing.Any",
-        "details": {
-          "name": "typing.Any",
-          "is_relative": false,
-          "base_package": "typing"
-        }
-      },
-      "34": {
-        "name": "typing.Optional",
-        "details": {
-          "name": "typing.Optional",
-          "is_relative": false,
-          "base_package": "typing"
-        }
-      },
-      "70": {
-        "name": "litellm",
-        "details": {
-          "name": "litellm",
-          "is_relative": false,
-          "base_package": "litellm"
-        }
-      },
-      "71": {
-        "name": "yaml",
-        "details": {
-          "name": "yaml",
-          "is_relative": false,
-          "base_package": "yaml"
-        }
-      },
-      "72": {
-        "name": "re",
-        "details": {
-          "name": "re",
-          "is_relative": false,
-          "base_package": "re"
-        }
-      },
-      "73": {
-        "name": "os",
-        "details": {
-          "name": "os",
-          "is_relative": false,
-          "base_package": "os"
-        }
-      },
-      "74": {
-        "name": "xml.etree.ElementTree",
-        "details": {
-          "name": "xml.etree.ElementTree",
-          "is_relative": false,
-          "base_package": "xml"
-        }
-      },
-      "75": {
-        "name": "traceback",
-        "details": {
-          "name": "traceback",
-          "is_relative": false,
-          "base_package": "traceback"
-        }
-      },
-      "76": {
-        "name": "re",
-        "details": {
-          "name": "re",
-          "is_relative": false,
-          "base_package": "re"
-        }
-      },
-      "77": {
-        "name": "magic",
-        "details": {
-          "name": "magic",
-          "is_relative": false,
-          "base_package": "magic"
-        }
-      },
-      "78": {
-        "name": "dotenv.load_dotenv",
-        "details": {
-          "name": "dotenv.load_dotenv",
-          "is_relative": false,
-          "base_package": "dotenv"
-        }
-      },
-      "79": {
-        "name": "py2neo.Graph",
-        "details": {
-          "name": "py2neo.Graph",
-          "is_relative": false,
-          "base_package": "py2neo"
-        }
-      },
-      "80": {
-        "name": "py2neo.Node",
-        "details": {
-          "name": "py2neo.Node",
-          "is_relative": false,
-          "base_package": "py2neo"
-        }
-      },
-      "81": {
-        "name": "py2neo.Relationship",
-        "details": {
-          "name": "py2neo.Relationship",
-          "is_relative": false,
-          "base_package": "py2neo"
-        }
-      },
-      "82": {
-        "name": "os",
-        "details": {
-          "name": "os",
-          "is_relative": false,
-          "base_package": "os"
-        }
-      },
-      "83": {
-        "name": "typing.Dict",
-        "details": {
-          "name": "typing.Dict",
-          "is_relative": false,
-          "base_package": "typing"
-        }
-      },
-      "84": {
-        "name": "typing.Optional",
-        "details": {
-          "name": "typing.Optional",
-          "is_relative": false,
-          "base_package": "typing"
-        }
-      },
-      "85": {
-        "name": "typing.Any",
-        "details": {
-          "name": "typing.Any",
-          "is_relative": false,
-          "base_package": "typing"
-        }
-      },
-      "86": {
-        "name": "py2neo.errors.ClientError",
-        "details": {
-          "name": "py2neo.errors.ClientError",
-          "is_relative": false,
-          "base_package": "py2neo"
-        }
-      },
-      "87": {
-        "name": "py2neo.errors.DatabaseError",
-        "details": {
-          "name": "py2neo.errors.DatabaseError",
-          "is_relative": false,
-          "base_package": "py2neo"
-        }
-      },
-      "88": {
-        "name": "utils.prompt_loader.PromptLoader",
-        "details": {
-          "name": "utils.prompt_loader.PromptLoader",
-          "is_relative": false,
-          "base_package": "utils"
-        }
-      },
-      "89": {
-        "name": "utils.codebase_analyzer.CodebaseAnalyzer",
-        "details": {
-          "name": "utils.codebase_analyzer.CodebaseAnalyzer",
-          "is_relative": false,
-          "base_package": "utils"
-        }
-      },
-      "90": {
-        "name": "utils.base_analyzer.BaseAnalyzer",
-        "details": {
-          "name": "utils.base_analyzer.BaseAnalyzer",
-          "is_relative": false,
-          "base_package": "utils"
-        }
-      },
-      "91": {
-        "name": "utils.repository_analyzer.RepositoryAnalyzer",
-        "details": {
-          "name": "utils.repository_analyzer.RepositoryAnalyzer",
-          "is_relative": false,
-          "base_package": "utils"
-        }
-      },
-      "116": {
-        "name": "os",
-        "details": {
-          "name": "os",
-          "is_relative": false,
-          "base_package": "os"
-        }
-      },
-      "117": {
-        "name": "sys",
-        "details": {
-          "name": "sys",
-          "is_relative": false,
-          "base_package": "sys"
-        }
-      },
-      "118": {
-        "name": "datetime.datetime",
-        "details": {
-          "name": "datetime.datetime",
-          "is_relative": false,
-          "base_package": "datetime"
-        }
-      },
-      "134": {
-        "name": "base_analyzer.BaseAnalyzer",
-        "details": {
-          "name": "base_analyzer.BaseAnalyzer",
-          "is_relative": false,
-          "base_package": "base_analyzer"
-        }
-      },
-      "135": {
-        "name": "os",
-        "details": {
-          "name": "os",
-          "is_relative": false,
-          "base_package": "os"
-        }
-      },
-      "136": {
-        "name": "re",
-        "details": {
-          "name": "re",
-          "is_relative": false,
-          "base_package": "re"
-        }
-      },
-      "137": {
-        "name": "collections.defaultdict",
-        "details": {
-          "name": "collections.defaultdict",
-          "is_relative": false,
-          "base_package": "collections"
-        }
-      },
-      "163": {
-        "name": "base_analyzer.BaseAnalyzer",
-        "details": {
-          "name": "base_analyzer.BaseAnalyzer",
-          "is_relative": false,
-          "base_package": "base_analyzer"
-        }
-      },
-      "164": {
-        "name": "os",
-        "details": {
-          "name": "os",
-          "is_relative": false,
-          "base_package": "os"
-        }
-      },
-      "165": {
-        "name": "re",
-        "details": {
-          "name": "re",
-          "is_relative": false,
-          "base_package": "re"
-        }
-      },
-      "166": {
-        "name": "ast",
-        "details": {
-          "name": "ast",
-          "is_relative": false,
-          "base_package": "ast"
-        }
-      },
-      "167": {
-        "name": "json",
-        "details": {
-          "name": "json",
-          "is_relative": false,
-          "base_package": "json"
-        }
-      },
-      "168": {
-        "name": "javalang",
-        "details": {
-          "name": "javalang",
-          "is_relative": false,
-          "base_package": "javalang"
-        }
-      },
-      "169": {
-        "name": "esprima",
-        "details": {
-          "name": "esprima",
-          "is_relative": false,
-          "base_package": "esprima"
-        }
-      },
-      "170": {
-        "name": "xml.etree.ElementTree",
-        "details": {
-          "name": "xml.etree.ElementTree",
-          "is_relative": false,
-          "base_package": "xml"
-        }
-      },
-      "270": {
-        "name": "typing.List",
-        "details": {
-          "name": "typing.List",
-          "is_relative": false,
-          "base_package": "typing"
-        }
-      },
-      "271": {
-        "name": "typing.Dict",
-        "details": {
-          "name": "typing.Dict",
-          "is_relative": false,
-          "base_package": "typing"
-        }
-      },
-      "272": {
-        "name": "typing.Optional",
-        "details": {
-          "name": "typing.Optional",
-          "is_relative": false,
-          "base_package": "typing"
-        }
-      },
-      "273": {
-        "name": "typing.Union",
-        "details": {
-          "name": "typing.Union",
-          "is_relative": false,
-          "base_package": "typing"
-        }
-      },
-      "274": {
-        "name": "typing.TypeVar",
-        "details": {
-          "name": "typing.TypeVar",
-          "is_relative": false,
-          "base_package": "typing"
-        }
-      },
-      "275": {
-        "name": "typing.Generic",
-        "details": {
-          "name": "typing.Generic",
-          "is_relative": false,
-          "base_package": "typing"
-        }
-      },
-      "276": {
-        "name": "abc.ABC",
-        "details": {
-          "name": "abc.ABC",
-          "is_relative": false,
-          "base_package": "abc"
-        }
-      },
-      "277": {
-        "name": "abc.abstractmethod",
-        "details": {
-          "name": "abc.abstractmethod",
-          "is_relative": false,
-          "base_package": "abc"
-        }
-      },
-      "278": {
-        "name": "dataclasses.dataclass",
-        "details": {
-          "name": "dataclasses.dataclass",
-          "is_relative": false,
-          "base_package": "dataclasses"
-        }
-      },
-      "279": {
-        "name": "datetime.datetime",
-        "details": {
-          "name": "datetime.datetime",
-          "is_relative": false,
-          "base_package": "datetime"
-        }
-      }
-    },
-    "PythonFile": {
-      "16": {
-        "name": "prompt_loader.py",
-        "details": {
-          "import_count": 6,
-          "name": "prompt_loader.py",
-          "has_classes": true,
-          "path": "/tmp/codebase/1737835300821/prompt_loader.py",
-          "has_functions": true,
-          "size": 4133
-        }
-      },
-      "35": {
-        "name": "setting.py",
-        "details": {
-          "import_count": 0,
-          "name": "setting.py",
-          "has_classes": false,
-          "path": "/tmp/codebase/1737835300821/setting.py",
-          "has_functions": false,
-          "size": 0
-        }
-      },
-      "37": {
-        "name": "grandfamily.py",
-        "details": {
-          "import_count": 0,
-          "name": "grandfamily.py",
-          "has_classes": true,
-          "path": "/tmp/codebase/1737835300821/grandfamily.py",
-          "has_functions": true,
-          "size": 736
-        }
-      },
-      "50": {
-        "name": "main.py",
-        "details": {
-          "import_count": 22,
-          "name": "main.py",
-          "has_classes": false,
-          "path": "/tmp/codebase/1737835300821/main.py",
-          "has_functions": true,
-          "size": 27982
-        }
-      },
-      "92": {
-        "name": "base_analyzer.py",
-        "details": {
-          "import_count": 3,
-          "name": "base_analyzer.py",
-          "has_classes": true,
-          "path": "/tmp/codebase/1737835300821/base_analyzer.py",
-          "has_functions": true,
-          "size": 7726
-        }
-      },
-      "121": {
-        "name": "codebase_analyzer.py",
-        "details": {
-          "import_count": 4,
-          "name": "codebase_analyzer.py",
-          "has_classes": true,
-          "path": "/tmp/codebase/1737835300821/codebase_analyzer.py",
-          "has_functions": true,
-          "size": 3877
-        }
-      },
-      "138": {
-        "name": "repository_analyzer.py",
-        "details": {
-          "import_count": 8,
-          "name": "repository_analyzer.py",
-          "has_classes": true,
-          "path": "/tmp/codebase/1737835300821/repository_analyzer.py",
-          "has_functions": true,
-          "size": 7528
-        }
-      },
-      "171": {
-        "name": "gggggg.py",
-        "details": {
-          "import_count": 10,
-          "name": "gggggg.py",
-          "has_classes": true,
-          "path": "/tmp/codebase/1737835300821/gggggg.py",
-          "has_functions": true,
-          "size": 5575
-        }
-      },
-      "280": {
-        "name": "classess.py",
-        "details": {
-          "import_count": 5,
-          "name": "classess.py",
-          "has_classes": true,
-          "path": "/tmp/codebase/1737835300821/classess.py",
-          "has_functions": true,
-          "size": 4393
-        }
-      }
-    },
-    "ModuleNamespace": {
-      "17": {
-        "name": "prompt_loader",
-        "details": {
-          "file_path": "/tmp/codebase/1737835300821/prompt_loader.py",
-          "name": "prompt_loader"
-        }
-      },
-      "36": {
-        "name": "setting",
-        "details": {
-          "file_path": "/tmp/codebase/1737835300821/setting.py",
-          "name": "setting"
-        }
-      },
-      "38": {
-        "name": "grandfamily",
-        "details": {
-          "file_path": "/tmp/codebase/1737835300821/grandfamily.py",
-          "name": "grandfamily"
-        }
-      },
-      "51": {
-        "name": "main",
-        "details": {
-          "file_path": "/tmp/codebase/1737835300821/main.py",
-          "name": "main"
-        }
-      },
-      "93": {
-        "name": "base_analyzer",
-        "details": {
-          "docstring": "This is a module-level docstring that demonstrates documentation at the module level.\nThis module contains sample code for testing the enhanced Python parser.",
-          "file_path": "/tmp/codebase/1737835300821/base_analyzer.py",
-          "name": "base_analyzer"
-        }
-      },
-      "122": {
-        "name": "codebase_analyzer",
-        "details": {
-          "file_path": "/tmp/codebase/1737835300821/codebase_analyzer.py",
-          "name": "codebase_analyzer"
-        }
-      },
-      "139": {
-        "name": "repository_analyzer",
-        "details": {
-          "file_path": "/tmp/codebase/1737835300821/repository_analyzer.py",
-          "name": "repository_analyzer"
-        }
-      },
-      "172": {
-        "name": "gggggg",
-        "details": {
-          "file_path": "/tmp/codebase/1737835300821/gggggg.py",
-          "name": "gggggg"
-        }
-      },
-      "281": {
-        "name": "classess",
-        "details": {
-          "file_path": "/tmp/codebase/1737835300821/classess.py",
-          "name": "classess"
-        }
-      }
-    },
-    "Class": {
-      "18": {
-        "name": "PromptLoader",
-        "details": {
-          "docstring": "A class to load and manage prompts from TOML configuration files.\nHandles template substitution and section retrieval with proper error handling.",
-          "total_attributes": 0,
-          "is_abstract": false,
-          "name": "PromptLoader",
-          "total_methods": 5
-        }
-      },
-      "39": {
-        "name": "Grandparent",
-        "details": {
-          "total_attributes": 0,
-          "is_abstract": false,
-          "name": "Grandparent",
-          "total_methods": 2
-        }
-      },
-      "42": {
-        "name": "Parent",
-        "details": {
-          "total_attributes": 0,
-          "is_abstract": false,
-          "name": "Parent",
-          "total_methods": 2
-        }
-      },
-      "45": {
-        "name": "Child",
-        "details": {
-          "total_attributes": 0,
-          "is_abstract": false,
-          "name": "Child",
-          "total_methods": 2
-        }
-      },
-      "94": {
-        "name": "DatabaseConnector",
-        "details": {
-          "docstring": "A class to handle database connections and operations.\nDemonstrates class-level documentation and various Python features.",
-          "total_attributes": 2,
-          "is_abstract": false,
-          "name": "DatabaseConnector",
-          "total_methods": 2
-        }
-      },
-      "100": {
-        "name": "DataProcessor",
-        "details": {
-          "docstring": "Class for processing and transforming data.\nContains multiple methods and class attributes.",
-          "total_attributes": 2,
-          "is_abstract": false,
-          "name": "DataProcessor",
-          "total_methods": 3
-        }
-      },
-      "106": {
-        "name": "CustomError",
-        "details": {
-          "docstring": "Custom error class for specific error handling.",
-          "total_attributes": 0,
-          "is_abstract": false,
-          "name": "CustomError",
-          "total_methods": 1
-        }
-      },
-      "123": {
-        "name": "CodebaseAnalyzer",
-        "details": {
-          "total_attributes": 0,
-          "is_abstract": false,
-          "name": "CodebaseAnalyzer",
-          "total_methods": 5
-        }
-      },
-      "140": {
-        "name": "RepositoryAnalyzer",
-        "details": {
-          "total_attributes": 0,
-          "is_abstract": false,
-          "name": "RepositoryAnalyzer",
-          "total_methods": 11
-        }
-      },
-      "173": {
-        "name": "Vehicle",
-        "details": {
-          "docstring": "Base class for all vehicles",
-          "total_attributes": 0,
-          "is_abstract": true,
-          "name": "Vehicle",
-          "total_methods": 3
-        }
-      },
-      "178": {
-        "name": "Car",
-        "details": {
-          "docstring": "Car implementation of Vehicle",
-          "total_attributes": 0,
-          "is_abstract": false,
-          "name": "Car",
-          "total_methods": 3
-        }
-      },
-      "182": {
-        "name": "Motorcycle",
-        "details": {
-          "docstring": "Motorcycle implementation of Vehicle",
-          "total_attributes": 0,
-          "is_abstract": false,
-          "name": "Motorcycle",
-          "total_methods": 2
-        }
-      },
-      "185": {
-        "name": "Fleet",
-        "details": {
-          "docstring": "Generic container for managing vehicle fleets",
-          "total_attributes": 0,
-          "is_abstract": false,
-          "name": "Fleet",
-          "total_methods": 3
-        }
-      },
-      "189": {
-        "name": "MaintenanceRecord",
-        "details": {
-          "docstring": "Maintenance record data class",
-          "total_attributes": 6,
-          "is_abstract": false,
-          "name": "MaintenanceRecord",
-          "total_methods": 0
-        }
-      },
-      "255": {
-        "name": "FleetManagementSystem",
-        "details": {
-          "docstring": "System for managing vehicle fleets",
-          "total_attributes": 0,
-          "is_abstract": false,
-          "name": "FleetManagementSystem",
-          "total_methods": 5
-        }
-      },
-      "282": {
-        "name": "Color",
-        "details": {
-          "docstring": "Represents a color using RGB values",
-          "total_attributes": 3,
-          "is_abstract": false,
-          "name": "Color",
-          "total_methods": 1
-        }
-      },
-      "287": {
-        "name": "Drawable",
-        "details": {
-          "docstring": "Interface for drawable objects",
-          "total_attributes": 0,
-          "is_abstract": true,
-          "name": "Drawable",
-          "total_methods": 1
-        }
-      },
-      "289": {
-        "name": "Shape",
-        "details": {
-          "docstring": "Base class for all shapes",
-          "total_attributes": 0,
-          "is_abstract": true,
-          "name": "Shape",
-          "total_methods": 3
-        }
-      },
-      "294": {
-        "name": "Circle",
-        "details": {
-          "docstring": "Circle shape with radius",
-          "total_attributes": 0,
-          "is_abstract": false,
-          "name": "Circle",
-          "total_methods": 3
-        }
-      },
-      "298": {
-        "name": "Rectangle",
-        "details": {
-          "docstring": "Rectangle shape with width and height",
-          "total_attributes": 0,
-          "is_abstract": false,
-          "name": "Rectangle",
-          "total_methods": 3
-        }
-      },
-      "377": {
-        "name": "Canvas",
-        "details": {
-          "docstring": "Canvas that contains and owns shapes",
-          "total_attributes": 0,
-          "is_abstract": false,
-          "name": "Canvas",
-          "total_methods": 4
-        }
-      },
-      "382": {
-        "name": "ShapeGroup",
-        "details": {
-          "docstring": "Group that references but doesn't own shapes",
-          "total_attributes": 0,
-          "is_abstract": false,
-          "name": "ShapeGroup",
-          "total_methods": 4
-        }
-      },
-      "387": {
-        "name": "ColoredRectangle",
-        "details": {
-          "docstring": "Rectangle with additional color-specific functionality",
-          "total_attributes": 0,
-          "is_abstract": false,
-          "name": "ColoredRectangle",
-          "total_methods": 1
-        }
-      }
-    },
-    "Method": {
-      "19": {
-        "name": "__init__",
-        "details": {
-          "docstring": "Initialize the prompt loader with the path to the TOML file.\n\nArgs:\n    toml_path (str): Path to the TOML configuration file",
-          "is_abstract": false,
-          "decorators": "",
-          "name": "__init__",
-          "parameter_count": 2,
-          "is_property": false,
-          "parameters": "self,toml_path",
-          "method_type": "methods",
-          "has_return_type": false
-        }
-      },
-      "20": {
-        "name": "_load_prompts",
-        "details": {
-          "docstring": "Load and parse prompts from the TOML file.\n\nReturns:\n    Dict[str, Any]: Parsed TOML content\n    \nRaises:\n    FileNotFoundError: If the TOML file doesn't exist\n    toml.TomlDecodeError: If the TOML file is invalid",
-          "is_abstract": false,
-          "decorators": "",
-          "name": "_load_prompts",
-          "parameter_count": 1,
-          "is_property": false,
-          "parameters": "self",
-          "method_type": "methods",
-          "has_return_type": false
-        }
-      },
-      "21": {
-        "name": "get_prompt",
-        "details": {
-          "docstring": "Get a prompt template and fill it with the provided kwargs.\n\nArgs:\n    prompt_type (str): The type of prompt to retrieve\n    default (Optional[str]): Default template to use if prompt_type not found\n    **kwargs: Keyword arguments to fill the template\n    \nReturns:\n    str: The filled prompt template\n    \nRaises:\n    KeyError: If prompt_type not found and no default provided\n    ValueError: If template substitution fails",
-          "is_abstract": false,
-          "decorators": "",
-          "name": "get_prompt",
-          "parameter_count": 3,
-          "is_property": false,
-          "returns": "str",
-          "parameters": "self,prompt_type,default",
-          "method_type": "methods",
-          "has_return_type": true
-        }
-      },
-      "22": {
-        "name": "get_section",
-        "details": {
-          "docstring": "Get a specific section from the TOML file.\n\nArgs:\n    section_name (str): Name of the section to retrieve\n    \nReturns:\n    Dict[str, Any]: The requested section content\n    \nRaises:\n    KeyError: If section not found",
-          "is_abstract": false,
-          "decorators": "",
-          "name": "get_section",
-          "parameter_count": 2,
-          "is_property": false,
-          "parameters": "self,section_name",
-          "method_type": "methods",
-          "has_return_type": false
-        }
-      },
-      "23": {
-        "name": "reload_prompts",
-        "details": {
-          "docstring": "Reload prompts from the TOML file.\nUseful when the underlying file has been modified.",
-          "is_abstract": false,
-          "decorators": "",
-          "name": "reload_prompts",
-          "parameter_count": 1,
-          "is_property": false,
-          "parameters": "self",
-          "method_type": "methods",
-          "has_return_type": false
-        }
-      },
-      "40": {
-        "name": "__init__",
-        "details": {
-          "is_abstract": false,
-          "decorators": "",
-          "name": "__init__",
-          "parameter_count": 2,
-          "is_property": false,
-          "parameters": "self,name",
-          "method_type": "methods",
-          "has_return_type": false
-        }
-      },
-      "41": {
-        "name": "display",
-        "details": {
-          "is_abstract": false,
-          "decorators": "",
-          "name": "display",
-          "parameter_count": 1,
-          "is_property": false,
-          "parameters": "self",
-          "method_type": "methods",
-          "has_return_type": false
-        }
-      },
-      "43": {
-        "name": "__init__",
-        "details": {
-          "is_abstract": false,
-          "decorators": "",
-          "name": "__init__",
-          "parameter_count": 3,
-          "is_property": false,
-          "parameters": "self,name,parent_name",
           "method_type": "methods",
           "has_return_type": false
         }
       },
       "44": {
-        "name": "display",
+        "name": "__init__",
         "details": {
           "is_abstract": false,
           "decorators": "",
-          "name": "display",
+          "name": "__init__",
+          "parameter_count": 2,
+          "is_property": false,
+          "parameters": "self,files_input",
+          "method_type": "methods",
+          "has_return_type": false
+        }
+      },
+      "45": {
+        "name": "parse_files",
+        "details": {
+          "docstring": "Parse files based on the input type.",
+          "is_abstract": false,
+          "decorators": "",
+          "name": "parse_files",
           "parameter_count": 1,
           "is_property": false,
           "parameters": "self",
@@ -1717,155 +56,6 @@
         }
       },
       "46": {
-        "name": "__init__",
-        "details": {
-          "is_abstract": false,
-          "decorators": "",
-          "name": "__init__",
-          "parameter_count": 4,
-          "is_property": false,
-          "parameters": "self,name,parent_name,grandparent_name",
-          "method_type": "methods",
-          "has_return_type": false
-        }
-      },
-      "47": {
-        "name": "display",
-        "details": {
-          "is_abstract": false,
-          "decorators": "",
-          "name": "display",
-          "parameter_count": 1,
-          "is_property": false,
-          "parameters": "self",
-          "method_type": "methods",
-          "has_return_type": false
-        }
-      },
-      "95": {
-        "name": "__init__",
-        "details": {
-          "docstring": "Initialize database connector with connection parameters.\n\nArgs:\n    host (str): Database host address\n    username (str): Database username\n    password (str): Database password",
-          "is_abstract": false,
-          "decorators": "",
-          "name": "__init__",
-          "parameter_count": 4,
-          "is_property": false,
-          "parameters": "self,host,username,password",
-          "method_type": "methods",
-          "has_return_type": false
-        }
-      },
-      "96": {
-        "name": "validate_credentials",
-        "details": {
-          "docstring": "Validate the provided credentials.\n\nArgs:\n    username (str): Username to validate\n    password (str): Password to validate\n    \nReturns:\n    bool: True if credentials are valid, False otherwise",
-          "is_abstract": false,
-          "decorators": "staticmethod",
-          "name": "validate_credentials",
-          "parameter_count": 2,
-          "is_property": false,
-          "parameters": "username,password",
-          "method_type": "static_methods",
-          "has_return_type": false
-        }
-      },
-      "97": {
-        "name": "connection_string",
-        "details": {
-          "docstring": "Returns the formatted connection string.",
-          "is_abstract": false,
-          "decorators": "property",
-          "name": "connection_string",
-          "parameter_count": 1,
-          "is_property": true,
-          "parameters": "self",
-          "method_type": "properties",
-          "has_return_type": false
-        }
-      },
-      "101": {
-        "name": "__init__",
-        "details": {
-          "is_abstract": false,
-          "decorators": "",
-          "name": "__init__",
-          "parameter_count": 1,
-          "is_property": false,
-          "parameters": "self",
-          "method_type": "methods",
-          "has_return_type": false
-        }
-      },
-      "102": {
-        "name": "process_data",
-        "details": {
-          "docstring": "Process the input data using specified mode.\n\nArgs:\n    data (list): Data to process\n    mode (str): Processing mode to use\n    \nReturns:\n    list: Processed data",
-          "is_abstract": false,
-          "decorators": "",
-          "name": "process_data",
-          "parameter_count": 3,
-          "is_property": false,
-          "parameters": "self,data,mode",
-          "method_type": "methods",
-          "has_return_type": false
-        }
-      },
-      "103": {
-        "name": "clear_batch",
-        "details": {
-          "docstring": "Reset the current batch of data.",
-          "is_abstract": false,
-          "decorators": "",
-          "name": "clear_batch",
-          "parameter_count": 1,
-          "is_property": false,
-          "parameters": "self",
-          "method_type": "methods",
-          "has_return_type": false
-        }
-      },
-      "107": {
-        "name": "__init__",
-        "details": {
-          "is_abstract": false,
-          "decorators": "",
-          "name": "__init__",
-          "parameter_count": 2,
-          "is_property": false,
-          "parameters": "self,message",
-          "method_type": "methods",
-          "has_return_type": false
-        }
-      },
-      "124": {
-        "name": "__init__",
-        "details": {
-          "is_abstract": false,
-          "decorators": "",
-          "name": "__init__",
-          "parameter_count": 2,
-          "is_property": false,
-          "parameters": "self,files_input",
-          "method_type": "methods",
-          "has_return_type": false
-        }
-      },
-      "125": {
-        "name": "parse_files",
-        "details": {
-          "docstring": "Parse files based on the input type.",
-          "is_abstract": false,
-          "decorators": "",
-          "name": "parse_files",
-          "parameter_count": 1,
-          "is_property": false,
-          "parameters": "self",
-          "method_type": "methods",
-          "has_return_type": false
-        }
-      },
-      "126": {
         "name": "_parse_repository_files",
         "details": {
           "docstring": "Parse all relevant files from a repository.",
@@ -1879,7 +69,7 @@
           "has_return_type": false
         }
       },
-      "127": {
+      "47": {
         "name": "_parse_individual_files",
         "details": {
           "docstring": "Parse specific files provided.",
@@ -1893,7 +83,7 @@
           "has_return_type": false
         }
       },
-      "128": {
+      "48": {
         "name": "analyze_code_patterns",
         "details": {
           "docstring": "Analyze code for patterns and conventions.",
@@ -1907,7 +97,7 @@
           "has_return_type": false
         }
       },
-      "141": {
+      "61": {
         "name": "__init__",
         "details": {
           "is_abstract": false,
@@ -1920,7 +110,7 @@
           "has_return_type": false
         }
       },
-      "142": {
+      "62": {
         "name": "_analyze_repository",
         "details": {
           "docstring": "Analyze the repository structure and contents.",
@@ -1934,7 +124,7 @@
           "has_return_type": false
         }
       },
-      "143": {
+      "63": {
         "name": "_analyze_file",
         "details": {
           "docstring": "Analyze individual files based on their type.",
@@ -1948,7 +138,7 @@
           "has_return_type": false
         }
       },
-      "144": {
+      "64": {
         "name": "_parse_python_file",
         "details": {
           "is_abstract": false,
@@ -1961,7 +151,7 @@
           "has_return_type": false
         }
       },
-      "145": {
+      "65": {
         "name": "_parse_java_file",
         "details": {
           "is_abstract": false,
@@ -1974,7 +164,7 @@
           "has_return_type": false
         }
       },
-      "146": {
+      "66": {
         "name": "_parse_javascript_file",
         "details": {
           "is_abstract": false,
@@ -1987,7 +177,7 @@
           "has_return_type": false
         }
       },
-      "147": {
+      "67": {
         "name": "_parse_json_file",
         "details": {
           "is_abstract": false,
@@ -2000,7 +190,7 @@
           "has_return_type": false
         }
       },
-      "148": {
+      "68": {
         "name": "_parse_xml_file",
         "details": {
           "is_abstract": false,
@@ -2013,7 +203,7 @@
           "has_return_type": false
         }
       },
-      "149": {
+      "69": {
         "name": "_parse_cpp_file",
         "details": {
           "is_abstract": false,
@@ -2026,7 +216,7 @@
           "has_return_type": false
         }
       },
-      "150": {
+      "70": {
         "name": "_parse_csharp_file",
         "details": {
           "is_abstract": false,
@@ -2039,7 +229,7 @@
           "has_return_type": false
         }
       },
-      "151": {
+      "71": {
         "name": "generate_summary_report",
         "details": {
           "docstring": "Generate a summary report of the repository analysis.",
@@ -2053,7 +243,7 @@
           "has_return_type": false
         }
       },
-      "174": {
+      "94": {
         "name": "__init__",
         "details": {
           "is_abstract": false,
@@ -2066,7 +256,7 @@
           "has_return_type": false
         }
       },
-      "175": {
+      "95": {
         "name": "mileage",
         "details": {
           "docstring": "Set current mileage",
@@ -2080,7 +270,7 @@
           "has_return_type": false
         }
       },
-      "176": {
+      "96": {
         "name": "start_engine",
         "details": {
           "docstring": "Start the vehicle's engine",
@@ -2095,7 +285,7 @@
           "has_return_type": true
         }
       },
-      "177": {
+      "97": {
         "name": "mileage",
         "details": {
           "docstring": "Get current mileage",
@@ -2110,7 +300,7 @@
           "has_return_type": true
         }
       },
-      "179": {
+      "99": {
         "name": "__init__",
         "details": {
           "is_abstract": false,
@@ -2123,7 +313,7 @@
           "has_return_type": false
         }
       },
-      "180": {
+      "100": {
         "name": "start_engine",
         "details": {
           "docstring": "Implementation of abstract method",
@@ -2138,7 +328,7 @@
           "has_return_type": true
         }
       },
-      "181": {
+      "101": {
         "name": "add_maintenance_record",
         "details": {
           "docstring": "Add a maintenance record",
@@ -2152,7 +342,7 @@
           "has_return_type": false
         }
       },
-      "183": {
+      "103": {
         "name": "__init__",
         "details": {
           "is_abstract": false,
@@ -2165,7 +355,7 @@
           "has_return_type": false
         }
       },
-      "184": {
+      "104": {
         "name": "start_engine",
         "details": {
           "docstring": "Implementation of abstract method",
@@ -2180,7 +370,7 @@
           "has_return_type": true
         }
       },
-      "186": {
+      "106": {
         "name": "__init__",
         "details": {
           "is_abstract": false,
@@ -2193,7 +383,7 @@
           "has_return_type": false
         }
       },
-      "187": {
+      "107": {
         "name": "add_vehicle",
         "details": {
           "docstring": "Add a vehicle to the fleet",
@@ -2207,7 +397,7 @@
           "has_return_type": false
         }
       },
-      "188": {
+      "108": {
         "name": "get_vehicle_count",
         "details": {
           "docstring": "Get total number of vehicles",
@@ -2222,7 +412,7 @@
           "has_return_type": true
         }
       },
-      "256": {
+      "117": {
         "name": "__init__",
         "details": {
           "is_abstract": false,
@@ -2235,7 +425,7 @@
           "has_return_type": false
         }
       },
-      "257": {
+      "118": {
         "name": "add_car",
         "details": {
           "docstring": "Add a car to the fleet",
@@ -2249,7 +439,7 @@
           "has_return_type": false
         }
       },
-      "258": {
+      "120": {
         "name": "add_motorcycle",
         "details": {
           "docstring": "Add a motorcycle to the fleet",
@@ -2263,7 +453,7 @@
           "has_return_type": false
         }
       },
-      "259": {
+      "121": {
         "name": "add_maintenance_record",
         "details": {
           "docstring": "Add a maintenance record",
@@ -2277,7 +467,7 @@
           "has_return_type": false
         }
       },
-      "260": {
+      "122": {
         "name": "get_fleet_statistics",
         "details": {
           "docstring": "Get statistics about the fleet",
@@ -2291,7 +481,7 @@
           "has_return_type": false
         }
       },
-      "283": {
+      "145": {
         "name": "__str__",
         "details": {
           "is_abstract": false,
@@ -2305,7 +495,7 @@
           "has_return_type": true
         }
       },
-      "288": {
+      "150": {
         "name": "draw",
         "details": {
           "is_abstract": true,
@@ -2319,7 +509,7 @@
           "has_return_type": true
         }
       },
-      "290": {
+      "152": {
         "name": "__init__",
         "details": {
           "is_abstract": false,
@@ -2332,7 +522,7 @@
           "has_return_type": false
         }
       },
-      "291": {
+      "153": {
         "name": "calculate_area",
         "details": {
           "is_abstract": true,
@@ -2346,7 +536,7 @@
           "has_return_type": true
         }
       },
-      "292": {
+      "154": {
         "name": "draw",
         "details": {
           "is_abstract": false,
@@ -2360,7 +550,7 @@
           "has_return_type": true
         }
       },
-      "293": {
+      "155": {
         "name": "area",
         "details": {
           "is_abstract": false,
@@ -2374,7 +564,7 @@
           "has_return_type": true
         }
       },
-      "295": {
+      "157": {
         "name": "__init__",
         "details": {
           "is_abstract": false,
@@ -2387,7 +577,7 @@
           "has_return_type": false
         }
       },
-      "296": {
+      "158": {
         "name": "calculate_area",
         "details": {
           "is_abstract": false,
@@ -2401,7 +591,7 @@
           "has_return_type": true
         }
       },
-      "297": {
+      "159": {
         "name": "draw",
         "details": {
           "is_abstract": false,
@@ -2415,7 +605,7 @@
           "has_return_type": true
         }
       },
-      "299": {
+      "161": {
         "name": "__init__",
         "details": {
           "is_abstract": false,
@@ -2428,7 +618,7 @@
           "has_return_type": false
         }
       },
-      "300": {
+      "162": {
         "name": "calculate_area",
         "details": {
           "is_abstract": false,
@@ -2442,7 +632,7 @@
           "has_return_type": true
         }
       },
-      "376": {
+      "163": {
         "name": "draw",
         "details": {
           "is_abstract": false,
@@ -2456,7 +646,7 @@
           "has_return_type": true
         }
       },
-      "378": {
+      "165": {
         "name": "__init__",
         "details": {
           "is_abstract": false,
@@ -2469,7 +659,7 @@
           "has_return_type": false
         }
       },
-      "379": {
+      "166": {
         "name": "add_shape",
         "details": {
           "is_abstract": false,
@@ -2482,7 +672,7 @@
           "has_return_type": false
         }
       },
-      "380": {
+      "167": {
         "name": "remove_shape",
         "details": {
           "is_abstract": false,
@@ -2495,7 +685,7 @@
           "has_return_type": false
         }
       },
-      "381": {
+      "168": {
         "name": "draw_all",
         "details": {
           "is_abstract": false,
@@ -2508,7 +698,7 @@
           "has_return_type": false
         }
       },
-      "383": {
+      "170": {
         "name": "__init__",
         "details": {
           "is_abstract": false,
@@ -2521,7 +711,7 @@
           "has_return_type": false
         }
       },
-      "384": {
+      "171": {
         "name": "add_shape",
         "details": {
           "is_abstract": false,
@@ -2534,7 +724,7 @@
           "has_return_type": false
         }
       },
-      "385": {
+      "172": {
         "name": "remove_shape",
         "details": {
           "is_abstract": false,
@@ -2547,7 +737,7 @@
           "has_return_type": false
         }
       },
-      "386": {
+      "173": {
         "name": "get_total_area",
         "details": {
           "is_abstract": false,
@@ -2561,7 +751,7 @@
           "has_return_type": true
         }
       },
-      "388": {
+      "175": {
         "name": "get_color_info",
         "details": {
           "is_abstract": false,
@@ -2574,38 +764,242 @@
           "method_type": "methods",
           "has_return_type": true
         }
+      },
+      "254": {
+        "name": "__init__",
+        "details": {
+          "docstring": "Initialize the prompt loader with the path to the TOML file.\n\nArgs:\n    toml_path (str): Path to the TOML configuration file",
+          "is_abstract": false,
+          "decorators": "",
+          "name": "__init__",
+          "parameter_count": 2,
+          "is_property": false,
+          "parameters": "self,toml_path",
+          "method_type": "methods",
+          "has_return_type": false
+        }
+      },
+      "255": {
+        "name": "_load_prompts",
+        "details": {
+          "docstring": "Load and parse prompts from the TOML file.\n\nReturns:\n    Dict[str, Any]: Parsed TOML content\n    \nRaises:\n    FileNotFoundError: If the TOML file doesn't exist\n    toml.TomlDecodeError: If the TOML file is invalid",
+          "is_abstract": false,
+          "decorators": "",
+          "name": "_load_prompts",
+          "parameter_count": 1,
+          "is_property": false,
+          "parameters": "self",
+          "method_type": "methods",
+          "has_return_type": false
+        }
+      },
+      "256": {
+        "name": "get_prompt",
+        "details": {
+          "docstring": "Get a prompt template and fill it with the provided kwargs.\n\nArgs:\n    prompt_type (str): The type of prompt to retrieve\n    default (Optional[str]): Default template to use if prompt_type not found\n    **kwargs: Keyword arguments to fill the template\n    \nReturns:\n    str: The filled prompt template\n    \nRaises:\n    KeyError: If prompt_type not found and no default provided\n    ValueError: If template substitution fails",
+          "is_abstract": false,
+          "decorators": "",
+          "name": "get_prompt",
+          "parameter_count": 3,
+          "is_property": false,
+          "returns": "str",
+          "parameters": "self,prompt_type,default",
+          "method_type": "methods",
+          "has_return_type": true
+        }
+      },
+      "257": {
+        "name": "get_section",
+        "details": {
+          "docstring": "Get a specific section from the TOML file.\n\nArgs:\n    section_name (str): Name of the section to retrieve\n    \nReturns:\n    Dict[str, Any]: The requested section content\n    \nRaises:\n    KeyError: If section not found",
+          "is_abstract": false,
+          "decorators": "",
+          "name": "get_section",
+          "parameter_count": 2,
+          "is_property": false,
+          "parameters": "self,section_name",
+          "method_type": "methods",
+          "has_return_type": false
+        }
+      },
+      "258": {
+        "name": "reload_prompts",
+        "details": {
+          "docstring": "Reload prompts from the TOML file.\nUseful when the underlying file has been modified.",
+          "is_abstract": false,
+          "decorators": "",
+          "name": "reload_prompts",
+          "parameter_count": 1,
+          "is_property": false,
+          "parameters": "self",
+          "method_type": "methods",
+          "has_return_type": false
+        }
+      },
+      "275": {
+        "name": "__init__",
+        "details": {
+          "is_abstract": false,
+          "decorators": "",
+          "name": "__init__",
+          "parameter_count": 2,
+          "is_property": false,
+          "parameters": "self,name",
+          "method_type": "methods",
+          "has_return_type": false
+        }
+      },
+      "276": {
+        "name": "display",
+        "details": {
+          "is_abstract": false,
+          "decorators": "",
+          "name": "display",
+          "parameter_count": 1,
+          "is_property": false,
+          "parameters": "self",
+          "method_type": "methods",
+          "has_return_type": false
+        }
+      },
+      "278": {
+        "name": "__init__",
+        "details": {
+          "is_abstract": false,
+          "decorators": "",
+          "name": "__init__",
+          "parameter_count": 3,
+          "is_property": false,
+          "parameters": "self,name,parent_name",
+          "method_type": "methods",
+          "has_return_type": false
+        }
+      },
+      "279": {
+        "name": "display",
+        "details": {
+          "is_abstract": false,
+          "decorators": "",
+          "name": "display",
+          "parameter_count": 1,
+          "is_property": false,
+          "parameters": "self",
+          "method_type": "methods",
+          "has_return_type": false
+        }
+      },
+      "281": {
+        "name": "__init__",
+        "details": {
+          "is_abstract": false,
+          "decorators": "",
+          "name": "__init__",
+          "parameter_count": 4,
+          "is_property": false,
+          "parameters": "self,name,parent_name,grandparent_name",
+          "method_type": "methods",
+          "has_return_type": false
+        }
+      },
+      "282": {
+        "name": "display",
+        "details": {
+          "is_abstract": false,
+          "decorators": "",
+          "name": "display",
+          "parameter_count": 1,
+          "is_property": false,
+          "parameters": "self",
+          "method_type": "methods",
+          "has_return_type": false
+        }
+      },
+      "484": {
+        "name": "__init__",
+        "details": {
+          "docstring": "Initialize database connector with connection parameters.\n\nArgs:\n    host (str): Database host address\n    username (str): Database username\n    password (str): Database password",
+          "is_abstract": false,
+          "decorators": "",
+          "name": "__init__",
+          "parameter_count": 4,
+          "is_property": false,
+          "parameters": "self,host,username,password",
+          "method_type": "methods",
+          "has_return_type": false
+        }
+      },
+      "485": {
+        "name": "validate_credentials",
+        "details": {
+          "docstring": "Validate the provided credentials.\n\nArgs:\n    username (str): Username to validate\n    password (str): Password to validate\n    \nReturns:\n    bool: True if credentials are valid, False otherwise",
+          "is_abstract": false,
+          "decorators": "staticmethod",
+          "name": "validate_credentials",
+          "parameter_count": 2,
+          "is_property": false,
+          "parameters": "username,password",
+          "method_type": "static_methods",
+          "has_return_type": false
+        }
+      },
+      "486": {
+        "name": "connection_string",
+        "details": {
+          "docstring": "Returns the formatted connection string.",
+          "is_abstract": false,
+          "decorators": "property",
+          "name": "connection_string",
+          "parameter_count": 1,
+          "is_property": true,
+          "parameters": "self",
+          "method_type": "properties",
+          "has_return_type": false
+        }
+      },
+      "490": {
+        "name": "__init__",
+        "details": {
+          "is_abstract": false,
+          "decorators": "",
+          "name": "__init__",
+          "parameter_count": 1,
+          "is_property": false,
+          "parameters": "self",
+          "method_type": "methods",
+          "has_return_type": false
+        }
+      },
+      "491": {
+        "name": "process_data",
+        "details": {
+          "docstring": "Process the input data using specified mode.\n\nArgs:\n    data (list): Data to process\n    mode (str): Processing mode to use\n    \nReturns:\n    list: Processed data",
+          "is_abstract": false,
+          "decorators": "",
+          "name": "process_data",
+          "parameter_count": 3,
+          "is_property": false,
+          "parameters": "self,data,mode",
+          "method_type": "methods",
+          "has_return_type": false
+        }
       }
     },
     "ClassAttribute": {
-      "98": {
-        "name": "connection_pool",
-        "details": {
-          "has_type_annotation": false,
-          "name": "connection_pool"
-        }
-      },
-      "99": {
-        "name": "DEFAULT_PORT",
-        "details": {
-          "has_type_annotation": false,
-          "name": "DEFAULT_PORT"
-        }
-      },
-      "104": {
+      "1": {
         "name": "BATCH_SIZE",
         "details": {
           "has_type_annotation": false,
           "name": "BATCH_SIZE"
         }
       },
-      "105": {
+      "2": {
         "name": "PROCESSING_MODES",
         "details": {
           "has_type_annotation": false,
           "name": "PROCESSING_MODES"
         }
       },
-      "190": {
+      "110": {
         "name": "vehicle_id",
         "details": {
           "has_type_annotation": true,
@@ -2613,7 +1007,7 @@
           "name": "vehicle_id"
         }
       },
-      "191": {
+      "111": {
         "name": "service_date",
         "details": {
           "has_type_annotation": true,
@@ -2621,7 +1015,7 @@
           "name": "service_date"
         }
       },
-      "192": {
+      "112": {
         "name": "service_type",
         "details": {
           "has_type_annotation": true,
@@ -2629,7 +1023,7 @@
           "name": "service_type"
         }
       },
-      "193": {
+      "113": {
         "name": "cost",
         "details": {
           "has_type_annotation": true,
@@ -2637,7 +1031,7 @@
           "name": "cost"
         }
       },
-      "194": {
+      "114": {
         "name": "technician",
         "details": {
           "has_type_annotation": true,
@@ -2645,14 +1039,14 @@
           "name": "technician"
         }
       },
-      "254": {
+      "115": {
         "name": "notes",
         "details": {
           "has_type_annotation": false,
           "name": "notes"
         }
       },
-      "284": {
+      "146": {
         "name": "red",
         "details": {
           "has_type_annotation": true,
@@ -2660,7 +1054,7 @@
           "name": "red"
         }
       },
-      "285": {
+      "147": {
         "name": "green",
         "details": {
           "has_type_annotation": true,
@@ -2668,22 +1062,1628 @@
           "name": "green"
         }
       },
-      "286": {
+      "148": {
         "name": "blue",
         "details": {
           "has_type_annotation": true,
           "type_hint": "int",
           "name": "blue"
         }
+      },
+      "487": {
+        "name": "connection_pool",
+        "details": {
+          "has_type_annotation": false,
+          "name": "connection_pool"
+        }
+      },
+      "488": {
+        "name": "DEFAULT_PORT",
+        "details": {
+          "has_type_annotation": false,
+          "name": "DEFAULT_PORT"
+        }
+      }
+    },
+    "Class": {
+      "3": {
+        "name": "CustomError",
+        "details": {
+          "docstring": "Custom error class for specific error handling.",
+          "total_attributes": 0,
+          "is_abstract": false,
+          "name": "CustomError",
+          "total_methods": 1
+        }
+      },
+      "43": {
+        "name": "CodebaseAnalyzer",
+        "details": {
+          "total_attributes": 0,
+          "is_abstract": false,
+          "name": "CodebaseAnalyzer",
+          "total_methods": 5
+        }
+      },
+      "60": {
+        "name": "RepositoryAnalyzer",
+        "details": {
+          "total_attributes": 0,
+          "is_abstract": false,
+          "name": "RepositoryAnalyzer",
+          "total_methods": 11
+        }
+      },
+      "93": {
+        "name": "Vehicle",
+        "details": {
+          "docstring": "Base class for all vehicles",
+          "total_attributes": 0,
+          "is_abstract": true,
+          "name": "Vehicle",
+          "total_methods": 3
+        }
+      },
+      "98": {
+        "name": "Car",
+        "details": {
+          "docstring": "Car implementation of Vehicle",
+          "total_attributes": 0,
+          "is_abstract": false,
+          "name": "Car",
+          "total_methods": 3
+        }
+      },
+      "102": {
+        "name": "Motorcycle",
+        "details": {
+          "docstring": "Motorcycle implementation of Vehicle",
+          "total_attributes": 0,
+          "is_abstract": false,
+          "name": "Motorcycle",
+          "total_methods": 2
+        }
+      },
+      "105": {
+        "name": "Fleet",
+        "details": {
+          "docstring": "Generic container for managing vehicle fleets",
+          "total_attributes": 0,
+          "is_abstract": false,
+          "name": "Fleet",
+          "total_methods": 3
+        }
+      },
+      "109": {
+        "name": "MaintenanceRecord",
+        "details": {
+          "docstring": "Maintenance record data class",
+          "total_attributes": 6,
+          "is_abstract": false,
+          "name": "MaintenanceRecord",
+          "total_methods": 0
+        }
+      },
+      "116": {
+        "name": "FleetManagementSystem",
+        "details": {
+          "docstring": "System for managing vehicle fleets",
+          "total_attributes": 0,
+          "is_abstract": false,
+          "name": "FleetManagementSystem",
+          "total_methods": 5
+        }
+      },
+      "144": {
+        "name": "Color",
+        "details": {
+          "docstring": "Represents a color using RGB values",
+          "total_attributes": 3,
+          "is_abstract": false,
+          "name": "Color",
+          "total_methods": 1
+        }
+      },
+      "149": {
+        "name": "Drawable",
+        "details": {
+          "docstring": "Interface for drawable objects",
+          "total_attributes": 0,
+          "is_abstract": true,
+          "name": "Drawable",
+          "total_methods": 1
+        }
+      },
+      "151": {
+        "name": "Shape",
+        "details": {
+          "docstring": "Base class for all shapes",
+          "total_attributes": 0,
+          "is_abstract": true,
+          "name": "Shape",
+          "total_methods": 3
+        }
+      },
+      "156": {
+        "name": "Circle",
+        "details": {
+          "docstring": "Circle shape with radius",
+          "total_attributes": 0,
+          "is_abstract": false,
+          "name": "Circle",
+          "total_methods": 3
+        }
+      },
+      "160": {
+        "name": "Rectangle",
+        "details": {
+          "docstring": "Rectangle shape with width and height",
+          "total_attributes": 0,
+          "is_abstract": false,
+          "name": "Rectangle",
+          "total_methods": 3
+        }
+      },
+      "164": {
+        "name": "Canvas",
+        "details": {
+          "docstring": "Canvas that contains and owns shapes",
+          "total_attributes": 0,
+          "is_abstract": false,
+          "name": "Canvas",
+          "total_methods": 4
+        }
+      },
+      "169": {
+        "name": "ShapeGroup",
+        "details": {
+          "docstring": "Group that references but doesn't own shapes",
+          "total_attributes": 0,
+          "is_abstract": false,
+          "name": "ShapeGroup",
+          "total_methods": 4
+        }
+      },
+      "174": {
+        "name": "ColoredRectangle",
+        "details": {
+          "docstring": "Rectangle with additional color-specific functionality",
+          "total_attributes": 0,
+          "is_abstract": false,
+          "name": "ColoredRectangle",
+          "total_methods": 1
+        }
+      },
+      "194": {
+        "name": "PromptLoader",
+        "details": {
+          "docstring": "A class to load and manage prompts from TOML configuration files.\nHandles template substitution and section retrieval with proper error handling.",
+          "total_attributes": 0,
+          "is_abstract": false,
+          "name": "PromptLoader",
+          "total_methods": 5
+        }
+      },
+      "274": {
+        "name": "Grandparent",
+        "details": {
+          "total_attributes": 0,
+          "is_abstract": false,
+          "name": "Grandparent",
+          "total_methods": 2
+        }
+      },
+      "277": {
+        "name": "Parent",
+        "details": {
+          "total_attributes": 0,
+          "is_abstract": false,
+          "name": "Parent",
+          "total_methods": 2
+        }
+      },
+      "280": {
+        "name": "Child",
+        "details": {
+          "total_attributes": 0,
+          "is_abstract": false,
+          "name": "Child",
+          "total_methods": 2
+        }
+      },
+      "483": {
+        "name": "DatabaseConnector",
+        "details": {
+          "docstring": "A class to handle database connections and operations.\nDemonstrates class-level documentation and various Python features.",
+          "total_attributes": 2,
+          "is_abstract": false,
+          "name": "DatabaseConnector",
+          "total_methods": 2
+        }
+      },
+      "489": {
+        "name": "DataProcessor",
+        "details": {
+          "docstring": "Class for processing and transforming data.\nContains multiple methods and class attributes.",
+          "total_attributes": 2,
+          "is_abstract": false,
+          "name": "DataProcessor",
+          "total_methods": 3
+        }
+      }
+    },
+    "Function": {
+      "5": {
+        "name": "connect_to_database",
+        "details": {
+          "docstring": "Standalone function to establish database connection.\n\nArgs:\n    host (str): Database host address\n    retries (int): Number of connection retries\n    \nReturns:\n    bool: True if connection successful, False otherwise",
+          "decorators": "",
+          "name": "connect_to_database",
+          "parameter_count": 2,
+          "parameters": "host,retries",
+          "has_return_type": false
+        }
+      },
+      "6": {
+        "name": "format_data",
+        "details": {
+          "docstring": "Format the input data into specified format.\n\nArgs:\n    data (dict): Data to format\n    output_format (str): Desired output format\n    \nReturns:\n    str: Formatted data string",
+          "decorators": "",
+          "name": "format_data",
+          "parameter_count": 2,
+          "parameters": "data,output_format",
+          "has_return_type": false
+        }
+      },
+      "7": {
+        "name": "initialize_system",
+        "details": {
+          "docstring": "System initialization function.\nReturns success status of initialization.",
+          "decorators": "",
+          "name": "initialize_system",
+          "parameter_count": 0,
+          "parameters": "",
+          "has_return_type": false
+        }
+      },
+      "8": {
+        "name": "__init__",
+        "details": {
+          "decorators": "",
+          "name": "__init__",
+          "parameter_count": 2,
+          "parameters": "self,message",
+          "has_return_type": false
+        }
+      },
+      "9": {
+        "name": "connection_string",
+        "details": {
+          "docstring": "Returns the formatted connection string.",
+          "decorators": "property",
+          "name": "connection_string",
+          "parameter_count": 1,
+          "parameters": "self",
+          "has_return_type": false
+        }
+      },
+      "10": {
+        "name": "validate_credentials",
+        "details": {
+          "docstring": "Validate the provided credentials.\n\nArgs:\n    username (str): Username to validate\n    password (str): Password to validate\n    \nReturns:\n    bool: True if credentials are valid, False otherwise",
+          "decorators": "staticmethod",
+          "name": "validate_credentials",
+          "parameter_count": 2,
+          "parameters": "username,password",
+          "has_return_type": false
+        }
+      },
+      "11": {
+        "name": "process_data",
+        "details": {
+          "docstring": "Process the input data using specified mode.\n\nArgs:\n    data (list): Data to process\n    mode (str): Processing mode to use\n    \nReturns:\n    list: Processed data",
+          "decorators": "",
+          "name": "process_data",
+          "parameter_count": 3,
+          "parameters": "self,data,mode",
+          "has_return_type": false
+        }
+      },
+      "12": {
+        "name": "clear_batch",
+        "details": {
+          "docstring": "Reset the current batch of data.",
+          "decorators": "",
+          "name": "clear_batch",
+          "parameter_count": 1,
+          "parameters": "self",
+          "has_return_type": false
+        }
+      },
+      "49": {
+        "name": "__init__",
+        "details": {
+          "decorators": "",
+          "name": "__init__",
+          "parameter_count": 2,
+          "parameters": "self,files_input",
+          "has_return_type": false
+        }
+      },
+      "50": {
+        "name": "parse_files",
+        "details": {
+          "docstring": "Parse files based on the input type.",
+          "decorators": "",
+          "name": "parse_files",
+          "parameter_count": 1,
+          "parameters": "self",
+          "has_return_type": false
+        }
+      },
+      "51": {
+        "name": "_parse_repository_files",
+        "details": {
+          "docstring": "Parse all relevant files from a repository.",
+          "decorators": "",
+          "name": "_parse_repository_files",
+          "parameter_count": 2,
+          "parameters": "self,repo_path",
+          "has_return_type": false
+        }
+      },
+      "52": {
+        "name": "_parse_individual_files",
+        "details": {
+          "docstring": "Parse specific files provided.",
+          "decorators": "",
+          "name": "_parse_individual_files",
+          "parameter_count": 2,
+          "parameters": "self,file_paths",
+          "has_return_type": false
+        }
+      },
+      "53": {
+        "name": "analyze_code_patterns",
+        "details": {
+          "docstring": "Analyze code for patterns and conventions.",
+          "decorators": "",
+          "name": "analyze_code_patterns",
+          "parameter_count": 1,
+          "parameters": "self",
+          "has_return_type": false
+        }
+      },
+      "72": {
+        "name": "__init__",
+        "details": {
+          "decorators": "",
+          "name": "__init__",
+          "parameter_count": 2,
+          "parameters": "self,repo_path",
+          "has_return_type": false
+        }
+      },
+      "73": {
+        "name": "_analyze_repository",
+        "details": {
+          "docstring": "Analyze the repository structure and contents.",
+          "decorators": "",
+          "name": "_analyze_repository",
+          "parameter_count": 1,
+          "parameters": "self",
+          "has_return_type": false
+        }
+      },
+      "74": {
+        "name": "_analyze_file",
+        "details": {
+          "docstring": "Analyze individual files based on their type.",
+          "decorators": "",
+          "name": "_analyze_file",
+          "parameter_count": 2,
+          "parameters": "self,file_path",
+          "has_return_type": false
+        }
+      },
+      "75": {
+        "name": "_parse_python_file",
+        "details": {
+          "decorators": "",
+          "name": "_parse_python_file",
+          "parameter_count": 2,
+          "parameters": "self,content",
+          "has_return_type": false
+        }
+      },
+      "76": {
+        "name": "_parse_java_file",
+        "details": {
+          "decorators": "",
+          "name": "_parse_java_file",
+          "parameter_count": 2,
+          "parameters": "self,content",
+          "has_return_type": false
+        }
+      },
+      "77": {
+        "name": "_parse_javascript_file",
+        "details": {
+          "decorators": "",
+          "name": "_parse_javascript_file",
+          "parameter_count": 2,
+          "parameters": "self,content",
+          "has_return_type": false
+        }
+      },
+      "78": {
+        "name": "_parse_json_file",
+        "details": {
+          "decorators": "",
+          "name": "_parse_json_file",
+          "parameter_count": 2,
+          "parameters": "self,content",
+          "has_return_type": false
+        }
+      },
+      "79": {
+        "name": "_parse_xml_file",
+        "details": {
+          "decorators": "",
+          "name": "_parse_xml_file",
+          "parameter_count": 2,
+          "parameters": "self,content",
+          "has_return_type": false
+        }
+      },
+      "80": {
+        "name": "_parse_cpp_file",
+        "details": {
+          "decorators": "",
+          "name": "_parse_cpp_file",
+          "parameter_count": 2,
+          "parameters": "self,content",
+          "has_return_type": false
+        }
+      },
+      "81": {
+        "name": "_parse_csharp_file",
+        "details": {
+          "decorators": "",
+          "name": "_parse_csharp_file",
+          "parameter_count": 2,
+          "parameters": "self,content",
+          "has_return_type": false
+        }
+      },
+      "82": {
+        "name": "generate_summary_report",
+        "details": {
+          "docstring": "Generate a summary report of the repository analysis.",
+          "decorators": "",
+          "name": "generate_summary_report",
+          "parameter_count": 1,
+          "parameters": "self",
+          "has_return_type": false
+        }
+      },
+      "123": {
+        "name": "__init__",
+        "details": {
+          "decorators": "",
+          "name": "__init__",
+          "parameter_count": 1,
+          "parameters": "self",
+          "has_return_type": false
+        }
+      },
+      "124": {
+        "name": "mileage",
+        "details": {
+          "docstring": "Set current mileage",
+          "decorators": "",
+          "name": "mileage",
+          "parameter_count": 2,
+          "parameters": "self,value",
+          "has_return_type": false
+        }
+      },
+      "125": {
+        "name": "start_engine",
+        "details": {
+          "docstring": "Implementation of abstract method",
+          "decorators": "",
+          "name": "start_engine",
+          "parameter_count": 1,
+          "returns": "bool",
+          "parameters": "self",
+          "has_return_type": true
+        }
+      },
+      "126": {
+        "name": "add_maintenance_record",
+        "details": {
+          "docstring": "Add a maintenance record",
+          "decorators": "",
+          "name": "add_maintenance_record",
+          "parameter_count": 6,
+          "parameters": "self,vehicle_id,service_type,cost,technician,notes",
+          "has_return_type": false
+        }
+      },
+      "127": {
+        "name": "add_vehicle",
+        "details": {
+          "docstring": "Add a vehicle to the fleet",
+          "decorators": "",
+          "name": "add_vehicle",
+          "parameter_count": 2,
+          "parameters": "self,vehicle",
+          "has_return_type": false
+        }
+      },
+      "128": {
+        "name": "get_vehicle_count",
+        "details": {
+          "docstring": "Get total number of vehicles",
+          "decorators": "",
+          "name": "get_vehicle_count",
+          "parameter_count": 1,
+          "returns": "int",
+          "parameters": "self",
+          "has_return_type": true
+        }
+      },
+      "129": {
+        "name": "add_car",
+        "details": {
+          "docstring": "Add a car to the fleet",
+          "decorators": "",
+          "name": "add_car",
+          "parameter_count": 2,
+          "parameters": "self,car",
+          "has_return_type": false
+        }
+      },
+      "130": {
+        "name": "add_motorcycle",
+        "details": {
+          "docstring": "Add a motorcycle to the fleet",
+          "decorators": "",
+          "name": "add_motorcycle",
+          "parameter_count": 2,
+          "parameters": "self,motorcycle",
+          "has_return_type": false
+        }
+      },
+      "131": {
+        "name": "get_fleet_statistics",
+        "details": {
+          "docstring": "Get statistics about the fleet",
+          "decorators": "",
+          "name": "get_fleet_statistics",
+          "parameter_count": 1,
+          "parameters": "self",
+          "has_return_type": false
+        }
+      },
+      "176": {
+        "name": "main",
+        "details": {
+          "decorators": "",
+          "name": "main",
+          "parameter_count": 0,
+          "parameters": "",
+          "has_return_type": false
+        }
+      },
+      "177": {
+        "name": "__str__",
+        "details": {
+          "decorators": "",
+          "name": "__str__",
+          "parameter_count": 1,
+          "returns": "str",
+          "parameters": "self",
+          "has_return_type": true
+        }
+      },
+      "178": {
+        "name": "draw",
+        "details": {
+          "decorators": "",
+          "name": "draw",
+          "parameter_count": 1,
+          "returns": "str",
+          "parameters": "self",
+          "has_return_type": true
+        }
+      },
+      "179": {
+        "name": "__init__",
+        "details": {
+          "decorators": "",
+          "name": "__init__",
+          "parameter_count": 2,
+          "parameters": "self,name",
+          "has_return_type": false
+        }
+      },
+      "180": {
+        "name": "area",
+        "details": {
+          "decorators": "property",
+          "name": "area",
+          "parameter_count": 1,
+          "returns": "float",
+          "parameters": "self",
+          "has_return_type": true
+        }
+      },
+      "181": {
+        "name": "calculate_area",
+        "details": {
+          "decorators": "",
+          "name": "calculate_area",
+          "parameter_count": 1,
+          "returns": "float",
+          "parameters": "self",
+          "has_return_type": true
+        }
+      },
+      "182": {
+        "name": "add_shape",
+        "details": {
+          "decorators": "",
+          "name": "add_shape",
+          "parameter_count": 2,
+          "parameters": "self,shape",
+          "has_return_type": false
+        }
+      },
+      "183": {
+        "name": "remove_shape",
+        "details": {
+          "decorators": "",
+          "name": "remove_shape",
+          "parameter_count": 2,
+          "parameters": "self,shape",
+          "has_return_type": false
+        }
+      },
+      "184": {
+        "name": "draw_all",
+        "details": {
+          "decorators": "",
+          "name": "draw_all",
+          "parameter_count": 1,
+          "parameters": "self",
+          "has_return_type": false
+        }
+      },
+      "185": {
+        "name": "get_total_area",
+        "details": {
+          "decorators": "",
+          "name": "get_total_area",
+          "parameter_count": 1,
+          "returns": "float",
+          "parameters": "self",
+          "has_return_type": true
+        }
+      },
+      "186": {
+        "name": "get_color_info",
+        "details": {
+          "decorators": "",
+          "name": "get_color_info",
+          "parameter_count": 1,
+          "returns": "str",
+          "parameters": "self",
+          "has_return_type": true
+        }
+      },
+      "259": {
+        "name": "__init__",
+        "details": {
+          "docstring": "Initialize the prompt loader with the path to the TOML file.\n\nArgs:\n    toml_path (str): Path to the TOML configuration file",
+          "decorators": "",
+          "name": "__init__",
+          "parameter_count": 2,
+          "parameters": "self,toml_path",
+          "has_return_type": false
+        }
+      },
+      "260": {
+        "name": "_load_prompts",
+        "details": {
+          "docstring": "Load and parse prompts from the TOML file.\n\nReturns:\n    Dict[str, Any]: Parsed TOML content\n    \nRaises:\n    FileNotFoundError: If the TOML file doesn't exist\n    toml.TomlDecodeError: If the TOML file is invalid",
+          "decorators": "",
+          "name": "_load_prompts",
+          "parameter_count": 1,
+          "parameters": "self",
+          "has_return_type": false
+        }
+      },
+      "261": {
+        "name": "get_prompt",
+        "details": {
+          "docstring": "Get a prompt template and fill it with the provided kwargs.\n\nArgs:\n    prompt_type (str): The type of prompt to retrieve\n    default (Optional[str]): Default template to use if prompt_type not found\n    **kwargs: Keyword arguments to fill the template\n    \nReturns:\n    str: The filled prompt template\n    \nRaises:\n    KeyError: If prompt_type not found and no default provided\n    ValueError: If template substitution fails",
+          "decorators": "",
+          "name": "get_prompt",
+          "parameter_count": 3,
+          "returns": "str",
+          "parameters": "self,prompt_type,default",
+          "has_return_type": true
+        }
+      },
+      "262": {
+        "name": "get_section",
+        "details": {
+          "docstring": "Get a specific section from the TOML file.\n\nArgs:\n    section_name (str): Name of the section to retrieve\n    \nReturns:\n    Dict[str, Any]: The requested section content\n    \nRaises:\n    KeyError: If section not found",
+          "decorators": "",
+          "name": "get_section",
+          "parameter_count": 2,
+          "parameters": "self,section_name",
+          "has_return_type": false
+        }
+      },
+      "263": {
+        "name": "reload_prompts",
+        "details": {
+          "docstring": "Reload prompts from the TOML file.\nUseful when the underlying file has been modified.",
+          "decorators": "",
+          "name": "reload_prompts",
+          "parameter_count": 1,
+          "parameters": "self",
+          "has_return_type": false
+        }
+      },
+      "283": {
+        "name": "__init__",
+        "details": {
+          "decorators": "",
+          "name": "__init__",
+          "parameter_count": 4,
+          "parameters": "self,name,parent_name,grandparent_name",
+          "has_return_type": false
+        }
+      },
+      "284": {
+        "name": "display",
+        "details": {
+          "decorators": "",
+          "name": "display",
+          "parameter_count": 1,
+          "parameters": "self",
+          "has_return_type": false
+        }
+      },
+      "287": {
+        "name": "connect_to_neo4j",
+        "details": {
+          "decorators": "",
+          "name": "connect_to_neo4j",
+          "parameter_count": 3,
+          "parameters": "uri,username,password",
+          "has_return_type": false
+        }
+      },
+      "288": {
+        "name": "detect_file_type",
+        "details": {
+          "decorators": "",
+          "name": "detect_file_type",
+          "parameter_count": 1,
+          "parameters": "file_path",
+          "has_return_type": false
+        }
+      },
+      "289": {
+        "name": "load_litellm_config",
+        "details": {
+          "decorators": "",
+          "name": "load_litellm_config",
+          "parameter_count": 1,
+          "parameters": "yaml_path",
+          "has_return_type": false
+        }
+      },
+      "290": {
+        "name": "determine_file_type",
+        "details": {
+          "decorators": "",
+          "name": "determine_file_type",
+          "parameter_count": 1,
+          "parameters": "file_path",
+          "has_return_type": false
+        }
+      },
+      "291": {
+        "name": "sanitize_input_content",
+        "details": {
+          "decorators": "",
+          "name": "sanitize_input_content",
+          "parameter_count": 1,
+          "parameters": "content",
+          "has_return_type": false
+        }
+      },
+      "292": {
+        "name": "ai_extract_compliance_sections",
+        "details": {
+          "decorators": "",
+          "name": "ai_extract_compliance_sections",
+          "parameter_count": 4,
+          "parameters": "file_content,config,selected_model,provider",
+          "has_return_type": false
+        }
+      },
+      "293": {
+        "name": "load_compliance_file",
+        "details": {
+          "decorators": "",
+          "name": "load_compliance_file",
+          "parameter_count": 4,
+          "parameters": "compliance_file_path,config,selected_model,provider",
+          "has_return_type": false
+        }
+      },
+      "294": {
+        "name": "generate_litellm_response",
+        "details": {
+          "decorators": "",
+          "name": "generate_litellm_response",
+          "parameter_count": 4,
+          "parameters": "prompt,config,selected_model,provider",
+          "has_return_type": false
+        }
+      },
+      "295": {
+        "name": "load_additional_files",
+        "details": {
+          "decorators": "",
+          "name": "load_additional_files",
+          "parameter_count": 1,
+          "parameters": "file_paths",
+          "has_return_type": false
+        }
+      },
+      "296": {
+        "name": "generate_comments_or_docstrings",
+        "details": {
+          "decorators": "",
+          "name": "generate_comments_or_docstrings",
+          "parameter_count": 5,
+          "parameters": "file_snippet,selected_model,provider,config,compliance_sections",
+          "has_return_type": false
+        }
+      },
+      "297": {
+        "name": "generate_documentation",
+        "details": {
+          "decorators": "",
+          "name": "generate_documentation",
+          "parameter_count": 7,
+          "parameters": "file_snippet,selected_model,provider,config,compliance_sections,file_extension,file_type",
+          "has_return_type": false
+        }
+      },
+      "298": {
+        "name": "review_code_from_file",
+        "details": {
+          "decorators": "",
+          "name": "review_code_from_file",
+          "parameter_count": 13,
+          "parameters": "file_path,repository_details,design_patterns_path,best_practices_path,review_file_path,additional_file_paths,comments_file_path,documentation_file_path,selected_model,provider,config,repo_file_structure,compliance_file_path",
+          "has_return_type": false
+        }
+      },
+      "299": {
+        "name": "generate_code_base_structure",
+        "details": {
+          "decorators": "",
+          "name": "generate_code_base_structure",
+          "parameter_count": 5,
+          "parameters": "selected_model,provider,config,repository_details,compliance_sections",
+          "has_return_type": false
+        }
+      },
+      "300": {
+        "name": "build_repository_knowledge_graph",
+        "details": {
+          "docstring": "Build a knowledge graph in Neo4j from repository structure details.\n\nArgs:\n    graph: py2neo.Graph instance connected to Neo4j\n    repository_details: Dictionary containing repository structure details",
+          "decorators": "",
+          "name": "build_repository_knowledge_graph",
+          "parameter_count": 2,
+          "parameters": "graph,repository_details",
+          "has_return_type": false
+        }
+      },
+      "376": {
+        "name": "create_knowledge_graph",
+        "details": {
+          "docstring": "Create a Neo4j knowledge graph from repository details.\n\nArgs:\n    repository_details: Dictionary containing repository structure",
+          "decorators": "",
+          "name": "create_knowledge_graph",
+          "parameter_count": 1,
+          "parameters": "repository_details",
+          "has_return_type": false
+        }
+      },
+      "377": {
+        "name": "generate_guidelines_document",
+        "details": {
+          "docstring": "Generate a comprehensive guidelines document from codebase analysis.\n\nArgs:\n    files_input (Dict[str, str]): Dictionary of input files\n    config (Dict[str, Any]): Configuration parameters\n    selected_model (str): Name of the selected AI model\n    provider (str): Name of the AI provider\n    \nReturns:\n    Optional[str]: Generated guidelines content or None if generation fails\n    \nRaises:\n    ValueError: If no valid files found to analyze",
+          "decorators": "",
+          "name": "generate_guidelines_document",
+          "parameter_count": 4,
+          "parameters": "files_input,config,selected_model,provider",
+          "has_return_type": false
+        }
+      },
+      "378": {
+        "name": "main",
+        "details": {
+          "decorators": "",
+          "name": "main",
+          "parameter_count": 0,
+          "parameters": "",
+          "has_return_type": false
+        }
+      },
+      "379": {
+        "name": "process_directory",
+        "details": {
+          "docstring": "Recursively process directory and its contents",
+          "decorators": "",
+          "name": "process_directory",
+          "parameter_count": 2,
+          "parameters": "directory,parent_node",
+          "has_return_type": false
+        }
+      }
+    },
+    "Import": {
+      "13": {
+        "name": "os",
+        "details": {
+          "name": "os",
+          "is_relative": false,
+          "base_package": "os"
+        }
+      },
+      "14": {
+        "name": "sys",
+        "details": {
+          "name": "sys",
+          "is_relative": false,
+          "base_package": "sys"
+        }
+      },
+      "15": {
+        "name": "datetime.datetime",
+        "details": {
+          "name": "datetime.datetime",
+          "is_relative": false,
+          "base_package": "datetime"
+        }
+      },
+      "54": {
+        "name": "base_analyzer.BaseAnalyzer",
+        "details": {
+          "name": "base_analyzer.BaseAnalyzer",
+          "is_relative": false,
+          "base_package": "base_analyzer"
+        }
+      },
+      "55": {
+        "name": "os",
+        "details": {
+          "name": "os",
+          "is_relative": false,
+          "base_package": "os"
+        }
+      },
+      "56": {
+        "name": "re",
+        "details": {
+          "name": "re",
+          "is_relative": false,
+          "base_package": "re"
+        }
+      },
+      "57": {
+        "name": "collections.defaultdict",
+        "details": {
+          "name": "collections.defaultdict",
+          "is_relative": false,
+          "base_package": "collections"
+        }
+      },
+      "83": {
+        "name": "base_analyzer.BaseAnalyzer",
+        "details": {
+          "name": "base_analyzer.BaseAnalyzer",
+          "is_relative": false,
+          "base_package": "base_analyzer"
+        }
+      },
+      "84": {
+        "name": "os",
+        "details": {
+          "name": "os",
+          "is_relative": false,
+          "base_package": "os"
+        }
+      },
+      "85": {
+        "name": "re",
+        "details": {
+          "name": "re",
+          "is_relative": false,
+          "base_package": "re"
+        }
+      },
+      "86": {
+        "name": "ast",
+        "details": {
+          "name": "ast",
+          "is_relative": false,
+          "base_package": "ast"
+        }
+      },
+      "87": {
+        "name": "json",
+        "details": {
+          "name": "json",
+          "is_relative": false,
+          "base_package": "json"
+        }
+      },
+      "88": {
+        "name": "javalang",
+        "details": {
+          "name": "javalang",
+          "is_relative": false,
+          "base_package": "javalang"
+        }
+      },
+      "89": {
+        "name": "esprima",
+        "details": {
+          "name": "esprima",
+          "is_relative": false,
+          "base_package": "esprima"
+        }
+      },
+      "90": {
+        "name": "xml.etree.ElementTree",
+        "details": {
+          "name": "xml.etree.ElementTree",
+          "is_relative": false,
+          "base_package": "xml"
+        }
+      },
+      "132": {
+        "name": "typing.List",
+        "details": {
+          "name": "typing.List",
+          "is_relative": false,
+          "base_package": "typing"
+        }
+      },
+      "133": {
+        "name": "typing.Dict",
+        "details": {
+          "name": "typing.Dict",
+          "is_relative": false,
+          "base_package": "typing"
+        }
+      },
+      "134": {
+        "name": "typing.Optional",
+        "details": {
+          "name": "typing.Optional",
+          "is_relative": false,
+          "base_package": "typing"
+        }
+      },
+      "135": {
+        "name": "typing.Union",
+        "details": {
+          "name": "typing.Union",
+          "is_relative": false,
+          "base_package": "typing"
+        }
+      },
+      "136": {
+        "name": "typing.TypeVar",
+        "details": {
+          "name": "typing.TypeVar",
+          "is_relative": false,
+          "base_package": "typing"
+        }
+      },
+      "137": {
+        "name": "typing.Generic",
+        "details": {
+          "name": "typing.Generic",
+          "is_relative": false,
+          "base_package": "typing"
+        }
+      },
+      "138": {
+        "name": "abc.ABC",
+        "details": {
+          "name": "abc.ABC",
+          "is_relative": false,
+          "base_package": "abc"
+        }
+      },
+      "139": {
+        "name": "abc.abstractmethod",
+        "details": {
+          "name": "abc.abstractmethod",
+          "is_relative": false,
+          "base_package": "abc"
+        }
+      },
+      "140": {
+        "name": "dataclasses.dataclass",
+        "details": {
+          "name": "dataclasses.dataclass",
+          "is_relative": false,
+          "base_package": "dataclasses"
+        }
+      },
+      "141": {
+        "name": "datetime.datetime",
+        "details": {
+          "name": "datetime.datetime",
+          "is_relative": false,
+          "base_package": "datetime"
+        }
+      },
+      "187": {
+        "name": "abc.ABC",
+        "details": {
+          "name": "abc.ABC",
+          "is_relative": false,
+          "base_package": "abc"
+        }
+      },
+      "188": {
+        "name": "abc.abstractmethod",
+        "details": {
+          "name": "abc.abstractmethod",
+          "is_relative": false,
+          "base_package": "abc"
+        }
+      },
+      "189": {
+        "name": "typing.List",
+        "details": {
+          "name": "typing.List",
+          "is_relative": false,
+          "base_package": "typing"
+        }
+      },
+      "190": {
+        "name": "typing.Optional",
+        "details": {
+          "name": "typing.Optional",
+          "is_relative": false,
+          "base_package": "typing"
+        }
+      },
+      "191": {
+        "name": "dataclasses.dataclass",
+        "details": {
+          "name": "dataclasses.dataclass",
+          "is_relative": false,
+          "base_package": "dataclasses"
+        }
+      },
+      "264": {
+        "name": "toml",
+        "details": {
+          "name": "toml",
+          "is_relative": false,
+          "base_package": "toml"
+        }
+      },
+      "265": {
+        "name": "pathlib.Path",
+        "details": {
+          "name": "pathlib.Path",
+          "is_relative": false,
+          "base_package": "pathlib"
+        }
+      },
+      "266": {
+        "name": "string.Template",
+        "details": {
+          "name": "string.Template",
+          "is_relative": false,
+          "base_package": "string"
+        }
+      },
+      "267": {
+        "name": "typing.Dict",
+        "details": {
+          "name": "typing.Dict",
+          "is_relative": false,
+          "base_package": "typing"
+        }
+      },
+      "268": {
+        "name": "typing.Any",
+        "details": {
+          "name": "typing.Any",
+          "is_relative": false,
+          "base_package": "typing"
+        }
+      },
+      "269": {
+        "name": "typing.Optional",
+        "details": {
+          "name": "typing.Optional",
+          "is_relative": false,
+          "base_package": "typing"
+        }
+      },
+      "380": {
+        "name": "litellm",
+        "details": {
+          "name": "litellm",
+          "is_relative": false,
+          "base_package": "litellm"
+        }
+      },
+      "381": {
+        "name": "yaml",
+        "details": {
+          "name": "yaml",
+          "is_relative": false,
+          "base_package": "yaml"
+        }
+      },
+      "382": {
+        "name": "re",
+        "details": {
+          "name": "re",
+          "is_relative": false,
+          "base_package": "re"
+        }
+      },
+      "383": {
+        "name": "os",
+        "details": {
+          "name": "os",
+          "is_relative": false,
+          "base_package": "os"
+        }
+      },
+      "384": {
+        "name": "xml.etree.ElementTree",
+        "details": {
+          "name": "xml.etree.ElementTree",
+          "is_relative": false,
+          "base_package": "xml"
+        }
+      },
+      "385": {
+        "name": "traceback",
+        "details": {
+          "name": "traceback",
+          "is_relative": false,
+          "base_package": "traceback"
+        }
+      },
+      "386": {
+        "name": "re",
+        "details": {
+          "name": "re",
+          "is_relative": false,
+          "base_package": "re"
+        }
+      },
+      "387": {
+        "name": "magic",
+        "details": {
+          "name": "magic",
+          "is_relative": false,
+          "base_package": "magic"
+        }
+      },
+      "388": {
+        "name": "dotenv.load_dotenv",
+        "details": {
+          "name": "dotenv.load_dotenv",
+          "is_relative": false,
+          "base_package": "dotenv"
+        }
+      },
+      "468": {
+        "name": "py2neo.Graph",
+        "details": {
+          "name": "py2neo.Graph",
+          "is_relative": false,
+          "base_package": "py2neo"
+        }
+      },
+      "469": {
+        "name": "py2neo.Node",
+        "details": {
+          "name": "py2neo.Node",
+          "is_relative": false,
+          "base_package": "py2neo"
+        }
+      },
+      "470": {
+        "name": "py2neo.Relationship",
+        "details": {
+          "name": "py2neo.Relationship",
+          "is_relative": false,
+          "base_package": "py2neo"
+        }
+      },
+      "471": {
+        "name": "os",
+        "details": {
+          "name": "os",
+          "is_relative": false,
+          "base_package": "os"
+        }
+      },
+      "472": {
+        "name": "typing.Dict",
+        "details": {
+          "name": "typing.Dict",
+          "is_relative": false,
+          "base_package": "typing"
+        }
+      },
+      "473": {
+        "name": "typing.Optional",
+        "details": {
+          "name": "typing.Optional",
+          "is_relative": false,
+          "base_package": "typing"
+        }
+      },
+      "474": {
+        "name": "typing.Any",
+        "details": {
+          "name": "typing.Any",
+          "is_relative": false,
+          "base_package": "typing"
+        }
+      },
+      "475": {
+        "name": "py2neo.errors.ClientError",
+        "details": {
+          "name": "py2neo.errors.ClientError",
+          "is_relative": false,
+          "base_package": "py2neo"
+        }
+      },
+      "476": {
+        "name": "py2neo.errors.DatabaseError",
+        "details": {
+          "name": "py2neo.errors.DatabaseError",
+          "is_relative": false,
+          "base_package": "py2neo"
+        }
+      },
+      "477": {
+        "name": "utils.prompt_loader.PromptLoader",
+        "details": {
+          "name": "utils.prompt_loader.PromptLoader",
+          "is_relative": false,
+          "base_package": "utils"
+        }
+      },
+      "478": {
+        "name": "utils.codebase_analyzer.CodebaseAnalyzer",
+        "details": {
+          "name": "utils.codebase_analyzer.CodebaseAnalyzer",
+          "is_relative": false,
+          "base_package": "utils"
+        }
+      },
+      "479": {
+        "name": "utils.base_analyzer.BaseAnalyzer",
+        "details": {
+          "name": "utils.base_analyzer.BaseAnalyzer",
+          "is_relative": false,
+          "base_package": "utils"
+        }
+      },
+      "480": {
+        "name": "utils.repository_analyzer.RepositoryAnalyzer",
+        "details": {
+          "name": "utils.repository_analyzer.RepositoryAnalyzer",
+          "is_relative": false,
+          "base_package": "utils"
+        }
       }
     },
     "Repository": {
-      "120": {
-        "name": "/tmp/codebase/1737835300821",
+      "40": {
+        "name": "/tmp/codebase/1737916104459",
         "details": {
-          "name": "/tmp/codebase/1737835300821",
-          "created_at": "2025-01-25 20:01:43.385694",
+          "name": "/tmp/codebase/1737916104459",
+          "created_at": "2025-01-26 18:28:26.684339",
           "total_files": 39
+        }
+      }
+    },
+    "PythonFile": {
+      "41": {
+        "name": "codebase_analyzer.py",
+        "details": {
+          "import_count": 4,
+          "name": "codebase_analyzer.py",
+          "has_classes": true,
+          "path": "/tmp/codebase/1737916104459/codebase_analyzer.py",
+          "has_functions": true,
+          "size": 3877
+        }
+      },
+      "58": {
+        "name": "repository_analyzer.py",
+        "details": {
+          "import_count": 8,
+          "name": "repository_analyzer.py",
+          "has_classes": true,
+          "path": "/tmp/codebase/1737916104459/repository_analyzer.py",
+          "has_functions": true,
+          "size": 7528
+        }
+      },
+      "91": {
+        "name": "gggggg.py",
+        "details": {
+          "import_count": 10,
+          "name": "gggggg.py",
+          "has_classes": true,
+          "path": "/tmp/codebase/1737916104459/gggggg.py",
+          "has_functions": true,
+          "size": 5575
+        }
+      },
+      "142": {
+        "name": "classess.py",
+        "details": {
+          "import_count": 5,
+          "name": "classess.py",
+          "has_classes": true,
+          "path": "/tmp/codebase/1737916104459/classess.py",
+          "has_functions": true,
+          "size": 4393
+        }
+      },
+      "192": {
+        "name": "prompt_loader.py",
+        "details": {
+          "import_count": 6,
+          "name": "prompt_loader.py",
+          "has_classes": true,
+          "path": "/tmp/codebase/1737916104459/prompt_loader.py",
+          "has_functions": true,
+          "size": 4133
+        }
+      },
+      "270": {
+        "name": "setting.py",
+        "details": {
+          "import_count": 0,
+          "name": "setting.py",
+          "has_classes": false,
+          "path": "/tmp/codebase/1737916104459/setting.py",
+          "has_functions": false,
+          "size": 0
+        }
+      },
+      "272": {
+        "name": "grandfamily.py",
+        "details": {
+          "import_count": 0,
+          "name": "grandfamily.py",
+          "has_classes": true,
+          "path": "/tmp/codebase/1737916104459/grandfamily.py",
+          "has_functions": true,
+          "size": 736
+        }
+      },
+      "285": {
+        "name": "main.py",
+        "details": {
+          "import_count": 22,
+          "name": "main.py",
+          "has_classes": false,
+          "path": "/tmp/codebase/1737916104459/main.py",
+          "has_functions": true,
+          "size": 27982
+        }
+      },
+      "481": {
+        "name": "base_analyzer.py",
+        "details": {
+          "import_count": 3,
+          "name": "base_analyzer.py",
+          "has_classes": true,
+          "path": "/tmp/codebase/1737916104459/base_analyzer.py",
+          "has_functions": true,
+          "size": 7726
+        }
+      }
+    },
+    "ModuleNamespace": {
+      "42": {
+        "name": "codebase_analyzer",
+        "details": {
+          "file_path": "/tmp/codebase/1737916104459/codebase_analyzer.py",
+          "name": "codebase_analyzer"
+        }
+      },
+      "59": {
+        "name": "repository_analyzer",
+        "details": {
+          "file_path": "/tmp/codebase/1737916104459/repository_analyzer.py",
+          "name": "repository_analyzer"
+        }
+      },
+      "92": {
+        "name": "gggggg",
+        "details": {
+          "file_path": "/tmp/codebase/1737916104459/gggggg.py",
+          "name": "gggggg"
+        }
+      },
+      "143": {
+        "name": "classess",
+        "details": {
+          "file_path": "/tmp/codebase/1737916104459/classess.py",
+          "name": "classess"
+        }
+      },
+      "193": {
+        "name": "prompt_loader",
+        "details": {
+          "file_path": "/tmp/codebase/1737916104459/prompt_loader.py",
+          "name": "prompt_loader"
+        }
+      },
+      "271": {
+        "name": "setting",
+        "details": {
+          "file_path": "/tmp/codebase/1737916104459/setting.py",
+          "name": "setting"
+        }
+      },
+      "273": {
+        "name": "grandfamily",
+        "details": {
+          "file_path": "/tmp/codebase/1737916104459/grandfamily.py",
+          "name": "grandfamily"
+        }
+      },
+      "286": {
+        "name": "main",
+        "details": {
+          "file_path": "/tmp/codebase/1737916104459/main.py",
+          "name": "main"
+        }
+      },
+      "482": {
+        "name": "base_analyzer",
+        "details": {
+          "docstring": "This is a module-level docstring that demonstrates documentation at the module level.\nThis module contains sample code for testing the enhanced Python parser.",
+          "file_path": "/tmp/codebase/1737916104459/base_analyzer.py",
+          "name": "base_analyzer"
         }
       }
     }
@@ -2691,106 +2691,106 @@
   "relationships": {
     "inheritance": [
       {
-        "derived_id": "42",
-        "derived_name": "Parent",
-        "base_id": "39",
-        "base_name": "Grandparent",
-        "is_direct": true,
-        "inheritance_level": 1
-      },
-      {
-        "derived_id": "45",
-        "derived_name": "Child",
-        "base_id": "39",
-        "base_name": "Grandparent",
-        "is_direct": false,
-        "inheritance_level": 2
-      },
-      {
-        "derived_id": "45",
-        "derived_name": "Child",
-        "base_id": "42",
-        "base_name": "Parent",
-        "is_direct": true,
-        "inheritance_level": 1
-      },
-      {
-        "derived_id": "178",
+        "derived_id": "98",
         "derived_name": "Car",
-        "base_id": "173",
+        "base_id": "93",
         "base_name": "Vehicle",
         "is_direct": true,
         "inheritance_level": 1
       },
       {
-        "derived_id": "182",
+        "derived_id": "102",
         "derived_name": "Motorcycle",
-        "base_id": "173",
+        "base_id": "93",
         "base_name": "Vehicle",
         "is_direct": true,
         "inheritance_level": 1
       },
       {
-        "derived_id": "289",
+        "derived_id": "151",
         "derived_name": "Shape",
-        "base_id": "287",
+        "base_id": "149",
         "base_name": "Drawable",
         "is_direct": true,
         "inheritance_level": 1
       },
       {
-        "derived_id": "294",
+        "derived_id": "156",
         "derived_name": "Circle",
-        "base_id": "287",
+        "base_id": "149",
         "base_name": "Drawable",
         "is_direct": false,
         "inheritance_level": 2
       },
       {
-        "derived_id": "294",
+        "derived_id": "156",
         "derived_name": "Circle",
-        "base_id": "289",
+        "base_id": "151",
         "base_name": "Shape",
         "is_direct": true,
         "inheritance_level": 1
       },
       {
-        "derived_id": "298",
+        "derived_id": "160",
         "derived_name": "Rectangle",
-        "base_id": "287",
+        "base_id": "149",
         "base_name": "Drawable",
         "is_direct": false,
         "inheritance_level": 2
       },
       {
-        "derived_id": "298",
+        "derived_id": "160",
         "derived_name": "Rectangle",
-        "base_id": "289",
+        "base_id": "151",
         "base_name": "Shape",
         "is_direct": true,
         "inheritance_level": 1
       },
       {
-        "derived_id": "387",
+        "derived_id": "174",
         "derived_name": "ColoredRectangle",
-        "base_id": "287",
+        "base_id": "149",
         "base_name": "Drawable",
         "is_direct": true,
         "inheritance_level": 1
       },
       {
-        "derived_id": "387",
+        "derived_id": "174",
         "derived_name": "ColoredRectangle",
-        "base_id": "289",
+        "base_id": "151",
         "base_name": "Shape",
         "is_direct": false,
         "inheritance_level": 2
       },
       {
-        "derived_id": "387",
+        "derived_id": "174",
         "derived_name": "ColoredRectangle",
-        "base_id": "298",
+        "base_id": "160",
         "base_name": "Rectangle",
+        "is_direct": true,
+        "inheritance_level": 1
+      },
+      {
+        "derived_id": "277",
+        "derived_name": "Parent",
+        "base_id": "274",
+        "base_name": "Grandparent",
+        "is_direct": true,
+        "inheritance_level": 1
+      },
+      {
+        "derived_id": "280",
+        "derived_name": "Child",
+        "base_id": "274",
+        "base_name": "Grandparent",
+        "is_direct": false,
+        "inheritance_level": 2
+      },
+      {
+        "derived_id": "280",
+        "derived_name": "Child",
+        "base_id": "277",
+        "base_name": "Parent",
         "is_direct": true,
         "inheritance_level": 1
       }
@@ -2798,343 +2798,343 @@
     "method_overrides": [
       {
         "method": {
-          "id": "43",
+          "id": "99",
           "name": "__init__",
           "class": {
-            "id": "42",
-            "name": "Parent"
-          }
-        },
-        "overridden": {
-          "method_id": "40",
-          "method_name": "__init__",
-          "class": {
-            "id": "39",
-            "name": "Grandparent"
-          }
-        }
-      },
-      {
-        "method": {
-          "id": "44",
-          "name": "display",
-          "class": {
-            "id": "42",
-            "name": "Parent"
-          }
-        },
-        "overridden": {
-          "method_id": "41",
-          "method_name": "display",
-          "class": {
-            "id": "39",
-            "name": "Grandparent"
-          }
-        }
-      },
-      {
-        "method": {
-          "id": "46",
-          "name": "__init__",
-          "class": {
-            "id": "45",
-            "name": "Child"
-          }
-        },
-        "overridden": {
-          "method_id": "40",
-          "method_name": "__init__",
-          "class": {
-            "id": "39",
-            "name": "Grandparent"
-          }
-        }
-      },
-      {
-        "method": {
-          "id": "46",
-          "name": "__init__",
-          "class": {
-            "id": "45",
-            "name": "Child"
-          }
-        },
-        "overridden": {
-          "method_id": "43",
-          "method_name": "__init__",
-          "class": {
-            "id": "42",
-            "name": "Parent"
-          }
-        }
-      },
-      {
-        "method": {
-          "id": "47",
-          "name": "display",
-          "class": {
-            "id": "45",
-            "name": "Child"
-          }
-        },
-        "overridden": {
-          "method_id": "41",
-          "method_name": "display",
-          "class": {
-            "id": "39",
-            "name": "Grandparent"
-          }
-        }
-      },
-      {
-        "method": {
-          "id": "47",
-          "name": "display",
-          "class": {
-            "id": "45",
-            "name": "Child"
-          }
-        },
-        "overridden": {
-          "method_id": "44",
-          "method_name": "display",
-          "class": {
-            "id": "42",
-            "name": "Parent"
-          }
-        }
-      },
-      {
-        "method": {
-          "id": "179",
-          "name": "__init__",
-          "class": {
-            "id": "178",
+            "id": "98",
             "name": "Car"
           }
         },
         "overridden": {
-          "method_id": "174",
+          "method_id": "94",
           "method_name": "__init__",
           "class": {
-            "id": "173",
+            "id": "93",
             "name": "Vehicle"
           }
         }
       },
       {
         "method": {
-          "id": "180",
+          "id": "100",
           "name": "start_engine",
           "class": {
-            "id": "178",
+            "id": "98",
             "name": "Car"
           }
         },
         "overridden": {
-          "method_id": "176",
+          "method_id": "96",
           "method_name": "start_engine",
           "class": {
-            "id": "173",
+            "id": "93",
             "name": "Vehicle"
           }
         }
       },
       {
         "method": {
-          "id": "183",
+          "id": "103",
           "name": "__init__",
           "class": {
-            "id": "182",
+            "id": "102",
             "name": "Motorcycle"
           }
         },
         "overridden": {
-          "method_id": "174",
+          "method_id": "94",
           "method_name": "__init__",
           "class": {
-            "id": "173",
+            "id": "93",
             "name": "Vehicle"
           }
         }
       },
       {
         "method": {
-          "id": "184",
+          "id": "104",
           "name": "start_engine",
           "class": {
-            "id": "182",
+            "id": "102",
             "name": "Motorcycle"
           }
         },
         "overridden": {
-          "method_id": "176",
+          "method_id": "96",
           "method_name": "start_engine",
           "class": {
-            "id": "173",
+            "id": "93",
             "name": "Vehicle"
           }
         }
       },
       {
         "method": {
-          "id": "292",
+          "id": "154",
           "name": "draw",
           "class": {
-            "id": "289",
+            "id": "151",
             "name": "Shape"
           }
         },
         "overridden": {
-          "method_id": "288",
+          "method_id": "150",
           "method_name": "draw",
           "class": {
-            "id": "287",
+            "id": "149",
             "name": "Drawable"
           }
         }
       },
       {
         "method": {
-          "id": "295",
+          "id": "157",
           "name": "__init__",
           "class": {
-            "id": "294",
+            "id": "156",
             "name": "Circle"
           }
         },
         "overridden": {
-          "method_id": "290",
+          "method_id": "152",
           "method_name": "__init__",
           "class": {
-            "id": "289",
+            "id": "151",
             "name": "Shape"
           }
         }
       },
       {
         "method": {
-          "id": "296",
+          "id": "158",
           "name": "calculate_area",
           "class": {
-            "id": "294",
+            "id": "156",
             "name": "Circle"
           }
         },
         "overridden": {
-          "method_id": "291",
+          "method_id": "153",
           "method_name": "calculate_area",
           "class": {
-            "id": "289",
+            "id": "151",
             "name": "Shape"
           }
         }
       },
       {
         "method": {
-          "id": "297",
+          "id": "159",
           "name": "draw",
           "class": {
-            "id": "294",
+            "id": "156",
             "name": "Circle"
           }
         },
         "overridden": {
-          "method_id": "288",
+          "method_id": "150",
           "method_name": "draw",
           "class": {
-            "id": "287",
+            "id": "149",
             "name": "Drawable"
           }
         }
       },
       {
         "method": {
-          "id": "297",
+          "id": "159",
           "name": "draw",
           "class": {
-            "id": "294",
+            "id": "156",
             "name": "Circle"
           }
         },
         "overridden": {
-          "method_id": "292",
+          "method_id": "154",
           "method_name": "draw",
           "class": {
-            "id": "289",
+            "id": "151",
             "name": "Shape"
           }
         }
       },
       {
         "method": {
-          "id": "299",
+          "id": "161",
           "name": "__init__",
           "class": {
-            "id": "298",
+            "id": "160",
             "name": "Rectangle"
           }
         },
         "overridden": {
-          "method_id": "290",
+          "method_id": "152",
           "method_name": "__init__",
           "class": {
-            "id": "289",
+            "id": "151",
             "name": "Shape"
           }
         }
       },
       {
         "method": {
-          "id": "300",
+          "id": "162",
           "name": "calculate_area",
           "class": {
-            "id": "298",
+            "id": "160",
             "name": "Rectangle"
           }
         },
         "overridden": {
-          "method_id": "291",
+          "method_id": "153",
           "method_name": "calculate_area",
           "class": {
-            "id": "289",
+            "id": "151",
             "name": "Shape"
           }
         }
       },
       {
         "method": {
-          "id": "376",
+          "id": "163",
           "name": "draw",
           "class": {
-            "id": "298",
+            "id": "160",
             "name": "Rectangle"
           }
         },
         "overridden": {
-          "method_id": "288",
+          "method_id": "150",
           "method_name": "draw",
           "class": {
-            "id": "287",
+            "id": "149",
             "name": "Drawable"
           }
         }
       },
       {
         "method": {
-          "id": "376",
+          "id": "163",
           "name": "draw",
           "class": {
-            "id": "298",
+            "id": "160",
             "name": "Rectangle"
           }
         },
         "overridden": {
-          "method_id": "292",
+          "method_id": "154",
           "method_name": "draw",
           "class": {
-            "id": "289",
+            "id": "151",
             "name": "Shape"
+          }
+        }
+      },
+      {
+        "method": {
+          "id": "278",
+          "name": "__init__",
+          "class": {
+            "id": "277",
+            "name": "Parent"
+          }
+        },
+        "overridden": {
+          "method_id": "275",
+          "method_name": "__init__",
+          "class": {
+            "id": "274",
+            "name": "Grandparent"
+          }
+        }
+      },
+      {
+        "method": {
+          "id": "279",
+          "name": "display",
+          "class": {
+            "id": "277",
+            "name": "Parent"
+          }
+        },
+        "overridden": {
+          "method_id": "276",
+          "method_name": "display",
+          "class": {
+            "id": "274",
+            "name": "Grandparent"
+          }
+        }
+      },
+      {
+        "method": {
+          "id": "281",
+          "name": "__init__",
+          "class": {
+            "id": "280",
+            "name": "Child"
+          }
+        },
+        "overridden": {
+          "method_id": "275",
+          "method_name": "__init__",
+          "class": {
+            "id": "274",
+            "name": "Grandparent"
+          }
+        }
+      },
+      {
+        "method": {
+          "id": "281",
+          "name": "__init__",
+          "class": {
+            "id": "280",
+            "name": "Child"
+          }
+        },
+        "overridden": {
+          "method_id": "278",
+          "method_name": "__init__",
+          "class": {
+            "id": "277",
+            "name": "Parent"
+          }
+        }
+      },
+      {
+        "method": {
+          "id": "282",
+          "name": "display",
+          "class": {
+            "id": "280",
+            "name": "Child"
+          }
+        },
+        "overridden": {
+          "method_id": "276",
+          "method_name": "display",
+          "class": {
+            "id": "274",
+            "name": "Grandparent"
+          }
+        }
+      },
+      {
+        "method": {
+          "id": "282",
+          "name": "display",
+          "class": {
+            "id": "280",
+            "name": "Child"
+          }
+        },
+        "overridden": {
+          "method_id": "279",
+          "method_name": "display",
+          "class": {
+            "id": "277",
+            "name": "Parent"
           }
         }
       }
@@ -3142,66 +3142,66 @@
     "sibling_relationships": [
       {
         "class": {
-          "id": "178",
+          "id": "98",
           "name": "Car"
         },
         "sibling": {
-          "id": "182",
+          "id": "102",
           "name": "Motorcycle"
         },
         "common_parent": "Vehicle"
       },
       {
         "class": {
-          "id": "182",
+          "id": "102",
           "name": "Motorcycle"
         },
         "sibling": {
-          "id": "178",
+          "id": "98",
           "name": "Car"
         },
         "common_parent": "Vehicle"
       },
       {
         "class": {
-          "id": "289",
+          "id": "151",
           "name": "Shape"
         },
         "sibling": {
-          "id": "387",
+          "id": "174",
           "name": "ColoredRectangle"
         },
         "common_parent": "Drawable"
       },
       {
         "class": {
-          "id": "294",
+          "id": "156",
           "name": "Circle"
         },
         "sibling": {
-          "id": "298",
+          "id": "160",
           "name": "Rectangle"
         },
         "common_parent": "Shape"
       },
       {
         "class": {
-          "id": "298",
+          "id": "160",
           "name": "Rectangle"
         },
         "sibling": {
-          "id": "294",
+          "id": "156",
           "name": "Circle"
         },
         "common_parent": "Shape"
       },
       {
         "class": {
-          "id": "387",
+          "id": "174",
           "name": "ColoredRectangle"
         },
         "sibling": {
-          "id": "289",
+          "id": "151",
           "name": "Shape"
         },
         "common_parent": "Drawable"
@@ -3210,383 +3210,11 @@
     "import_relationships": [
       {
         "module": {
-          "id": "17",
-          "name": "prompt_loader"
-        },
-        "import": {
-          "id": "29",
-          "name": "toml",
-          "base_package": "toml",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "17",
-          "name": "prompt_loader"
-        },
-        "import": {
-          "id": "30",
-          "name": "pathlib.Path",
-          "base_package": "pathlib",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "17",
-          "name": "prompt_loader"
-        },
-        "import": {
-          "id": "31",
-          "name": "string.Template",
-          "base_package": "string",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "17",
-          "name": "prompt_loader"
-        },
-        "import": {
-          "id": "32",
-          "name": "typing.Dict",
-          "base_package": "typing",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "17",
-          "name": "prompt_loader"
-        },
-        "import": {
-          "id": "33",
-          "name": "typing.Any",
-          "base_package": "typing",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "17",
-          "name": "prompt_loader"
-        },
-        "import": {
-          "id": "34",
-          "name": "typing.Optional",
-          "base_package": "typing",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "70",
-          "name": "litellm",
-          "base_package": "litellm",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "71",
-          "name": "yaml",
-          "base_package": "yaml",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "72",
-          "name": "re",
-          "base_package": "re",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "73",
-          "name": "os",
-          "base_package": "os",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "74",
-          "name": "xml.etree.ElementTree",
-          "base_package": "xml",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "75",
-          "name": "traceback",
-          "base_package": "traceback",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "76",
-          "name": "re",
-          "base_package": "re",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "77",
-          "name": "magic",
-          "base_package": "magic",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "78",
-          "name": "dotenv.load_dotenv",
-          "base_package": "dotenv",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "79",
-          "name": "py2neo.Graph",
-          "base_package": "py2neo",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "80",
-          "name": "py2neo.Node",
-          "base_package": "py2neo",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "81",
-          "name": "py2neo.Relationship",
-          "base_package": "py2neo",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "82",
-          "name": "os",
-          "base_package": "os",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "83",
-          "name": "typing.Dict",
-          "base_package": "typing",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "84",
-          "name": "typing.Optional",
-          "base_package": "typing",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "85",
-          "name": "typing.Any",
-          "base_package": "typing",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "86",
-          "name": "py2neo.errors.ClientError",
-          "base_package": "py2neo",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "87",
-          "name": "py2neo.errors.DatabaseError",
-          "base_package": "py2neo",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "88",
-          "name": "utils.prompt_loader.PromptLoader",
-          "base_package": "utils",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "89",
-          "name": "utils.codebase_analyzer.CodebaseAnalyzer",
-          "base_package": "utils",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "90",
-          "name": "utils.base_analyzer.BaseAnalyzer",
-          "base_package": "utils",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "51",
-          "name": "main"
-        },
-        "import": {
-          "id": "91",
-          "name": "utils.repository_analyzer.RepositoryAnalyzer",
-          "base_package": "utils",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "93",
-          "name": "base_analyzer"
-        },
-        "import": {
-          "id": "116",
-          "name": "os",
-          "base_package": "os",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "93",
-          "name": "base_analyzer"
-        },
-        "import": {
-          "id": "117",
-          "name": "sys",
-          "base_package": "sys",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "93",
-          "name": "base_analyzer"
-        },
-        "import": {
-          "id": "118",
-          "name": "datetime.datetime",
-          "base_package": "datetime",
-          "is_relative": false
-        }
-      },
-      {
-        "module": {
-          "id": "122",
+          "id": "42",
           "name": "codebase_analyzer"
         },
         "import": {
-          "id": "134",
+          "id": "54",
           "name": "base_analyzer.BaseAnalyzer",
           "base_package": "base_analyzer",
           "is_relative": false
@@ -3594,11 +3222,11 @@
       },
       {
         "module": {
-          "id": "122",
+          "id": "42",
           "name": "codebase_analyzer"
         },
         "import": {
-          "id": "135",
+          "id": "55",
           "name": "os",
           "base_package": "os",
           "is_relative": false
@@ -3606,11 +3234,11 @@
       },
       {
         "module": {
-          "id": "122",
+          "id": "42",
           "name": "codebase_analyzer"
         },
         "import": {
-          "id": "136",
+          "id": "56",
           "name": "re",
           "base_package": "re",
           "is_relative": false
@@ -3618,11 +3246,11 @@
       },
       {
         "module": {
-          "id": "122",
+          "id": "42",
           "name": "codebase_analyzer"
         },
         "import": {
-          "id": "137",
+          "id": "57",
           "name": "collections.defaultdict",
           "base_package": "collections",
           "is_relative": false
@@ -3630,11 +3258,11 @@
       },
       {
         "module": {
-          "id": "139",
+          "id": "59",
           "name": "repository_analyzer"
         },
         "import": {
-          "id": "163",
+          "id": "83",
           "name": "base_analyzer.BaseAnalyzer",
           "base_package": "base_analyzer",
           "is_relative": false
@@ -3642,11 +3270,11 @@
       },
       {
         "module": {
-          "id": "139",
+          "id": "59",
           "name": "repository_analyzer"
         },
         "import": {
-          "id": "164",
+          "id": "84",
           "name": "os",
           "base_package": "os",
           "is_relative": false
@@ -3654,11 +3282,11 @@
       },
       {
         "module": {
-          "id": "139",
+          "id": "59",
           "name": "repository_analyzer"
         },
         "import": {
-          "id": "165",
+          "id": "85",
           "name": "re",
           "base_package": "re",
           "is_relative": false
@@ -3666,11 +3294,11 @@
       },
       {
         "module": {
-          "id": "139",
+          "id": "59",
           "name": "repository_analyzer"
         },
         "import": {
-          "id": "166",
+          "id": "86",
           "name": "ast",
           "base_package": "ast",
           "is_relative": false
@@ -3678,11 +3306,11 @@
       },
       {
         "module": {
-          "id": "139",
+          "id": "59",
           "name": "repository_analyzer"
         },
         "import": {
-          "id": "167",
+          "id": "87",
           "name": "json",
           "base_package": "json",
           "is_relative": false
@@ -3690,11 +3318,11 @@
       },
       {
         "module": {
-          "id": "139",
+          "id": "59",
           "name": "repository_analyzer"
         },
         "import": {
-          "id": "168",
+          "id": "88",
           "name": "javalang",
           "base_package": "javalang",
           "is_relative": false
@@ -3702,11 +3330,11 @@
       },
       {
         "module": {
-          "id": "139",
+          "id": "59",
           "name": "repository_analyzer"
         },
         "import": {
-          "id": "169",
+          "id": "89",
           "name": "esprima",
           "base_package": "esprima",
           "is_relative": false
@@ -3714,11 +3342,11 @@
       },
       {
         "module": {
-          "id": "139",
+          "id": "59",
           "name": "repository_analyzer"
         },
         "import": {
-          "id": "170",
+          "id": "90",
           "name": "xml.etree.ElementTree",
           "base_package": "xml",
           "is_relative": false
@@ -3726,11 +3354,11 @@
       },
       {
         "module": {
-          "id": "172",
+          "id": "92",
           "name": "gggggg"
         },
         "import": {
-          "id": "270",
+          "id": "132",
           "name": "typing.List",
           "base_package": "typing",
           "is_relative": false
@@ -3738,11 +3366,11 @@
       },
       {
         "module": {
-          "id": "172",
+          "id": "92",
           "name": "gggggg"
         },
         "import": {
-          "id": "271",
+          "id": "133",
           "name": "typing.Dict",
           "base_package": "typing",
           "is_relative": false
@@ -3750,11 +3378,11 @@
       },
       {
         "module": {
-          "id": "172",
+          "id": "92",
           "name": "gggggg"
         },
         "import": {
-          "id": "272",
+          "id": "134",
           "name": "typing.Optional",
           "base_package": "typing",
           "is_relative": false
@@ -3762,11 +3390,11 @@
       },
       {
         "module": {
-          "id": "172",
+          "id": "92",
           "name": "gggggg"
         },
         "import": {
-          "id": "273",
+          "id": "135",
           "name": "typing.Union",
           "base_package": "typing",
           "is_relative": false
@@ -3774,11 +3402,11 @@
       },
       {
         "module": {
-          "id": "172",
+          "id": "92",
           "name": "gggggg"
         },
         "import": {
-          "id": "274",
+          "id": "136",
           "name": "typing.TypeVar",
           "base_package": "typing",
           "is_relative": false
@@ -3786,11 +3414,11 @@
       },
       {
         "module": {
-          "id": "172",
+          "id": "92",
           "name": "gggggg"
         },
         "import": {
-          "id": "275",
+          "id": "137",
           "name": "typing.Generic",
           "base_package": "typing",
           "is_relative": false
@@ -3798,11 +3426,11 @@
       },
       {
         "module": {
-          "id": "172",
+          "id": "92",
           "name": "gggggg"
         },
         "import": {
-          "id": "276",
+          "id": "138",
           "name": "abc.ABC",
           "base_package": "abc",
           "is_relative": false
@@ -3810,11 +3438,11 @@
       },
       {
         "module": {
-          "id": "172",
+          "id": "92",
           "name": "gggggg"
         },
         "import": {
-          "id": "277",
+          "id": "139",
           "name": "abc.abstractmethod",
           "base_package": "abc",
           "is_relative": false
@@ -3822,11 +3450,11 @@
       },
       {
         "module": {
-          "id": "172",
+          "id": "92",
           "name": "gggggg"
         },
         "import": {
-          "id": "278",
+          "id": "140",
           "name": "dataclasses.dataclass",
           "base_package": "dataclasses",
           "is_relative": false
@@ -3834,11 +3462,11 @@
       },
       {
         "module": {
-          "id": "172",
+          "id": "92",
           "name": "gggggg"
         },
         "import": {
-          "id": "279",
+          "id": "141",
           "name": "datetime.datetime",
           "base_package": "datetime",
           "is_relative": false
@@ -3846,11 +3474,11 @@
       },
       {
         "module": {
-          "id": "281",
+          "id": "143",
           "name": "classess"
         },
         "import": {
-          "id": "11",
+          "id": "187",
           "name": "abc.ABC",
           "base_package": "abc",
           "is_relative": false
@@ -3858,11 +3486,11 @@
       },
       {
         "module": {
-          "id": "281",
+          "id": "143",
           "name": "classess"
         },
         "import": {
-          "id": "12",
+          "id": "188",
           "name": "abc.abstractmethod",
           "base_package": "abc",
           "is_relative": false
@@ -3870,11 +3498,11 @@
       },
       {
         "module": {
-          "id": "281",
+          "id": "143",
           "name": "classess"
         },
         "import": {
-          "id": "13",
+          "id": "189",
           "name": "typing.List",
           "base_package": "typing",
           "is_relative": false
@@ -3882,11 +3510,11 @@
       },
       {
         "module": {
-          "id": "281",
+          "id": "143",
           "name": "classess"
         },
         "import": {
-          "id": "14",
+          "id": "190",
           "name": "typing.Optional",
           "base_package": "typing",
           "is_relative": false
@@ -3894,13 +3522,385 @@
       },
       {
         "module": {
-          "id": "281",
+          "id": "143",
           "name": "classess"
         },
         "import": {
-          "id": "15",
+          "id": "191",
           "name": "dataclasses.dataclass",
           "base_package": "dataclasses",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "193",
+          "name": "prompt_loader"
+        },
+        "import": {
+          "id": "264",
+          "name": "toml",
+          "base_package": "toml",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "193",
+          "name": "prompt_loader"
+        },
+        "import": {
+          "id": "265",
+          "name": "pathlib.Path",
+          "base_package": "pathlib",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "193",
+          "name": "prompt_loader"
+        },
+        "import": {
+          "id": "266",
+          "name": "string.Template",
+          "base_package": "string",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "193",
+          "name": "prompt_loader"
+        },
+        "import": {
+          "id": "267",
+          "name": "typing.Dict",
+          "base_package": "typing",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "193",
+          "name": "prompt_loader"
+        },
+        "import": {
+          "id": "268",
+          "name": "typing.Any",
+          "base_package": "typing",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "193",
+          "name": "prompt_loader"
+        },
+        "import": {
+          "id": "269",
+          "name": "typing.Optional",
+          "base_package": "typing",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "380",
+          "name": "litellm",
+          "base_package": "litellm",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "381",
+          "name": "yaml",
+          "base_package": "yaml",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "382",
+          "name": "re",
+          "base_package": "re",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "383",
+          "name": "os",
+          "base_package": "os",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "384",
+          "name": "xml.etree.ElementTree",
+          "base_package": "xml",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "385",
+          "name": "traceback",
+          "base_package": "traceback",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "386",
+          "name": "re",
+          "base_package": "re",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "387",
+          "name": "magic",
+          "base_package": "magic",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "388",
+          "name": "dotenv.load_dotenv",
+          "base_package": "dotenv",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "468",
+          "name": "py2neo.Graph",
+          "base_package": "py2neo",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "469",
+          "name": "py2neo.Node",
+          "base_package": "py2neo",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "470",
+          "name": "py2neo.Relationship",
+          "base_package": "py2neo",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "471",
+          "name": "os",
+          "base_package": "os",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "472",
+          "name": "typing.Dict",
+          "base_package": "typing",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "473",
+          "name": "typing.Optional",
+          "base_package": "typing",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "474",
+          "name": "typing.Any",
+          "base_package": "typing",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "475",
+          "name": "py2neo.errors.ClientError",
+          "base_package": "py2neo",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "476",
+          "name": "py2neo.errors.DatabaseError",
+          "base_package": "py2neo",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "477",
+          "name": "utils.prompt_loader.PromptLoader",
+          "base_package": "utils",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "478",
+          "name": "utils.codebase_analyzer.CodebaseAnalyzer",
+          "base_package": "utils",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "479",
+          "name": "utils.base_analyzer.BaseAnalyzer",
+          "base_package": "utils",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "286",
+          "name": "main"
+        },
+        "import": {
+          "id": "480",
+          "name": "utils.repository_analyzer.RepositoryAnalyzer",
+          "base_package": "utils",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "482",
+          "name": "base_analyzer"
+        },
+        "import": {
+          "id": "13",
+          "name": "os",
+          "base_package": "os",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "482",
+          "name": "base_analyzer"
+        },
+        "import": {
+          "id": "14",
+          "name": "sys",
+          "base_package": "sys",
+          "is_relative": false
+        }
+      },
+      {
+        "module": {
+          "id": "482",
+          "name": "base_analyzer"
+        },
+        "import": {
+          "id": "15",
+          "name": "datetime.datetime",
+          "base_package": "datetime",
           "is_relative": false
         }
       }
@@ -3913,13 +3913,6 @@
           "Drawable",
           "Shape",
           "Rectangle"
-        ],
-        "depth": 1
-      },
-      "Child": {
-        "ancestors": [
-          "Grandparent",
-          "Parent"
         ],
         "depth": 1
       },
@@ -3937,9 +3930,10 @@
         ],
         "depth": 1
       },
-      "Parent": {
+      "Child": {
         "ancestors": [
-          "Grandparent"
+          "Grandparent",
+          "Parent"
         ],
         "depth": 1
       },
@@ -3960,29 +3954,23 @@
           "Drawable"
         ],
         "depth": 1
+      },
+      "Parent": {
+        "ancestors": [
+          "Grandparent"
+        ],
+        "depth": 1
       }
     },
     "method_inheritance": {
       "__init__": {
-        "base_class": "Shape",
-        "inherited_by": {
-          "classes": [
-            "Circle",
-            "Rectangle"
-          ],
-          "methods": [
-            "__init__"
-          ]
-        }
-      },
-      "display": {
         "base_class": "Parent",
         "inherited_by": {
           "classes": [
             "Child"
           ],
           "methods": [
-            "display"
+            "__init__"
           ]
         }
       },
@@ -4019,6 +4007,17 @@
           ],
           "methods": [
             "calculate_area"
+          ]
+        }
+      },
+      "display": {
+        "base_class": "Parent",
+        "inherited_by": {
+          "classes": [
+            "Child"
+          ],
+          "methods": [
+            "display"
           ]
         }
       }

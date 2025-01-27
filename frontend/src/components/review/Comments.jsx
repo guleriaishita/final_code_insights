@@ -165,7 +165,7 @@ const Comments = () => {
               <div className="relative">
                 <label className="block text-me mb-1">
                   <span className="text-red-500 mr-1">*</span>
-                  Main Files:
+                  Main File:
                 </label>
                 <div className="relative">
                   <input

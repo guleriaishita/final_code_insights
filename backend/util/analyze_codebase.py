@@ -1,22 +1,35 @@
+
+
+
+
+
+
 import sys
 import json
 import litellm
 import yaml
 import os
 import re
-import javalang
+
 import json
 import xml.etree.ElementTree as ET
-import esprima
+
 import ast
-import pycparser
+
 from collections import defaultdict
 import traceback
 import magic
 from dotenv import load_dotenv
 from datetime import datetime
 from py2neo import Graph, Node, Relationship
+import shutil
+import logging
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 def generate_codebase_structure(repo_path):
     """
     Main function to generate codebase structure and create knowledge graph
@@ -846,133 +859,114 @@ RETURN
         traceback.print_exc()
 
 
+#!/usr/bin/env python3
+import os
+import sys
+import json
+import shutil
+import logging
+import argparse
+import traceback
 
-def process_files(files_data, temp_dir):
-    """
-    Process the uploaded files and create a temporary directory structure
-    
-    Args:
-        files_data (list): List of dictionaries containing file information
-        temp_dir (str): Path to temporary directory
-        
-    Returns:
-        list: List of created file paths
-    """
-    if not files_data:
-        return []
-    
-    file_paths = []
-    for file_info in files_data:
-        # Create file path maintaining any directory structure
-        file_path = os.path.join(temp_dir, file_info['filename'])
-        
-        # Create directories if they don't exist
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        
-        # Write file content
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(file_info['content'])
-        
-        file_paths.append(file_path)
-    
-    return file_paths
+#!/usr/bin/env python3
+import os
+import sys
+import json
+import shutil
+import logging
+import traceback
 
+# Configure logging
+logging.basicConfig(level=logging.INFO, 
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
-def create_temp_compliance_file(compliance_data, temp_dir):
+def generate_codebase_structure(directory):
     """
-    Create temporary compliance file if provided
-    
-    Args:
-        compliance_data (dict): Dictionary containing compliance file information
-        temp_dir (str): Path to temporary directory
-        
-    Returns:
-        str or None: Path to created compliance file, or None if no data provided
+    Generate a structure representation of the codebase.
+    This is a placeholder function - replace with actual implementation.
     """
-    if not compliance_data:
-        return None
-    
-    compliance_path = os.path.join(temp_dir, compliance_data['filename'])
-    os.makedirs(os.path.dirname(compliance_path), exist_ok=True)
-    
-    with open(compliance_path, 'w', encoding='utf-8') as f:
-        f.write(compliance_data['content'])
-    
-    return compliance_path
-
+    # Implement your codebase structure generation logic here
+    return {}
 
 def main():
+    logger.info("Script started")
+    
     try:
-        # Parse input JSON from stdin with error handling
-        try:
-            input_json = json.load(sys.stdin)
-        except json.JSONDecodeError as e:
-            raise Exception(f"Invalid JSON input: {str(e)}")
-
-        # Extract required fields
-        files_data = input_json.get('files', [])
-        temp_dir = input_json.get('temp_dir', '')
-        compliance_data = input_json.get('compliance')
-
-        if not temp_dir:
-            raise ValueError("Temporary directory path is required")
-
-        # Create absolute temp directory path
-        temp_dir = os.path.abspath(temp_dir)
+        # Read input from stdin
+        input_data = json.loads(sys.stdin.readline())
+        
+        # Get temporary directory from input or create one
+        temp_dir = input_data.get('temp_dir') or os.path.join(os.getcwd(), 'temp_' + str(os.getpid()))
+        
+        # Ensure temporary directory exists
         os.makedirs(temp_dir, exist_ok=True)
+        
+        # Write input files to temporary directory
+        for file_info in input_data.get('files', []):
+            file_path = os.path.join(temp_dir, file_info['filename'])
+            
+            # Ensure directory exists
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+            
+            # Write file content
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(file_info['content'])
 
-        # Process files and generate analysis
-        created_files = process_files(files_data, temp_dir)
-        compliance_file = create_temp_compliance_file(compliance_data, temp_dir)
-        generate_codebase_structure(temp_dir)
-
-        # Initialize analysis content
-        analysis_content = {}
-
-        # Read knowledge graph with proper error handling
-        knowledge_graph_file = os.path.join(temp_dir, 'knowledge_graph_structure.json')
+        # Generate codebase structure
+        analysis_result = generate_codebase_structure(temp_dir)
+        
+        # Try reading the knowledge graph structure
         try:
-            if os.path.exists(knowledge_graph_file):
-                with open(knowledge_graph_file, 'r', encoding='utf-8') as f:
-                    analysis_content['knowledgeGraph'] = json.load(f)
-            else:
-                analysis_content['knowledgeGraph'] = {
-                    "error": "Knowledge graph structure was not generated",
-                    "timestamp": datetime.now().isoformat()
-                }
-        except Exception as e:
-            analysis_content['knowledgeGraph'] = {
-                "error": f"Error reading knowledge graph: {str(e)}",
-                "timestamp": datetime.now().isoformat()
-            }
+            # First, try reading from current directory
+            with open('knowledge_graph_structure.json', 'r') as f:
+                graph_content = json.load(f)
+        except FileNotFoundError:
+            # Fallback to temp directory
+            try:
+                with open(os.path.join(temp_dir, 'knowledge_graph_structure.json'), 'r') as f:
+                    graph_content = json.load(f)
+            except FileNotFoundError:
+                # If no knowledge graph found, use an empty dict or handle as needed
+                graph_content = {}
 
-        # Return success result
-        result = {
+        # Prepare response
+        response = {
             'success': True,
-            'content': analysis_content,
-            'timestamp': datetime.now().isoformat(),
-            'files_processed': len(created_files),
-            'compliance_included': compliance_file is not None
+            'content': {
+                'knowledge_graph': graph_content
+            }
         }
 
-        print(json.dumps(result))
+        # Write output to a file in the temp directory
+        output_file_path = os.path.join(temp_dir, 'analysis_output.json')
+        with open(output_file_path, 'w', encoding='utf-8') as f:
+            json.dump(response, f, indent=4)
+
+        # Prepare final output with file path
+        final_output = {
+            'success': True,
+            'output_file': output_file_path
+        }
+
+        # Print final output to stdout
+        print(json.dumps(final_output))
         sys.stdout.flush()
 
     except Exception as e:
-        # Detailed error response
-        error_result = {
-            'success': False,
-            'error': {
-                'message': str(e),
-                'type': type(e).__name__,
-                'details': traceback.format_exc(),
-                'timestamp': datetime.now().isoformat()
-            }
+        # Log and handle any errors
+        logger.error(f"Error: {str(e)}\n{traceback.format_exc()}")
+        error_response = {
+            'success': False, 
+            'error': str(e),
+            'traceback': traceback.format_exc()
         }
-        print(json.dumps(error_result))
-        sys.stderr.write(f"Error in main: {str(e)}\n")
-        sys.stderr.write(traceback.format_exc())
-        sys.exit(1)
+        print(json.dumps(error_response))
+        sys.stdout.flush()
+    
+    finally:
+        # Clean up is now handled by the Node.js route
+        pass
 
 if __name__ == "__main__":
     main()

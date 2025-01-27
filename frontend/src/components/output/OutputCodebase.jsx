@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { FileDown, Loader, Search, Code, BookOpen, GitBranch, Network, ArrowUpSquare, Users, Share2, Workflow, TreeDeciduous, FileJson } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const OutputCodebase = () => {
+const EnhancedOutputCodebase = () => {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,9 +13,10 @@ const OutputCodebase = () => {
   const [nodeData, setNodeData] = useState(null);
   const [nodeLoading, setNodeLoading] = useState(false);
   const [nodeError, setNodeError] = useState(null);
+  const [showRelationships, setShowRelationships] = useState(false);
 
   useEffect(() => {
-    const fileId = sessionStorage.getItem('fileId_review_codebase');
+    const fileId = sessionStorage.getItem('processId_review_codebase');
     if (!fileId) {
       setError('No review ID found');
       setLoading(false);
@@ -25,8 +25,9 @@ const OutputCodebase = () => {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/generated_analyzed_codebase_docs/${fileId}`);
-        setData(response.data);
+        const response = await fetch(`http://localhost:5000/api/output/generated_analyzed_codebase_docs/${fileId}`);
+        const jsonData = await response.json();
+        setData(jsonData);
         fetchClasses();
       } catch (err) {
         setError(err.message);
@@ -70,14 +71,14 @@ const OutputCodebase = () => {
     setNodeLoading(false);
   };
 
-  const handleDownload = async (url, filename = 'analysis_result.json') => {
+  const handleDownload = async (url) => {
     try {
       const response = await fetch(url);
       const blob = await response.blob();
       const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = downloadUrl;
-      link.download = filename;
+      link.download = 'analysis_result.json';
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -157,17 +158,13 @@ const OutputCodebase = () => {
     <div className="text-red-500 text-center p-4">Error: {error}</div>
   );
 
-  if (!data) return (
-    <div className="text-gray-600 text-center p-4">No results found</div>
-  );
-
   return (
     <>
       <nav className="bg-white">
         <div className="container px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center text-xl font-medium">
-              <div onClick={() => navigate('/dashboard')} className="flex items-start cursor-pointer">  
+              <div onClick={() => navigate('/dashboard')} className="flex items-start cursor-pointer">
                 <img src="../../../public/Logo.png" alt="CodeInsight Logo" className="h-8 w-8" />
                 <span className="ml-2">Code Insight</span>
               </div>
@@ -177,28 +174,48 @@ const OutputCodebase = () => {
       </nav>
 
       <div className="max-w-7xl mx-auto p-6">
-        {data.resultUrl && (
+        <div className="flex gap-4 mb-6">
+          {data?.resultUrl && (
+            <button
+              onClick={() => handleDownload(data.resultUrl)}
+              className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors inline-flex items-center gap-2"
+            >
+              <FileDown size={20} />
+              Download Results
+            </button>
+          )}
           <button
-            onClick={() => handleDownload(data.resultUrl)}
-            className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors inline-flex items-center gap-2 mb-6"
+            onClick={() => setShowRelationships(!showRelationships)}
+            className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors inline-flex items-center gap-2"
           >
-            <FileDown size={20} />
-            Download Results
+            <Network size={20} />
+            {showRelationships ? 'Hide' : 'Show'} Class Relationships
           </button>
-        )}
+        </div>
 
-        <div className="grid grid-cols-2 gap-6">
-          {/* Knowledge Graph Section */}
-          <div className="bg-white rounded-xl shadow p-6 border border-purple-100">
-            <h2 className="text-xl font-semibold mb-4">Knowledge Graph</h2>
-            <div className="whitespace-pre-wrap">
-              {data.result.content.knowledgeGraph}
+        {/* Analysis Results Section */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+  <div className="flex items-center gap-2 mb-4">
+    <BookOpen className="w-6 h-6 text-purple-600" />
+    <h2 className="text-xl font-semibold text-purple-900">Analysis Results</h2>
+  </div>
+  <div className="bg-purple-50 p-4 rounded-lg text-left">
+    <pre className="whitespace-pre-wrap break-words">
+      {data?.result?.content?.content?.knowledge_graph ? 
+        JSON.stringify(data.result.content.content.knowledge_graph, null, 2)
+        : 'No analysis data available'
+      }
+    </pre>
+  </div>
+</div>
+
+        {/* Class Relationships Section */}
+        {showRelationships && (
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Network className="w-6 h-6 text-purple-600" />
+              <h2 className="text-xl font-semibold text-purple-900">Class Relationships</h2>
             </div>
-          </div>
-
-          {/* Class Relationships Section */}
-          <div className="bg-white rounded-xl shadow p-6 border border-purple-100">
-            <h2 className="text-xl font-semibold mb-4">Class Relationships</h2>
             
             <div className="flex gap-4 mb-4">
               <select
@@ -220,16 +237,6 @@ const OutputCodebase = () => {
               </button>
             </div>
 
-            {nodeData && (
-              <button
-                onClick={() => setShowJson(!showJson)}
-                className="flex items-center gap-2 p-2 mb-4 bg-purple-100 text-purple-700 rounded hover:bg-purple-200"
-              >
-                <FileJson className="w-4 h-4" />
-                {showJson ? 'Hide' : 'Show'} Raw JSON
-              </button>
-            )}
-
             {nodeLoading && (
               <div className="flex justify-center p-4">
                 <div className="animate-spin h-8 w-8 border-4 border-purple-500 border-t-transparent rounded-full" />
@@ -242,13 +249,7 @@ const OutputCodebase = () => {
               </div>
             )}
 
-            {showJson && nodeData && (
-              <pre className="mt-4 p-4 bg-gray-50 rounded-lg overflow-auto max-h-96 text-sm">
-                {JSON.stringify(nodeData, null, 2)}
-              </pre>
-            )}
-
-            {nodeData && (
+{nodeData && (
               <div className="space-y-6">
                 {renderSection("Parents", nodeData.inheritance?.parents, <ArrowUpSquare />, renderClassCard)}
                 {renderSection("Children", nodeData.inheritance?.children, <Share2 />, renderClassCard)}
@@ -262,10 +263,10 @@ const OutputCodebase = () => {
               </div>
             )}
           </div>
-        </div>
+        )}
       </div>
     </>
   );
 };
 
-export default OutputCodebase;
+export default EnhancedOutputCodebase;
